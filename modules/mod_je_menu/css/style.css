@@ -1,0 +1,22 @@
+
+ul.sdt_menu{margin:0 auto;padding:0;list-style: none;font-size:14px;height:85px;width:100%; position:relative; z-index:1200;}
+ul.sdt_menu a{text-decoration:none;	outline:none; text-transform:uppercase; text-decoration:none!important}
+ul.sdt_menu li{	float:left;height:85px;position:relative;cursor:pointer;}
+ul.sdt_menu li > a{z-index:12;position:absolute;top:0px;left:0px;height:85px;}
+ul.sdt_menu li a img{border:none;position:absolute;	width:0px;	height:0px;	bottom:0px;	left:85px;}
+ul.sdt_menu li span.sdt_wrap{position:absolute;	top:25px;left:0px;height:60px;z-index:15;}
+ul.sdt_menu li span.sdt_active{	position:absolute;top:85px;	height:0px;	left:0px;z-index:14;}
+ul.sdt_menu li span span.sdt_link,
+ul.sdt_menu li span span.sdt_descr,
+ul.sdt_menu li div.sdt_box a{margin:0 15px;}
+ul.sdt_menu li span span.sdt_link{font-size:24px;clear:both;margin:0; padding:0; text-align:center; display:block}
+ul.sdt_menu li span span.sdt_descr{font-size:10px; letter-spacing:1px; line-height:12px;clear:both;margin:0; padding:0; text-align:center; display:block}
+/* Sub Menu */
+ul.sdt_menu li ul.sdt_box{display:block;position:absolute;overflow:hidden;top:85px;left:0px;display:none;margin:0;}
+ul.sdt_menu li ul.sdt_box li{float:left;height:25px;position:relative;cursor:pointer; list-style:none}
+ul.sdt_menu ul.sdt_box li > a{position: relative;height:25px; line-height:25px;	z-index:12;	background:none; margin:0; padding:0; text-align:center }
+ul.sdt_menu li ul.sdt_box a{float:left;	clear:both;	line-height:30px;}
+ul.sdt_menu li ul.sdt_box a:first-child{margin:20px 0 0 0;}
+ul.sdt_menu li ul.sdt_box a:hover{}
+ul.sdt_menu .sdtab { position:absolute; top:-100%; left:-100%}
+ul.sdt_menu .sdtnn { display:none;}

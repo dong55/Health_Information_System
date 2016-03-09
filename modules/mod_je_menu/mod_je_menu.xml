@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="3.3" type="module" client="site" method="upgrade">
+	<name>JE SlideDown Menu</name> 
+    <version>3.3</version>
+    <creationDate>February, 2015</creationDate>
+    <author>jExtensions.com</author>
+    <authorEmail>support@jExtensions.com</authorEmail>
+    <authorUrl>http://jExtensions.com</authorUrl>
+    <copyright>Copyright 2015 - jExtensions.com</copyright>
+    <license>GNU/GPL</license>
+	<description><![CDATA[	
+	<h1 class="sub-heading">JE Box Slide-Down Menu</h1>	
+	<div class="description">Download more free extensions from <a href="http://jextensions.com/" target="_blank">jExtensions.com</a><br/>
+	Need help? <a href="http://jextensions.com/slide-down-box-menu-joomla-2.5/" target="_blank">Click here to visit the support page</a>.<br/>
+	<span class="credits">Credits: <a href="http://tympanus.net/codrops/2010/07/16/slide-down-box-menu/" target="_blank" >tympanus</a></span>
+	</div>
+		]]>
+	</description>
+
+	<files>
+		<filename module="mod_je_menu">mod_je_menu.php</filename>
+		<folder>css</folder>
+		<folder>js</folder>
+		<folder>php</folder>
+		<folder>tmpl</folder>
+		<filename>helper.php</filename>
+		<filename>index.html</filename>
+		<filename>color.php</filename>
+	</files>
+	<config>
+		<fields name="params" addfieldpath="/modules/mod_je_menu/php">							
+			<fieldset name="basic">
+			
+				<field name="jQuery" type="list" default="0" label="jQuery" description="Enable or Disable the latest jQuery version. Make sure that jQuery is loaded only once on your website.">
+					<option value="0">Disable</option>
+					<option	value="1">Enable</option>
+				</field>
+					
+					
+				<field name="Easing" type="list" default="1" label="jQuery Easing" description="Enable or Disable jQuery Easing plugin. Disable this plugin if other extensions are already loading it.">
+					<option value="0">Disable</option>
+					<option	value="1">Enable</option>
+				</field>	
+				
+				<field name="menutype" type="menu" label="Select Menu" description="Choose a menu to display." />
+				
+							
+				<field name="mod_width" type="text" label="Module Width" default="960" description="Maxiumum width of the module in pixels. (default: 960)" />
+				<field name="fontStyle" type="text" default="Open+Sans" label="Google Font Style" description="" />	
+				
+				<field name="menubg" type="jscolor" default="#666666" label="Menu Background" description="" />
+				<field name="menulink" type="jscolor" default="#ffffff" label="Menu Link Color" description="" />
+				<field name="menulinkH" type="jscolor" default="#fe9a00" label="Menu Active/Hover" description="" />
+
+
+				<field name="startLevel" type="list" default="1" label="Start Level" description="Menu start level.">
+					<option value="0">JALL</option>
+					<option value="1">J1</option>
+					<option value="2">J2</option>
+					<option value="3">J3</option>
+					<option value="4">J4</option>
+					<option value="5">J5</option>
+					<option value="6">J6</option>
+					<option value="7">J7</option>
+					<option value="8">J8</option>
+					<option value="9">J9</option>
+					<option value="10">J10</option>
+				</field>
+				<field name="endLevel" type="list" default="0" label="End Level" description="Menu end level.">
+					<option value="0">JALL</option>
+					<option value="1">J1</option>
+					<option value="2">J2</option>
+					<option value="3">J3</option>
+					<option value="4">J4</option>
+					<option value="5">J5</option>
+					<option value="6">J6</option>
+					<option value="7">J7</option>
+					<option value="8">J8</option>
+					<option value="9">J9</option>
+					<option value="10">J10</option>
+				</field>
+				
+				<field type="asset" />
+			</fieldset>
+
+		</fields>
+	</config>
+</extension>
