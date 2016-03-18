@@ -13,8 +13,8 @@ class JConfig {
 	public $debug_lang = '0';
 	public $dbtype = 'mysqli';
 	public $host = 'localhost';
-	public $user = 'root';
-	public $password = 'root';
+	public $user = 'admin';
+	public $password = 'password';
 	public $db = 'his';
 	public $dbprefix = 'cv0rg_';
 	public $live_site = '';
@@ -31,7 +31,7 @@ class JConfig {
 	public $offset = 'UTC';
 	public $mailonline = '1';
 	public $mailer = 'mail';
-	public $mailfrom = 'dongwanxue@gmail.com';
+	public $mailfrom = 'lingsim.hong@gmail.com';
 	public $fromname = 'Health Information System';
 	public $sendmail = '/usr/sbin/sendmail';
 	public $smtpauth = '0';
@@ -54,8 +54,8 @@ class JConfig {
 	public $sef_suffix = '0';
 	public $unicodeslugs = '0';
 	public $feed_limit = '10';
-	public $log_path = 'C:\\wamp\\www\\Jumla3.4/logs';
-	public $tmp_path = 'C:\\wamp\\www\\Jumla3.4/tmp';
+	public $log_path = '/Applications/MAMP/htdocs/Health_Information_System/logs';
+	public $tmp_path = '/Applications/MAMP/htdocs/Health_Information_System/tmp';
 	public $lifetime = '15';
 	public $session_handler = 'database';
 }
