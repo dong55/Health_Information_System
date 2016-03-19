@@ -13,8 +13,8 @@ class JConfig {
 	public $debug_lang = '0';
 	public $dbtype = 'mysqli';
 	public $host = 'localhost';
-	public $user = 'admin';
-	public $password = 'password';
+	public $user = 'root';
+	public $password = 'root';
 	public $db = 'his';
 	public $dbprefix = 'cv0rg_';
 	public $live_site = '';
@@ -54,8 +54,8 @@ class JConfig {
 	public $sef_suffix = '0';
 	public $unicodeslugs = '0';
 	public $feed_limit = '10';
-	public $log_path = '/Applications/MAMP/htdocs/Health_Information_System/logs';
-	public $tmp_path = '/Applications/MAMP/htdocs/Health_Information_System/tmp';
+	public $log_path =  'C:\\wamp\\www\\Health_Information_System/logs';
+	public $tmp_path =  'C:\\wamp\\www\\Health_Information_System/tmp';
 	public $lifetime = '15';
 	public $session_handler = 'database';
 }

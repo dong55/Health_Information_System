@@ -1,14 +1,20 @@
 -- phpMyAdmin SQL Dump
--- version 4.4.10
+-- version 4.1.14
 -- http://www.phpmyadmin.net
 --
--- Host: localhost:8889
--- Generation Time: Mar 18, 2016 at 12:02 PM
--- Server version: 5.5.42
--- PHP Version: 5.6.10
+-- Host: 127.0.0.1
+-- Generation Time: Mar 19, 2016 at 04:11 AM
+-- Server version: 5.6.17
+-- PHP Version: 5.5.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
 
 --
 -- Database: `his`
@@ -20,23 +26,27 @@ SET time_zone = "+00:00";
 -- Table structure for table `cv0rg_assets`
 --
 
-CREATE TABLE `cv0rg_assets` (
-  `id` int(10) unsigned NOT NULL COMMENT 'Primary Key',
+CREATE TABLE IF NOT EXISTS `cv0rg_assets` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Primary Key',
   `parent_id` int(11) NOT NULL DEFAULT '0' COMMENT 'Nested set parent.',
   `lft` int(11) NOT NULL DEFAULT '0' COMMENT 'Nested set lft.',
   `rgt` int(11) NOT NULL DEFAULT '0' COMMENT 'Nested set rgt.',
   `level` int(10) unsigned NOT NULL COMMENT 'The cached level in the nested tree.',
   `name` varchar(50) NOT NULL COMMENT 'The unique name for the asset.\n',
   `title` varchar(100) NOT NULL COMMENT 'The descriptive title for the asset.',
-  `rules` varchar(5120) NOT NULL COMMENT 'JSON encoded access control.'
-) ENGINE=InnoDB AUTO_INCREMENT=264 DEFAULT CHARSET=utf8;
+  `rules` varchar(5120) NOT NULL COMMENT 'JSON encoded access control.',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `idx_asset_name` (`name`),
+  KEY `idx_lft_rgt` (`lft`,`rgt`),
+  KEY `idx_parent_id` (`parent_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=265 ;
 
 --
 -- Dumping data for table `cv0rg_assets`
 --
 
 INSERT INTO `cv0rg_assets` (`id`, `parent_id`, `lft`, `rgt`, `level`, `name`, `title`, `rules`) VALUES
-(1, 0, 1, 598, 0, 'root.1', 'Root Asset', '{"core.login.site":{"6":1,"2":1},"core.login.admin":{"6":1},"core.login.offline":[],"core.admin":{"8":1},"core.manage":{"7":1},"core.create":{"6":1,"3":1},"core.delete":{"6":1},"core.edit":{"6":1,"4":1},"core.edit.state":{"6":1,"5":1},"core.edit.own":{"6":1,"3":1}}'),
+(1, 0, 1, 600, 0, 'root.1', 'Root Asset', '{"core.login.site":{"6":1,"2":1},"core.login.admin":{"6":1},"core.login.offline":[],"core.admin":{"8":1},"core.manage":{"7":1},"core.create":{"6":1,"3":1},"core.delete":{"6":1},"core.edit":{"6":1,"4":1},"core.edit.state":{"6":1,"5":1},"core.edit.own":{"6":1,"3":1}}'),
 (2, 1, 2, 3, 1, 'com_admin', 'com_admin', '{}'),
 (3, 1, 4, 13, 1, 'com_banners', 'com_banners', '{"core.admin":{"7":1},"core.manage":{"6":1},"core.create":[],"core.delete":[],"core.edit":[],"core.edit.state":[]}'),
 (4, 1, 14, 15, 1, 'com_cache', 'com_cache', '{"core.admin":{"7":1},"core.manage":{"7":1}}'),
@@ -286,7 +296,8 @@ INSERT INTO `cv0rg_assets` (`id`, `parent_id`, `lft`, `rgt`, `level`, `name`, `t
 (260, 39, 308, 309, 3, 'com_content.article.114', 'FatSecret Food Diary', '{"core.delete":{"6":1},"core.edit":{"6":1,"4":1},"core.edit.state":{"6":1,"5":1}}'),
 (261, 39, 310, 311, 3, 'com_content.article.115', 'FatSecret Exercise Diary', '{"core.delete":{"6":1},"core.edit":{"6":1,"4":1},"core.edit.state":{"6":1,"5":1}}'),
 (262, 39, 312, 313, 3, 'com_content.article.116', 'FatSecret Diet Calendar', '{"core.delete":{"6":1},"core.edit":{"6":1,"4":1},"core.edit.state":{"6":1,"5":1}}'),
-(263, 39, 314, 315, 3, 'com_content.article.117', 'Fat Secret Weight Tracker', '{"core.delete":{"6":1},"core.edit":{"6":1,"4":1},"core.edit.state":{"6":1,"5":1}}');
+(263, 39, 314, 315, 3, 'com_content.article.117', 'Fat Secret Weight Tracker', '{"core.delete":{"6":1},"core.edit":{"6":1,"4":1},"core.edit.state":{"6":1,"5":1}}'),
+(264, 1, 598, 599, 1, 'com_kunena', 'com_kunena', '{}');
 
 -- --------------------------------------------------------
 
@@ -294,10 +305,12 @@ INSERT INTO `cv0rg_assets` (`id`, `parent_id`, `lft`, `rgt`, `level`, `name`, `t
 -- Table structure for table `cv0rg_associations`
 --
 
-CREATE TABLE `cv0rg_associations` (
+CREATE TABLE IF NOT EXISTS `cv0rg_associations` (
   `id` int(11) NOT NULL COMMENT 'A reference to the associated item.',
   `context` varchar(50) NOT NULL COMMENT 'The context of the associated item.',
-  `key` char(32) NOT NULL COMMENT 'The key for the association computed from an md5 on associated ids.'
+  `key` char(32) NOT NULL COMMENT 'The key for the association computed from an md5 on associated ids.',
+  PRIMARY KEY (`context`,`id`),
+  KEY `idx_key` (`key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -306,8 +319,8 @@ CREATE TABLE `cv0rg_associations` (
 -- Table structure for table `cv0rg_banners`
 --
 
-CREATE TABLE `cv0rg_banners` (
-  `id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_banners` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `cid` int(11) NOT NULL DEFAULT '0',
   `type` int(11) NOT NULL DEFAULT '0',
   `name` varchar(255) NOT NULL DEFAULT '',
@@ -340,8 +353,14 @@ CREATE TABLE `cv0rg_banners` (
   `created_by_alias` varchar(255) NOT NULL DEFAULT '',
   `modified` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `modified_by` int(10) unsigned NOT NULL DEFAULT '0',
-  `version` int(10) unsigned NOT NULL DEFAULT '1'
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+  `version` int(10) unsigned NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`),
+  KEY `idx_state` (`state`),
+  KEY `idx_own_prefix` (`own_prefix`),
+  KEY `idx_metakey_prefix` (`metakey_prefix`),
+  KEY `idx_banner_catid` (`catid`),
+  KEY `idx_language` (`language`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6 ;
 
 --
 -- Dumping data for table `cv0rg_banners`
@@ -359,8 +378,8 @@ INSERT INTO `cv0rg_banners` (`id`, `cid`, `type`, `name`, `alias`, `imptotal`, `
 -- Table structure for table `cv0rg_banner_clients`
 --
 
-CREATE TABLE `cv0rg_banner_clients` (
-  `id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_banner_clients` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL DEFAULT '',
   `contact` varchar(255) NOT NULL DEFAULT '',
   `email` varchar(255) NOT NULL DEFAULT '',
@@ -373,8 +392,11 @@ CREATE TABLE `cv0rg_banner_clients` (
   `metakey_prefix` varchar(255) NOT NULL DEFAULT '',
   `purchase_type` tinyint(4) NOT NULL DEFAULT '-1',
   `track_clicks` tinyint(4) NOT NULL DEFAULT '-1',
-  `track_impressions` tinyint(4) NOT NULL DEFAULT '-1'
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+  `track_impressions` tinyint(4) NOT NULL DEFAULT '-1',
+  PRIMARY KEY (`id`),
+  KEY `idx_own_prefix` (`own_prefix`),
+  KEY `idx_metakey_prefix` (`metakey_prefix`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
 
 --
 -- Dumping data for table `cv0rg_banner_clients`
@@ -389,11 +411,15 @@ INSERT INTO `cv0rg_banner_clients` (`id`, `name`, `contact`, `email`, `extrainfo
 -- Table structure for table `cv0rg_banner_tracks`
 --
 
-CREATE TABLE `cv0rg_banner_tracks` (
+CREATE TABLE IF NOT EXISTS `cv0rg_banner_tracks` (
   `track_date` datetime NOT NULL,
   `track_type` int(10) unsigned NOT NULL,
   `banner_id` int(10) unsigned NOT NULL,
-  `count` int(10) unsigned NOT NULL DEFAULT '0'
+  `count` int(10) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`track_date`,`track_type`,`banner_id`),
+  KEY `idx_track_date` (`track_date`),
+  KEY `idx_track_type` (`track_type`),
+  KEY `idx_banner_id` (`banner_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -402,8 +428,8 @@ CREATE TABLE `cv0rg_banner_tracks` (
 -- Table structure for table `cv0rg_categories`
 --
 
-CREATE TABLE `cv0rg_categories` (
-  `id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_categories` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `asset_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'FK to the #__assets table.',
   `parent_id` int(10) unsigned NOT NULL DEFAULT '0',
   `lft` int(11) NOT NULL DEFAULT '0',
@@ -429,8 +455,16 @@ CREATE TABLE `cv0rg_categories` (
   `modified_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `hits` int(10) unsigned NOT NULL DEFAULT '0',
   `language` char(7) NOT NULL,
-  `version` int(10) unsigned NOT NULL DEFAULT '1'
-) ENGINE=InnoDB AUTO_INCREMENT=86 DEFAULT CHARSET=utf8;
+  `version` int(10) unsigned NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`),
+  KEY `cat_idx` (`extension`,`published`,`access`),
+  KEY `idx_access` (`access`),
+  KEY `idx_checkout` (`checked_out`),
+  KEY `idx_path` (`path`),
+  KEY `idx_left_right` (`lft`,`rgt`),
+  KEY `idx_alias` (`alias`),
+  KEY `idx_language` (`language`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=86 ;
 
 --
 -- Dumping data for table `cv0rg_categories`
@@ -520,8 +554,8 @@ INSERT INTO `cv0rg_categories` (`id`, `asset_id`, `parent_id`, `lft`, `rgt`, `le
 -- Table structure for table `cv0rg_contact_details`
 --
 
-CREATE TABLE `cv0rg_contact_details` (
-  `id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_contact_details` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL DEFAULT '',
   `alias` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '',
   `con_position` varchar(255) DEFAULT NULL,
@@ -563,8 +597,17 @@ CREATE TABLE `cv0rg_contact_details` (
   `publish_up` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `publish_down` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `version` int(10) unsigned NOT NULL DEFAULT '1',
-  `hits` int(10) unsigned NOT NULL DEFAULT '0'
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
+  `hits` int(10) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `idx_access` (`access`),
+  KEY `idx_checkout` (`checked_out`),
+  KEY `idx_state` (`published`),
+  KEY `idx_catid` (`catid`),
+  KEY `idx_createdby` (`created_by`),
+  KEY `idx_featured_catid` (`featured`,`catid`),
+  KEY `idx_language` (`language`),
+  KEY `idx_xreference` (`xreference`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=10 ;
 
 --
 -- Dumping data for table `cv0rg_contact_details`
@@ -587,8 +630,8 @@ INSERT INTO `cv0rg_contact_details` (`id`, `name`, `alias`, `con_position`, `add
 -- Table structure for table `cv0rg_content`
 --
 
-CREATE TABLE `cv0rg_content` (
-  `id` int(10) unsigned NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_content` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `asset_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'FK to the #__assets table.',
   `title` varchar(255) NOT NULL DEFAULT '',
   `alias` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '',
@@ -617,8 +660,17 @@ CREATE TABLE `cv0rg_content` (
   `metadata` text NOT NULL,
   `featured` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT 'Set if article is featured.',
   `language` char(7) NOT NULL COMMENT 'The language code for the article.',
-  `xreference` varchar(50) NOT NULL COMMENT 'A reference to enable linkages to external data sets.'
-) ENGINE=InnoDB AUTO_INCREMENT=118 DEFAULT CHARSET=utf8;
+  `xreference` varchar(50) NOT NULL COMMENT 'A reference to enable linkages to external data sets.',
+  PRIMARY KEY (`id`),
+  KEY `idx_access` (`access`),
+  KEY `idx_checkout` (`checked_out`),
+  KEY `idx_state` (`state`),
+  KEY `idx_catid` (`catid`),
+  KEY `idx_createdby` (`created_by`),
+  KEY `idx_featured_catid` (`featured`,`catid`),
+  KEY `idx_language` (`language`),
+  KEY `idx_xreference` (`xreference`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=118 ;
 
 --
 -- Dumping data for table `cv0rg_content`
@@ -741,10 +793,10 @@ INSERT INTO `cv0rg_content` (`id`, `asset_id`, `title`, `alias`, `introtext`, `f
 INSERT INTO `cv0rg_content` (`id`, `asset_id`, `title`, `alias`, `introtext`, `fulltext`, `state`, `catid`, `created`, `created_by`, `created_by_alias`, `modified`, `modified_by`, `checked_out`, `checked_out_time`, `publish_up`, `publish_down`, `images`, `urls`, `attribs`, `version`, `ordering`, `metakey`, `metadesc`, `access`, `hits`, `metadata`, `featured`, `language`, `xreference`) VALUES
 (111, 237, 'JSN PageBuilder - The Easiest Way to Build Joomla Pages', 'jsn-pagebuilder-the-easiest-way-to-build-joomla-pages', '[pb_row background="solid" solid_color_value="#dbe7f8" solid_color_color="#dbe7f8" border_width_value_="0" border_style="solid" border_color="#000" div_padding_top="10" div_padding_right="10" div_padding_bottom="10" div_padding_left="10" ][pb_column span="span12"][pb_text el_title="Highlight" enable_dropcap="no" appearing_animation="0" ]<h5 style="text-align: center;">This page is built by the Free Edition of another cool product <a href="http://www.joomlashine.com/joomla-extensions/jsn-pagebuilder.html" title="" target="_blank">JSN PageBuilder</a> from JoomlaShine (Only for Joomla 3.x).</h5><h5 style="text-align: center;"> Please click on the below button to check the PRO Edition of this extension.</h5>[/pb_text][pb_buttonbar el_title="Button Bar 1" buttonbar_alignment="center" buttonbar_show_title="yes" buttonbar_show_icon="yes" buttonbar_group="no" appearing_animation="0" ][pb_buttonbar_item button_text="See Demo" link_type="url" button_type_url="http://demo.joomlashine.com/joomla-extensions/jsn-pagebuilder/jsn-pagebuilder-overview.html" open_in="current_browser" button_size="default" button_color="btn-primary" ][/pb_buttonbar_item][pb_buttonbar_item button_text="Get It Now" link_type="url" button_type_url="http://www.joomlashine.com/joomla-extensions/jsn-pagebuilder.html" open_in="current_browser" button_size="default" button_color="btn-success" ][/pb_buttonbar_item][/pb_buttonbar][/pb_column][/pb_row][pb_row background="none" solid_color_value="#FFFFFF" solid_color_color="#ffffff" gradient_color="0% #FFFFFF,100% #000000" gradient_color_css="" gradient_direction="vertical" pattern="" repeat="full" image="" stretch="none" position="center center" paralax="no" video_url="" autoplay="no" border_width_value_="0" border_style="solid" border_color="#000" div_padding="" div_padding_top="10" div_padding_bottom="10" div_padding_right="10" div_padding_left="10" css_suffix="" id_wrapper="" ][pb_column span="span12"][pb_text el_title="JSN PageBuilder introduction" enable_dropcap="no" appearing_animation="0" ]<p>JSN PageBuilder is the perfect tool to help you build and manage content for Joomla 3.x websites. JSN PageBuilder not only allows you to build a new page<strong> </strong>but also helps you to redesign your old pages<b> </b>because it works directly on articles and modules. Even you are a Joomla newbie, you now can create your desired page without worry. And for a developer who is tired of coding too much, this helpful extension will make your life better and save you time. You can be free from programming knowledge.</p>[/pb_text][pb_divider el_title="Divider 2" div_margin_top="40" div_border_width="1" div_border_style="solid" div_border_color="#e8e8e8" appearing_animation="0" ][/pb_divider][/pb_column][/pb_row][pb_row background="none" solid_color_value="#FFFFFF" solid_color_color="#ffffff" gradient_color="0% #FFFFFF,100% #000000" gradient_color_css="" gradient_direction="vertical" pattern="" repeat="full" image="" stretch="none" position="center center" paralax="no" video_url="" autoplay="no" border_width_value_="0" border_style="solid" border_color="#000" div_padding="" div_padding_top="10" div_padding_bottom="10" div_padding_right="10" div_padding_left="10" css_suffix="" id_wrapper="" ][pb_column span="span12"][pb_heading el_title="OUTSTANDING FEATURES OF JSN PAGEBUILDER" tag="h3" div_margin_bottom="20" text_align="inherit" font="custom" font_face_type="google fonts" font_face_value="Yanone Kaffeesatz" font_size_value_="28" font_style="bold" color="#5e5f66" border_bottom_style="solid" border_bottom_color="#a81010" appearing_animation="fade_in" appearing_animation_speed="medium" ]OUTSTANDING FEATURES OF JSN PAGEBUILDER[/pb_heading][/pb_column][/pb_row][pb_row background="none" solid_color_value="#FFFFFF" solid_color_color="#ffffff" gradient_color="0% #FFFFFF,100% #000000" gradient_color_css="" gradient_direction="vertical" pattern="" repeat="full" image="" stretch="none" position="center center" paralax="no" video_url="" autoplay="no" border_width_value_="0" border_style="solid" border_color="#000" div_padding="" div_padding_top="10" div_padding_bottom="10" div_padding_right="10" div_padding_left="10" css_suffix="" id_wrapper="" ][pb_column span="span4"][pb_list el_title="Features" show_icon="yes" icon_position="left" icon_size_value="32" icon_background_type="circle" icon_background_color="#ffffff" icon_c_value="#47a447" icon_c_color="#47a447" show_heading="yes" font="inherit" appearing_animation="0" ][pb_list_item heading="Drag & Drop" icon="icon-checkmark" ]Simplest way to create and arrange page elements.[/pb_list_item][pb_list_item heading="Visual Editing" icon="icon-checkmark" ]Easy to start without dealing with IT bottlenecks. <br>[/pb_list_item][/pb_list][/pb_column][pb_column span="span4"][pb_list el_title="Features" show_icon="yes" icon_position="left" icon_size_value="32" icon_background_type="circle" icon_background_color="#ffffff" icon_c_value="#47a447" icon_c_color="#47a447" show_heading="yes" font="inherit" appearing_animation="0" ][pb_list_item heading="Advanced Element" icon="icon-checkmark" ]Fundamental and advanced elements to optimize contents.<br>[/pb_list_item][pb_list_item heading="Live Preview" icon="icon-checkmark" ]Instant view of what is going on with content and styles.<br>[/pb_list_item][/pb_list][/pb_column][pb_column span="span4"][pb_list el_title="Features" show_icon="yes" icon_position="left" icon_size_value="32" icon_background_type="circle" icon_background_color="#ffffff" icon_c_value="#47a447" icon_c_color="#47a447" show_heading="yes" font="inherit" appearing_animation="0" ][pb_list_item heading="Built-in animation" icon="icon-checkmark" ]Various styles to make your website more eye-catching<br>[/pb_list_item][pb_list_item heading="Responsive Layout" icon="icon-checkmark" ]Presented beautifully on all browsers and mobile devices.<br>[/pb_list_item][/pb_list][/pb_column][/pb_row][pb_row background="none" solid_color_value="#FFFFFF" solid_color_color="#ffffff" gradient_color="0% #FFFFFF,100% #000000" gradient_color_css="" gradient_direction="vertical" pattern="" repeat="full" image="" stretch="none" position="center center" paralax="no" video_url="" autoplay="no" border_width_value_="0" border_style="solid" border_color="#000" div_padding="" div_padding_top="10" div_padding_bottom="10" div_padding_right="10" div_padding_left="10" css_suffix="" id_wrapper="" ][pb_column span="span12"][pb_divider el_title="Divider 4 copy" div_margin_bottom="40" div_border_width="1" div_border_style="solid" div_border_color="#ebe8e8" appearing_animation="0" ][/pb_divider][pb_heading el_title="SAMPLE ELEMENTS" tag="h3" div_margin_bottom="20" text_align="inherit" font="custom" font_face_type="google fonts" font_face_value="Yanone Kaffeesatz" font_size_value_="28" font_style="bold" color="#5e5f66" border_bottom_style="solid" border_bottom_color="#a81010" appearing_animation="fade_in" appearing_animation_speed="medium" ]SAMPLE ELEMENTS[/pb_heading][pb_heading el_title="Pricing table element" tag="h4" div_margin_bottom="20" text_align="inherit" font="custom" font_face_type="google fonts" font_face_value="Source Sans Pro" font_size_value_="20" font_style="bold" color="#5e5f66" border_bottom_style="solid" border_bottom_color="#a81010" appearing_animation="fade_in" appearing_animation_speed="medium" ]Pricing table element[/pb_heading][pb_pricingtable el_title="Pricing Table 2" prtbl_elements="title__#__attributes__#__button__#__ " appearing_animation="0" ][pb_pricingtableattr_item prtbl_item_attr_id="max_domains" prtbl_item_attr_title="Max Domains" prtbl_item_attr_desc="Max Domains" prtbl_item_attr_type="text" ][/pb_pricingtableattr_item][pb_pricingtableattr_item prtbl_item_attr_id="storage" prtbl_item_attr_title="Storage" prtbl_item_attr_desc="Storage" prtbl_item_attr_type="text" ][/pb_pricingtableattr_item][pb_pricingtableattr_item prtbl_item_attr_id="ssl_support" prtbl_item_attr_title="SSL Support" prtbl_item_attr_desc="SSL Support" prtbl_item_attr_type="checkbox" ][/pb_pricingtableattr_item][pb_pricingtable_item div_margin_top="" div_margin_bottom="" disabled_el="no" css_suffix="" prtbl_item_title="Free" prtbl_item_desc="Free" prtbl_item_image="" prtbl_item_currency="$" prtbl_item_price="0" prtbl_item_time=" / month" prtbl_item_button_text="Buy now" link_type="url" button_type_url="http://" open_in="current_browser" prtbl_item_attributes="" prtbl_item_feature="no" ][pb_pricingtable_item_item prtbl_item_attr_id="max_domains" prtbl_item_attr_title="Max Domains" prtbl_item_attr_value="5" prtbl_item_attr_desc="5" prtbl_item_attr_type="text" ][/pb_pricingtable_item_item][pb_pricingtable_item_item prtbl_item_attr_id="storage" prtbl_item_attr_title="Storage" prtbl_item_attr_value="500 MB" prtbl_item_attr_desc="500 MB" prtbl_item_attr_type="text" ][/pb_pricingtable_item_item][pb_pricingtable_item_item prtbl_item_attr_id="ssl_support" prtbl_item_attr_title="SSL Support" prtbl_item_attr_value="yes" prtbl_item_attr_desc="yes" prtbl_item_attr_type="checkbox" ][/pb_pricingtable_item_item][/pb_pricingtable_item][pb_pricingtable_item div_margin_top="" div_margin_bottom="" disabled_el="no" css_suffix="" prtbl_item_title="Standard" prtbl_item_desc="Standard" prtbl_item_image="" prtbl_item_currency="$" prtbl_item_price="69" prtbl_item_time=" / month" prtbl_item_button_text="Buy now" link_type="url" button_type_url="http://" open_in="current_browser" prtbl_item_attributes="" prtbl_item_feature="yes" ][pb_pricingtable_item_item prtbl_item_attr_id="max_domains" prtbl_item_attr_title="Max Domains" prtbl_item_attr_value="20" prtbl_item_attr_desc="20" prtbl_item_attr_type="text" ][/pb_pricingtable_item_item][pb_pricingtable_item_item prtbl_item_attr_id="storage" prtbl_item_attr_title="Storage" prtbl_item_attr_value="2 TB" prtbl_item_attr_desc="2 TB" prtbl_item_attr_type="text" ][/pb_pricingtable_item_item][pb_pricingtable_item_item prtbl_item_attr_id="ssl_support" prtbl_item_attr_title="SSL Support" prtbl_item_attr_value="yes" prtbl_item_attr_desc="yes" prtbl_item_attr_type="checkbox" ][/pb_pricingtable_item_item][/pb_pricingtable_item][pb_pricingtable_item prtbl_item_title="Premium" prtbl_item_desc="Premium" prtbl_item_currency="$" prtbl_item_price="99" prtbl_item_time=" / month" prtbl_item_button_text="Buy now" link_type="url" button_type_url="http://" open_in="current_browser" prtbl_item_feature="no" ][pb_pricingtable_item_item prtbl_item_attr_id="max_domains" prtbl_item_attr_title="Max Domains" prtbl_item_attr_value="1" prtbl_item_attr_desc="1" prtbl_item_attr_type="text" ][/pb_pricingtable_item_item][pb_pricingtable_item_item prtbl_item_attr_id="storage" prtbl_item_attr_title="Storage" prtbl_item_attr_value="100 MB" prtbl_item_attr_desc="100 MB" prtbl_item_attr_type="text" ][/pb_pricingtable_item_item][pb_pricingtable_item_item prtbl_item_attr_id="ssl_support" prtbl_item_attr_title="SSL Support" prtbl_item_attr_value="yes" prtbl_item_attr_desc="no" prtbl_item_attr_type="checkbox" ][/pb_pricingtable_item_item][/pb_pricingtable_item][/pb_pricingtable][pb_divider el_title="Divider 3" div_margin_top="40" div_margin_bottom="40" div_border_width="1" div_border_style="solid" div_border_color="#ebe8e8" appearing_animation="0" ][/pb_divider][pb_heading el_title="Button element" tag="h4" div_margin_bottom="20" text_align="inherit" font="custom" font_face_type="google fonts" font_face_value="Source Sans Pro" font_size_value_="20" font_style="bold" color="#5e5f66" border_bottom_style="solid" border_bottom_color="#a81010" appearing_animation="fade_in" appearing_animation_speed="medium" ]Button element[/pb_heading][pb_buttonbar el_title="Button Bar large" buttonbar_alignment="inherit" buttonbar_show_title="yes" buttonbar_show_icon="yes" buttonbar_group="no" appearing_animation="0" ][pb_buttonbar_item button_text="Default" link_type="url" button_type_url="http://" open_in="current_browser" icon="" button_size="btn-lg" button_color="btn-default" ][/pb_buttonbar_item][pb_buttonbar_item button_text="Primary" link_type="url" button_type_url="http://" open_in="current_browser" icon="" button_size="btn-lg" button_color="btn-primary" ][/pb_buttonbar_item][pb_buttonbar_item button_text="Info" link_type="url" button_type_url="http://" open_in="current_browser" icon="" button_size="btn-lg" button_color="btn-info" ][/pb_buttonbar_item][pb_buttonbar_item button_text="Success" link_type="url" button_type_url="http://" open_in="current_browser" icon="" button_size="btn-lg" button_color="btn-success" ][/pb_buttonbar_item][pb_buttonbar_item button_text="Warning" link_type="url" button_type_url="http://" open_in="current_browser" icon="" button_size="btn-lg" button_color="btn-warning" ][/pb_buttonbar_item][pb_buttonbar_item button_text="Danger" link_type="url" button_type_url="http://" open_in="current_browser" icon="" button_size="btn-lg" button_color="btn-danger" ][/pb_buttonbar_item][pb_buttonbar_item button_text="With icon" link_type="url" button_type_url="http://" open_in="current_browser" icon="icon-comments" button_size="btn-lg" button_color="btn-default" ][/pb_buttonbar_item][/pb_buttonbar][pb_buttonbar el_title="Button Bar 3" buttonbar_alignment="inherit" buttonbar_show_title="yes" buttonbar_show_icon="yes" buttonbar_group="no" appearing_animation="0" ][pb_buttonbar_item button_text="Default" link_type="url" button_type_url="http://" open_in="current_browser" button_size="default" button_color="btn-default" ][/pb_buttonbar_item][pb_buttonbar_item button_text="Primary" link_type="url" button_type_url="http://" open_in="current_browser" button_size="default" button_color="btn-primary" ][/pb_buttonbar_item][pb_buttonbar_item button_text="Info" link_type="url" button_type_url="http://" open_in="current_browser" button_size="default" button_color="btn-info" ][/pb_buttonbar_item][pb_buttonbar_item button_text="Success" link_type="url" button_type_url="http://" open_in="current_browser" button_size="default" button_color="btn-success" ][/pb_buttonbar_item][pb_buttonbar_item button_text="Warning" link_type="url" button_type_url="http://" open_in="current_browser" button_size="default" button_color="btn-warning" ][/pb_buttonbar_item][pb_buttonbar_item button_text="Danger" link_type="url" button_type_url="http://" open_in="current_browser" button_size="default" button_color="btn-danger" ][/pb_buttonbar_item][pb_buttonbar_item button_text="With icon" link_type="url" button_type_url="http://" open_in="current_browser" icon="icon-comments" button_size="default" button_color="btn-default" ][/pb_buttonbar_item][pb_buttonbar_item button_text="Link" link_type="url" button_type_url="http://" open_in="current_browser" button_size="default" button_color="btn-link" ][/pb_buttonbar_item][/pb_buttonbar][pb_buttonbar el_title="Button Bar small" buttonbar_alignment="inherit" buttonbar_show_title="yes" buttonbar_show_icon="yes" buttonbar_group="no" appearing_animation="0" ][pb_buttonbar_item button_text="Default" link_type="url" button_type_url="http://" open_in="current_browser" icon="" button_size="btn-sm" button_color="btn-default" ][/pb_buttonbar_item][pb_buttonbar_item button_text="Primary" link_type="url" button_type_url="http://" open_in="current_browser" icon="" button_size="btn-sm" button_color="btn-primary" ][/pb_buttonbar_item][pb_buttonbar_item button_text="Info" link_type="url" button_type_url="http://" open_in="current_browser" icon="" button_size="btn-sm" button_color="btn-info" ][/pb_buttonbar_item][pb_buttonbar_item button_text="Success" link_type="url" button_type_url="http://" open_in="current_browser" icon="" button_size="btn-sm" button_color="btn-success" ][/pb_buttonbar_item][pb_buttonbar_item button_text="Warning" link_type="url" button_type_url="http://" open_in="current_browser" icon="" button_size="btn-sm" button_color="btn-warning" ][/pb_buttonbar_item][pb_buttonbar_item button_text="Danger" link_type="url" button_type_url="http://" open_in="current_browser" icon="" button_size="btn-sm" button_color="btn-danger" ][/pb_buttonbar_item][pb_buttonbar_item button_text="With icon" link_type="url" button_type_url="http://" open_in="current_browser" icon="icon-comments" button_size="btn-sm" button_color="btn-default" ][/pb_buttonbar_item][pb_buttonbar_item button_text="Link" link_type="url" button_type_url="http://" open_in="current_browser" icon="" button_size="btn-sm" button_color="btn-link" ][/pb_buttonbar_item][/pb_buttonbar][pb_divider el_title="Divider 3 copy" div_margin_top="40" div_margin_bottom="40" div_border_width="1" div_border_style="solid" div_border_color="#ebe8e8" appearing_animation="0" ][/pb_divider][/pb_column][/pb_row][pb_row background="none" solid_color_value="#FFFFFF" solid_color_color="#ffffff" gradient_color="0% #FFFFFF,100% #000000" gradient_color_css="" gradient_direction="vertical" pattern="" repeat="full" image="" stretch="none" position="center center" paralax="no" video_url="" autoplay="no" border_width_value_="0" border_style="solid" border_color="#000" div_padding="" div_padding_top="10" div_padding_bottom="10" div_padding_right="10" div_padding_left="10" css_suffix="" id_wrapper="" ][pb_column span="span6"][pb_heading el_title="Accordion element" tag="h4" div_margin_bottom="20" text_align="inherit" font="custom" font_face_type="google fonts" font_face_value="Source Sans Pro" font_size_value_="20" font_style="bold" color="#5e5f66" border_bottom_style="solid" border_bottom_color="#a81010" appearing_animation="fade_in" appearing_animation_speed="medium" ]Accordion element[/pb_heading][pb_accordion el_title="Accordion 1" initial_open="1" multi_open="no" filter="no" appearing_animation="0" ][pb_accordion_item heading="Accordion Item 1" icon="" tag="" ]Felis ornare fames vehicula nisi leo molestie curabitur felis, eget porta interdum habitant porttitor ligula nunc volutpat, sagittis aenean taciti justo auctor ante quam. suspendisse ipsum orci eu cras placerat porttitor diam ante placerat, libero fringilla consectetur morbi potenti, eget porta interdum habitant porttitor ligula nunc.[/pb_accordion_item][pb_accordion_item heading="Accordion Item 2" ]Lorem dictumst placerat adipiscing augue odio nunc, ultrices orci curabitur adipiscing blandit dolor dapibus, sollicitudin ante donec ornare consectetur. sit nisi tellus integer etiam interdum laoreet luctus sagittis curae integer nibh, torquent tristique quisque non magna a porta fermentum ultricies. tellus dolor pulvinar lectus purus in.[/pb_accordion_item][/pb_accordion][/pb_column][pb_column span="span6"][pb_heading el_title="Tab element" tag="h4" div_margin_bottom="20" text_align="inherit" font="custom" font_face_type="google fonts" font_face_value="Source Sans Pro" font_size_value_="20" font_style="bold" color="#5e5f66" border_bottom_style="solid" border_bottom_color="#a81010" appearing_animation="fade_in" appearing_animation_speed="medium" ]Tab element[/pb_heading][pb_tab el_title="Tab 1" initial_open="1" fade_effect="no" tab_position="top" appearing_animation="0" ][pb_tab_item heading="Tab Item 1" icon="" ]Feugiat odio duis facilisis hac fusce ipsum donec euismod class, elementum nulla condimentum quam aliquet odio consectetur malesuada, quisque ante commodo varius vel praesent urna leo. mauris aliquam vitae interdum rhoncus taciti aenean cursus curabitur est quam non molestie, facilisis ut praesent quam amet faucibus fermentum et euismod mi sollicitudin. [/pb_tab_item][pb_tab_item heading="Tab Item 2" icon="" ]Consectetur taciti hac posuere ultrices malesuada sapien quis dictumst, ut turpis consequat netus et ligula sociosqu, feugiat aliquet nisi integer sed ligula feugiat. aliquam pellentesque proin venenatis sed tempus augue, fusce quam consectetur amet ultricies, placerat ullamcorper vestibulum lacus luctus. ut scelerisque praesent tortor sociosqu eros, suspendisse donec ut enim. [/pb_tab_item][/pb_tab][/pb_column][/pb_row][pb_row background="none" solid_color_value="#FFFFFF" solid_color_color="#ffffff" gradient_color="0% #FFFFFF,100% #000000" gradient_color_css="" gradient_direction="vertical" pattern="" repeat="full" image="" stretch="none" position="center center" paralax="no" video_url="" autoplay="no" border_width_value_="0" border_style="solid" border_color="#000" div_padding="" div_padding_top="10" div_padding_bottom="10" div_padding_right="10" div_padding_left="10" css_suffix="" id_wrapper="" ][pb_column span="span12"][pb_divider el_title="Divider 4" div_margin_bottom="40" div_border_width="1" div_border_style="solid" div_border_color="#ebe8e8" appearing_animation="0" ][/pb_divider][pb_heading el_title="Carousel element" tag="h4" div_margin_bottom="20" text_align="inherit" font="custom" font_face_type="google fonts" font_face_value="Source Sans Pro" font_size_value_="20" font_style="bold" color="#5e5f66" border_bottom_style="solid" border_bottom_color="#a81010" appearing_animation="fade_in" appearing_animation_speed="medium" ]Carousel element[/pb_heading][pb_carousel el_title="Carousel 1" align="center" dimension_width_unit="px" show_indicator="no" show_arrows="yes" automatic_cycling="no" appearing_animation="0" ][pb_carousel_item image_file="https://lh5.googleusercontent.com/-uMjkIqBu-6Q/VNHuELzvkPI/AAAAAAAAE0w/SkumY36ADQI/s1024/image-1.jpg" heading="Carousel Item 1" ]Senectus faucibus hac tincidunt lorem tincidunt tempus integer ipsum per, etiam luctus arcu egestas nullam conubia lobortis turpis imperdiet pharetra[/pb_carousel_item][pb_carousel_item image_file="https://lh4.googleusercontent.com/-7Zlo6unCgug/VNHuEI6WZ4I/AAAAAAAAE0w/lpT5-ZAo4q8/s1024/image-2.jpg" heading="Carousel Item 2" ]Sit class semper lacinia molestie ultricies in at habitasse viverra facilisis phasellus fames, condimentum cras nisl feugiat arcu habitant cursus at libero in cubilia[/pb_carousel_item][/pb_carousel][pb_divider el_title="Divider 5" div_margin_top="40" div_border_width="1" div_border_style="solid" div_border_color="#ebe8e8" appearing_animation="0" ][/pb_divider][/pb_column][/pb_row][pb_row background="none" solid_color_value="#FFFFFF" solid_color_color="#ffffff" gradient_color="0% #FFFFFF,100% #000000" gradient_color_css="" gradient_direction="vertical" pattern="" repeat="full" image="" stretch="none" position="center center" paralax="no" video_url="" autoplay="no" border_width_value_="0" border_style="solid" border_color="#000" div_padding="" div_padding_top="10" div_padding_bottom="10" div_padding_right="10" div_padding_left="10" css_suffix="" id_wrapper="" ][pb_column span="span12"][pb_heading el_title="Parallax Scrolling Background" tag="h4" div_margin_bottom="20" text_align="inherit" font="custom" font_face_type="google fonts" font_face_value="Source Sans Pro" font_size_value_="20" font_style="bold" color="#5e5f66" border_bottom_style="solid" border_bottom_color="#a81010" appearing_animation="fade_in" appearing_animation_speed="medium" ]Parallax Scrolling Background[/pb_heading][/pb_column][/pb_row][pb_row background="image" image="https://lh4.googleusercontent.com/-fct5BGdSUg8/VNHuEH6mXrI/AAAAAAAAE0w/3WjTqH2ueS0/s1024/image-3.jpg" position="center center" paralax="yes" border_width_value_="0" border_style="solid" border_color="#000" div_padding_top="50" div_padding_right="10" div_padding_bottom="50" div_padding_left="10" ][pb_column span="span12"][pb_heading el_title=" STUNNING PARALLAX BACKGROUND" tag="h3" text_align="center" font="custom" font_face_type="google fonts" font_face_value="Open Sans" font_style="bold" color="#ffffff" border_bottom_style="solid" border_bottom_color="#000000" appearing_animation="0" ] STUNNING PARALLAX BACKGROUND[/pb_heading][/pb_column][/pb_row][pb_row background="none" solid_color_value="#FFFFFF" solid_color_color="#ffffff" gradient_color="0% #FFFFFF,100% #000000" gradient_color_css="" gradient_direction="vertical" pattern="" repeat="full" image="" stretch="none" position="center center" paralax="no" video_url="" autoplay="no" border_width_value_="0" border_style="solid" border_color="#000" div_padding="" div_padding_top="10" div_padding_bottom="10" div_padding_right="10" div_padding_left="10" css_suffix="" id_wrapper="" ][pb_column span="span12"][pb_divider el_title="Divider 5 copy" div_margin_top="40" div_margin_bottom="40" div_border_width="1" div_border_style="solid" div_border_color="#ebe8e8" appearing_animation="0" ][/pb_divider][pb_heading el_title="Built-in animation" tag="h4" div_margin_bottom="20" text_align="inherit" font="custom" font_face_type="google fonts" font_face_value="Source Sans Pro" font_size_value_="20" font_style="bold" color="#5e5f66" border_bottom_style="solid" border_bottom_color="#a81010" appearing_animation="fade_in" appearing_animation_speed="medium" ]Built-in animation[/pb_heading][pb_text el_title="Appearing animation: Slide from top" enable_dropcap="no" appearing_animation="slide_from_top" appearing_animation_speed="medium" ]<b>Appearing animation: Slide from top.</b> Consectetur fusce vehicula potenti venenatis consectetur pulvinar vehicula tempor ac aptent sed lobortis, hac torquent elit dapibus.Consectetur fusce vehicula potenti venenatis consectetur pulvinar vehicula tempor ac aptent sed lobortis, hac torquent elit dapibus. Consectetur fusce vehicula potenti venenatis consectetur pulvinar vehicula tempor ac aptent sed lobortis, hac torquent elit dapibus.Consectetur fusce vehicula potenti venenatis consectetur pulvinar vehicula tempor ac aptent sed lobortis, hac torquent elit dapibus.[/pb_text][/pb_column][/pb_row][pb_row background="none" solid_color_value="#FFFFFF" solid_color_color="#ffffff" gradient_color="0% #FFFFFF,100% #000000" gradient_color_css="" gradient_direction="vertical" pattern="" repeat="full" image="" stretch="none" position="center center" paralax="no" video_url="" autoplay="no" border_width_value_="0" border_style="solid" border_color="#000" div_padding="" div_padding_top="10" div_padding_bottom="10" div_padding_right="10" div_padding_left="10" css_suffix="" id_wrapper="" ][pb_column span="span12"][pb_heading el_title="Built-in animation copy" tag="h4" div_margin_bottom="20" text_align="inherit" font="custom" font_face_type="google fonts" font_face_value="Source Sans Pro" font_size_value_="20" font_style="bold" color="#5e5f66" border_bottom_style="solid" border_bottom_color="#a81010" appearing_animation="fade_in" appearing_animation_speed="medium" ]And many other advanced elements are waiting for you to discover...[/pb_heading][pb_buttonbar el_title="Button Download" div_margin_top="30" buttonbar_alignment="center" buttonbar_show_title="yes" buttonbar_show_icon="yes" buttonbar_group="no" appearing_animation="0" ][pb_buttonbar_item button_text="Free Download Now" link_type="url" button_type_url="http://www.joomlashine.com/joomla-extensions/jsn-pagebuilder.html" open_in="current_browser" icon="icon-download" button_size="btn-lg" button_color="btn-danger" ][/pb_buttonbar_item][/pb_buttonbar][/pb_column][/pb_row]', '', 1, 14, '2015-01-06 10:19:40', 42, '', '2015-01-06 10:30:43', 42, 0, '0000-00-00 00:00:00', '2015-01-06 10:19:40', '0000-00-00 00:00:00', '', '', '{"show_title":"","link_titles":"","show_tags":"","show_intro":"","info_block_position":"","show_category":"","link_category":"","show_parent_category":"","link_parent_category":"","show_author":"","link_author":"","show_create_date":"","show_modify_date":"","show_publish_date":"","show_item_navigation":"","show_icons":"","show_print_icon":"","show_email_icon":"","show_vote":"","show_hits":"","show_noauth":"","urls_position":"","alternative_readmore":"","article_layout":"","show_publishing_options":"","show_article_options":"","show_urls_images_backend":"","show_urls_images_frontend":""}', 2, 5, '', '', 1, 4, '{"robots":"","author":"","rights":"","xreference":""}', 0, '*', ''),
 (112, 246, 'Content Slider', 'joomla-slider', '<style type="text/css">\r\n	.jsn-easyslider p {\r\n		margin-bottom: 20px;\r\n	}\r\n</style>\r\n\r\n\r\n<div class="jsn-easyslider">\r\n	<div class="text-info" style="background-image: none; padding-left: 15px;">\r\n		<p style="text-align: center;">The slider you see on this website is the <strong>Free Edition</strong> of another cool product <a href="http://www.joomlashine.com/joomla-extensions/jsn-easyslider-joomla-slider-extension.html">JSN EasySlider</a> from JoomlaShine. Please click on the below button to check the PRO Edition of this extension.</p>\r\n		<p align="center">\r\n			<a class="link-button button-blue" href="http://demo.joomlashine.com/joomla-extensions/jsn-easyslider/jsn-easyslider-overview.html?utm_source=detailpage&utm_medium=button&utm_campaign=JSNEasySlider" target="_blank">See Demo</a>\r\n			<a class="link-button button-green" href="http://www.joomlashine.com/joomla-extensions/jsn-easyslider-joomla-slider-extension.html#jsn-edition-price" target="_blank">Get It Now</a>\r\n		</p>\r\n	</div>\r\n\r\n	<p>JSN EasySlider is the cutting-edge way of presenting content on the web with the <strong>“Three-I” standard:</strong> Impressive - Informative - Interactive.</p>\r\n	<ul style="list-style-position: inside;">\r\n		<li style="padding-left: 30px;">Impressive to catch and maintain attention</li>\r\n		<li style="padding-left: 30px;">Informative to convey message effectively</li>\r\n		<li style="padding-left: 30px;">Interactive to drive engagement with specific Call-To-Actions</li>\r\n	</ul>\r\n	<p>It allows you to synthesize <strong>dynamic content types</strong>: text, video &amp; images and leverage the strength of <strong>stunning effects</strong> for effective information conveyance. Besides superpower for content presentation, it also has a uniquely outstanding feature:<strong> super user-friendly interface</strong>. With Drag-n-drop functionality, WYSIWYG Editor, Timeline editor and live preview, no lines of code are required to get a stunning slider.</p>\r\n	<p><strong>Here after is the slider created by the FREE Edition of JSN EasySlider:</strong></p>\r\n</div>\r\n\r\n{jsn_easyslider identity_id=NyCDeIfY slider_id=2/}', '', 1, 20, '2015-08-12 08:27:06', 42, '', '2015-09-09 08:21:43', 42, 0, '0000-00-00 00:00:00', '2015-08-12 08:27:06', '0000-00-00 00:00:00', '{}', '{}', '{"show_title":"","link_titles":"","show_tags":"","show_intro":"","info_block_position":"","show_category":"","link_category":"","show_parent_category":"","link_parent_category":"","show_author":"","link_author":"","show_create_date":"","show_modify_date":"","show_publish_date":"","show_item_navigation":"","show_icons":"","show_print_icon":"","show_email_icon":"","show_vote":"","show_hits":"","show_noauth":"","urls_position":"","alternative_readmore":"","article_layout":"","show_publishing_options":"","show_article_options":"","show_urls_images_backend":"","show_urls_images_frontend":""}', 2, 0, '', '', 1, 8, '{"robots":"","author":"","rights":"","xreference":""}', 0, '*', ''),
-(113, 259, 'FatSecret Food Search', 'fatsecret-food-search', '<p>\r\n<script src="http://platform.fatsecret.com/js?key=16de556b3f434b459cc270655f7fef0e&amp;amp&amp;auto_load=true&amp;auto_nav=false"></script>\r\n<script>// <![CDATA[\r\n \r\nfatsecret.setCanvasUrl("food.get", "http://localhost:8888/Health_Information_System/index.php/food-diary"); \r\n// ]]></script>\r\n</p>', '', 1, 14, '2016-03-18 09:50:14', 760, '', '2016-03-18 10:34:22', 760, 760, '2016-03-18 10:34:22', '2016-03-18 09:50:14', '0000-00-00 00:00:00', '{}', '{}', '{"show_title":"","link_titles":"","show_tags":"","show_intro":"","info_block_position":"","show_category":"","link_category":"","show_parent_category":"","link_parent_category":"","show_author":"","link_author":"","show_create_date":"","show_modify_date":"","show_publish_date":"","show_item_navigation":"","show_icons":"","show_print_icon":"","show_email_icon":"","show_vote":"","show_hits":"","show_noauth":"","urls_position":"","alternative_readmore":"","article_layout":"","show_publishing_options":"","show_article_options":"","show_urls_images_backend":"","show_urls_images_frontend":""}', 14, 4, '', '', 1, 23, '{"robots":"","author":"","rights":"","xreference":""}', 0, '*', ''),
-(114, 260, 'FatSecret Food Diary', 'fatsecret-food-diary', '<p>\r\n<script src="http://platform.fatsecret.com/js?key=16de556b3f434b459cc270655f7fef0e&amp;amp&amp;auto_load=true&amp;auto_nav=false"></script>\r\n<script>// <![CDATA[\r\nfatsecret.variables.navOptions = fatsecret.navFeatures.food_diary;\r\n// ]]></script>\r\n</p>', '', 1, 14, '2016-03-18 10:16:29', 760, '', '2016-03-18 10:55:54', 760, 760, '2016-03-18 10:55:54', '2016-03-18 10:16:29', '0000-00-00 00:00:00', '{}', '{}', '{"show_title":"0","link_titles":"0","show_tags":"","show_intro":"","info_block_position":"","show_category":"","link_category":"","show_parent_category":"","link_parent_category":"","show_author":"0","link_author":"0","show_create_date":"0","show_modify_date":"","show_publish_date":"","show_item_navigation":"","show_icons":"","show_print_icon":"0","show_email_icon":"0","show_vote":"","show_hits":"","show_noauth":"","urls_position":"","alternative_readmore":"","article_layout":"","show_publishing_options":"","show_article_options":"","show_urls_images_backend":"","show_urls_images_frontend":""}', 7, 3, '', '', 1, 12, '{"robots":"","author":"","rights":"","xreference":""}', 0, '*', ''),
+(113, 259, 'FatSecret Food Search', 'fatsecret-food-search', '<p>\r\n<script src="http://platform.fatsecret.com/js?key=16de556b3f434b459cc270655f7fef0e&amp;amp&amp;auto_load=true&amp;auto_nav=false"></script>\r\n<script>// <![CDATA[\r\n \r\nfatsecret.setCanvasUrl("food.get", "http://localhost:8888/Health_Information_System/index.php/food-diary"); \r\n// ]]></script>\r\n</p>', '', 1, 14, '2016-03-18 09:50:14', 760, '', '2016-03-18 10:34:22', 760, 760, '2016-03-18 10:34:22', '2016-03-18 09:50:14', '0000-00-00 00:00:00', '{}', '{}', '{"show_title":"","link_titles":"","show_tags":"","show_intro":"","info_block_position":"","show_category":"","link_category":"","show_parent_category":"","link_parent_category":"","show_author":"","link_author":"","show_create_date":"","show_modify_date":"","show_publish_date":"","show_item_navigation":"","show_icons":"","show_print_icon":"","show_email_icon":"","show_vote":"","show_hits":"","show_noauth":"","urls_position":"","alternative_readmore":"","article_layout":"","show_publishing_options":"","show_article_options":"","show_urls_images_backend":"","show_urls_images_frontend":""}', 14, 4, '', '', 1, 24, '{"robots":"","author":"","rights":"","xreference":""}', 0, '*', ''),
+(114, 260, 'FatSecret Food Diary', 'fatsecret-food-diary', '<p>\r\n<script src="http://platform.fatsecret.com/js?key=16de556b3f434b459cc270655f7fef0e&amp;amp&amp;auto_load=true&amp;auto_nav=false"></script>\r\n<script>// <![CDATA[\r\nfatsecret.variables.navOptions = fatsecret.navFeatures.food_diary;\r\n// ]]></script>\r\n</p>', '', 1, 14, '2016-03-18 10:16:29', 760, '', '2016-03-18 10:55:54', 760, 760, '2016-03-18 10:55:54', '2016-03-18 10:16:29', '0000-00-00 00:00:00', '{}', '{}', '{"show_title":"0","link_titles":"0","show_tags":"","show_intro":"","info_block_position":"","show_category":"","link_category":"","show_parent_category":"","link_parent_category":"","show_author":"0","link_author":"0","show_create_date":"0","show_modify_date":"","show_publish_date":"","show_item_navigation":"","show_icons":"","show_print_icon":"0","show_email_icon":"0","show_vote":"","show_hits":"","show_noauth":"","urls_position":"","alternative_readmore":"","article_layout":"","show_publishing_options":"","show_article_options":"","show_urls_images_backend":"","show_urls_images_frontend":""}', 7, 3, '', '', 1, 13, '{"robots":"","author":"","rights":"","xreference":""}', 0, '*', ''),
 (115, 261, 'FatSecret Exercise Diary', 'fatsecret-exercise-diary', '<p>\r\n<script src="http://platform.fatsecret.com/js?key=16de556b3f434b459cc270655f7fef0e&amp;amp&amp;auto_load=true&amp;auto_nav=false"></script>\r\n<script>// <![CDATA[\r\nfatsecret.variables.navOptions = fatsecret.navFeatures.exercise_diary;\r\n// ]]></script>\r\n</p>', '', 1, 14, '2016-03-18 10:17:45', 760, '', '2016-03-18 10:23:09', 760, 0, '0000-00-00 00:00:00', '2016-03-18 10:17:45', '0000-00-00 00:00:00', '{}', '{}', '{"show_title":"0","link_titles":"0","show_tags":"","show_intro":"","info_block_position":"","show_category":"","link_category":"","show_parent_category":"","link_parent_category":"","show_author":"0","link_author":"0","show_create_date":"0","show_modify_date":"","show_publish_date":"","show_item_navigation":"0","show_icons":"","show_print_icon":"0","show_email_icon":"0","show_vote":"","show_hits":"","show_noauth":"","urls_position":"","alternative_readmore":"","article_layout":"","show_publishing_options":"","show_article_options":"","show_urls_images_backend":"","show_urls_images_frontend":""}', 2, 2, '', '', 1, 3, '{"robots":"","author":"","rights":"","xreference":""}', 0, '*', ''),
-(116, 262, 'FatSecret Diet Calendar', 'fatsecret-diet-calendar', '<p>\r\n<script src="http://platform.fatsecret.com/js?key=16de556b3f434b459cc270655f7fef0e&amp;amp&amp;auto_load=true&amp;auto_nav=false"></script>\r\n<script>// <![CDATA[\r\nfatsecret.variables.navOptions = fatsecret.navFeatures.diet_calendar;\r\n// ]]></script>\r\n</p>', '', 1, 14, '2016-03-18 10:18:38', 760, '', '2016-03-18 10:22:42', 760, 0, '0000-00-00 00:00:00', '2016-03-18 10:18:38', '0000-00-00 00:00:00', '{}', '{}', '{"show_title":"0","link_titles":"0","show_tags":"","show_intro":"","info_block_position":"","show_category":"","link_category":"","show_parent_category":"","link_parent_category":"","show_author":"0","link_author":"0","show_create_date":"0","show_modify_date":"","show_publish_date":"","show_item_navigation":"0","show_icons":"","show_print_icon":"0","show_email_icon":"0","show_vote":"","show_hits":"","show_noauth":"","urls_position":"","alternative_readmore":"","article_layout":"","show_publishing_options":"","show_article_options":"","show_urls_images_backend":"","show_urls_images_frontend":""}', 3, 1, '', '', 1, 4, '{"robots":"","author":"","rights":"","xreference":""}', 0, '*', ''),
+(116, 262, 'FatSecret Diet Calendar', 'fatsecret-diet-calendar', '<p>\r\n<script src="http://platform.fatsecret.com/js?key=16de556b3f434b459cc270655f7fef0e&amp;amp&amp;auto_load=true&amp;auto_nav=false"></script>\r\n<script>// <![CDATA[\r\nfatsecret.variables.navOptions = fatsecret.navFeatures.diet_calendar;\r\n// ]]></script>\r\n</p>', '', 1, 14, '2016-03-18 10:18:38', 760, '', '2016-03-18 10:22:42', 760, 0, '0000-00-00 00:00:00', '2016-03-18 10:18:38', '0000-00-00 00:00:00', '{}', '{}', '{"show_title":"0","link_titles":"0","show_tags":"","show_intro":"","info_block_position":"","show_category":"","link_category":"","show_parent_category":"","link_parent_category":"","show_author":"0","link_author":"0","show_create_date":"0","show_modify_date":"","show_publish_date":"","show_item_navigation":"0","show_icons":"","show_print_icon":"0","show_email_icon":"0","show_vote":"","show_hits":"","show_noauth":"","urls_position":"","alternative_readmore":"","article_layout":"","show_publishing_options":"","show_article_options":"","show_urls_images_backend":"","show_urls_images_frontend":""}', 3, 1, '', '', 1, 5, '{"robots":"","author":"","rights":"","xreference":""}', 0, '*', ''),
 (117, 263, 'Fat Secret Weight Tracker', 'fat-secret-weight-tracker', '<p>\r\n<script src="http://platform.fatsecret.com/js?key=16de556b3f434b459cc270655f7fef0e&amp;amp&amp;auto_load=true&amp;auto_nav=false"></script>\r\n<script>// <![CDATA[\r\nfatsecret.variables.navOptions = fatsecret.navFeatures.weight_tracker;\r\n// ]]></script>\r\n</p>', '', 1, 14, '2016-03-18 10:19:09', 760, '', '2016-03-18 10:24:16', 760, 0, '0000-00-00 00:00:00', '2016-03-18 10:19:09', '0000-00-00 00:00:00', '{}', '{}', '{"show_title":"0","link_titles":"0","show_tags":"","show_intro":"","info_block_position":"","show_category":"","link_category":"","show_parent_category":"","link_parent_category":"","show_author":"0","link_author":"0","show_create_date":"0","show_modify_date":"","show_publish_date":"","show_item_navigation":"","show_icons":"","show_print_icon":"0","show_email_icon":"0","show_vote":"","show_hits":"","show_noauth":"","urls_position":"","alternative_readmore":"","article_layout":"","show_publishing_options":"","show_article_options":"","show_urls_images_backend":"","show_urls_images_frontend":""}', 4, 0, '', '', 1, 2, '{"robots":"","author":"","rights":"","xreference":""}', 0, '*', '');
 
 -- --------------------------------------------------------
@@ -753,13 +805,19 @@ INSERT INTO `cv0rg_content` (`id`, `asset_id`, `title`, `alias`, `introtext`, `f
 -- Table structure for table `cv0rg_contentitem_tag_map`
 --
 
-CREATE TABLE `cv0rg_contentitem_tag_map` (
+CREATE TABLE IF NOT EXISTS `cv0rg_contentitem_tag_map` (
   `type_alias` varchar(255) NOT NULL DEFAULT '',
   `core_content_id` int(10) unsigned NOT NULL COMMENT 'PK from the core content table',
   `content_item_id` int(11) NOT NULL COMMENT 'PK from the content type table',
   `tag_id` int(10) unsigned NOT NULL COMMENT 'PK from the tag table',
   `tag_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Date of most recent save for this tag-item',
-  `type_id` mediumint(8) NOT NULL COMMENT 'PK from the content_type table'
+  `type_id` mediumint(8) NOT NULL COMMENT 'PK from the content_type table',
+  UNIQUE KEY `uc_ItemnameTagid` (`type_id`,`content_item_id`,`tag_id`),
+  KEY `idx_tag_type` (`tag_id`,`type_id`),
+  KEY `idx_date_id` (`tag_date`,`tag_id`),
+  KEY `idx_tag` (`tag_id`),
+  KEY `idx_type` (`type_id`),
+  KEY `idx_core_content_id` (`core_content_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Maps items from content tables to tags';
 
 --
@@ -775,9 +833,10 @@ INSERT INTO `cv0rg_contentitem_tag_map` (`type_alias`, `core_content_id`, `conte
 -- Table structure for table `cv0rg_content_frontpage`
 --
 
-CREATE TABLE `cv0rg_content_frontpage` (
+CREATE TABLE IF NOT EXISTS `cv0rg_content_frontpage` (
   `content_id` int(11) NOT NULL DEFAULT '0',
-  `ordering` int(11) NOT NULL DEFAULT '0'
+  `ordering` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`content_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -793,11 +852,12 @@ INSERT INTO `cv0rg_content_frontpage` (`content_id`, `ordering`) VALUES
 -- Table structure for table `cv0rg_content_rating`
 --
 
-CREATE TABLE `cv0rg_content_rating` (
+CREATE TABLE IF NOT EXISTS `cv0rg_content_rating` (
   `content_id` int(11) NOT NULL DEFAULT '0',
   `rating_sum` int(10) unsigned NOT NULL DEFAULT '0',
   `rating_count` int(10) unsigned NOT NULL DEFAULT '0',
-  `lastip` varchar(50) NOT NULL DEFAULT ''
+  `lastip` varchar(50) NOT NULL DEFAULT '',
+  PRIMARY KEY (`content_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -806,16 +866,18 @@ CREATE TABLE `cv0rg_content_rating` (
 -- Table structure for table `cv0rg_content_types`
 --
 
-CREATE TABLE `cv0rg_content_types` (
-  `type_id` int(10) unsigned NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_content_types` (
+  `type_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `type_title` varchar(255) NOT NULL DEFAULT '',
   `type_alias` varchar(255) NOT NULL DEFAULT '',
   `table` varchar(255) NOT NULL DEFAULT '',
   `rules` text NOT NULL,
   `field_mappings` text NOT NULL,
   `router` varchar(255) NOT NULL DEFAULT '',
-  `content_history_options` varchar(5120) DEFAULT NULL COMMENT 'JSON string for com_contenthistory options'
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
+  `content_history_options` varchar(5120) DEFAULT NULL COMMENT 'JSON string for com_contenthistory options',
+  PRIMARY KEY (`type_id`),
+  KEY `idx_alias` (`type_alias`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=14 ;
 
 --
 -- Dumping data for table `cv0rg_content_types`
@@ -842,7 +904,7 @@ INSERT INTO `cv0rg_content_types` (`type_id`, `type_title`, `type_alias`, `table
 -- Table structure for table `cv0rg_core_log_searches`
 --
 
-CREATE TABLE `cv0rg_core_log_searches` (
+CREATE TABLE IF NOT EXISTS `cv0rg_core_log_searches` (
   `search_term` varchar(128) NOT NULL DEFAULT '',
   `hits` int(10) unsigned NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -853,8 +915,8 @@ CREATE TABLE `cv0rg_core_log_searches` (
 -- Table structure for table `cv0rg_extensions`
 --
 
-CREATE TABLE `cv0rg_extensions` (
-  `extension_id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_extensions` (
+  `extension_id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
   `type` varchar(20) NOT NULL,
   `element` varchar(100) NOT NULL,
@@ -870,8 +932,12 @@ CREATE TABLE `cv0rg_extensions` (
   `checked_out` int(10) unsigned NOT NULL DEFAULT '0',
   `checked_out_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `ordering` int(11) DEFAULT '0',
-  `state` int(11) DEFAULT '0'
-) ENGINE=InnoDB AUTO_INCREMENT=746 DEFAULT CHARSET=utf8;
+  `state` int(11) DEFAULT '0',
+  PRIMARY KEY (`extension_id`),
+  KEY `element_clientid` (`element`,`client_id`),
+  KEY `element_folder_clientid` (`element`,`folder`,`client_id`),
+  KEY `extension` (`type`,`element`,`folder`,`client_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=760 ;
 
 --
 -- Dumping data for table `cv0rg_extensions`
@@ -910,7 +976,7 @@ INSERT INTO `cv0rg_extensions` (`extension_id`, `name`, `type`, `element`, `fold
 (32, 'com_postinstall', 'component', 'com_postinstall', '', 1, 1, 1, 1, '{"name":"com_postinstall","type":"component","creationDate":"September 2013","author":"Joomla! Project","copyright":"(C) 2005 - 2015 Open Source Matters. All rights reserved.","authorEmail":"admin@joomla.org","authorUrl":"www.joomla.org","version":"3.2.0","description":"COM_POSTINSTALL_XML_DESCRIPTION","group":""}', '', '', '', 0, '0000-00-00 00:00:00', 0, 0),
 (101, 'SimplePie', 'library', 'simplepie', '', 0, 1, 1, 1, '{"name":"SimplePie","type":"library","creationDate":"2004","author":"SimplePie","copyright":"Copyright (c) 2004-2009, Ryan Parman and Geoffrey Sneddon","authorEmail":"","authorUrl":"http:\\/\\/simplepie.org\\/","version":"1.2","description":"LIB_SIMPLEPIE_XML_DESCRIPTION","group":"","filename":"simplepie"}', '', '', '', 0, '0000-00-00 00:00:00', 0, 0),
 (102, 'phputf8', 'library', 'phputf8', '', 0, 1, 1, 1, '{"name":"phputf8","type":"library","creationDate":"2006","author":"Harry Fuecks","copyright":"Copyright various authors","authorEmail":"hfuecks@gmail.com","authorUrl":"http:\\/\\/sourceforge.net\\/projects\\/phputf8","version":"0.5","description":"LIB_PHPUTF8_XML_DESCRIPTION","group":"","filename":"phputf8"}', '', '', '', 0, '0000-00-00 00:00:00', 0, 0),
-(103, 'Joomla! Platform', 'library', 'joomla', '', 0, 1, 1, 1, '{"name":"Joomla! Platform","type":"library","creationDate":"2008","author":"Joomla! Project","copyright":"Copyright (C) 2005 - 2015 Open Source Matters. All rights reserved.","authorEmail":"admin@joomla.org","authorUrl":"http:\\/\\/www.joomla.org","version":"13.1","description":"LIB_JOOMLA_XML_DESCRIPTION","group":"","filename":"joomla"}', '{"mediaversion":"c5f0391dfc12969e49fbb504df29a307"}', '', '', 0, '0000-00-00 00:00:00', 0, 0),
+(103, 'Joomla! Platform', 'library', 'joomla', '', 0, 1, 1, 1, '{"name":"Joomla! Platform","type":"library","creationDate":"2008","author":"Joomla! Project","copyright":"Copyright (C) 2005 - 2015 Open Source Matters. All rights reserved.","authorEmail":"admin@joomla.org","authorUrl":"http:\\/\\/www.joomla.org","version":"13.1","description":"LIB_JOOMLA_XML_DESCRIPTION","group":"","filename":"joomla"}', '{"mediaversion":"77437d84c1b8d02a9752085c23c45d5d"}', '', '', 0, '0000-00-00 00:00:00', 0, 0),
 (104, 'IDNA Convert', 'library', 'idna_convert', '', 0, 1, 1, 1, '{"name":"IDNA Convert","type":"library","creationDate":"2004","author":"phlyLabs","copyright":"2004-2011 phlyLabs Berlin, http:\\/\\/phlylabs.de","authorEmail":"phlymail@phlylabs.de","authorUrl":"http:\\/\\/phlylabs.de","version":"0.8.0","description":"LIB_IDNA_XML_DESCRIPTION","group":"","filename":"idna_convert"}', '', '', '', 0, '0000-00-00 00:00:00', 0, 0),
 (105, 'FOF', 'library', 'fof', '', 0, 1, 1, 1, '{"name":"FOF","type":"library","creationDate":"2015-04-22 13:15:32","author":"Nicholas K. Dionysopoulos \\/ Akeeba Ltd","copyright":"(C)2011-2015 Nicholas K. Dionysopoulos","authorEmail":"nicholas@akeebabackup.com","authorUrl":"https:\\/\\/www.akeebabackup.com","version":"2.4.3","description":"LIB_FOF_XML_DESCRIPTION","group":"","filename":"fof"}', '', '', '', 0, '0000-00-00 00:00:00', 0, 0),
 (106, 'PHPass', 'library', 'phpass', '', 0, 1, 1, 1, '{"name":"PHPass","type":"library","creationDate":"2004-2006","author":"Solar Designer","copyright":"","authorEmail":"solar@openwall.com","authorUrl":"http:\\/\\/www.openwall.com\\/phpass\\/","version":"0.3","description":"LIB_PHPASS_XML_DESCRIPTION","group":"","filename":"phpass"}', '', '', '', 0, '0000-00-00 00:00:00', 0, 0),
@@ -1011,7 +1077,7 @@ INSERT INTO `cv0rg_extensions` (`extension_id`, `name`, `type`, `element`, `fold
 (600, 'English (en-GB)', 'language', 'en-GB', '', 0, 1, 1, 1, '{"name":"English (en-GB)","type":"language","creationDate":"2013-03-07","author":"Joomla! Project","copyright":"Copyright (C) 2005 - 2015 Open Source Matters. All rights reserved.","authorEmail":"admin@joomla.org","authorUrl":"www.joomla.org","version":"3.4.3","description":"en-GB site language","group":""}', '', '', '', 0, '0000-00-00 00:00:00', 0, 0),
 (601, 'English (en-GB)', 'language', 'en-GB', '', 1, 1, 1, 1, '{"name":"English (en-GB)","type":"language","creationDate":"2013-03-07","author":"Joomla! Project","copyright":"Copyright (C) 2005 - 2015 Open Source Matters. All rights reserved.","authorEmail":"admin@joomla.org","authorUrl":"www.joomla.org","version":"3.4.3","description":"en-GB administrator language","group":""}', '', '', '', 0, '0000-00-00 00:00:00', 0, 0),
 (700, 'files_joomla', 'file', 'joomla', '', 0, 1, 1, 1, '{"name":"files_joomla","type":"file","creationDate":"December 2015","author":"Joomla! Project","copyright":"(C) 2005 - 2015 Open Source Matters. All rights reserved","authorEmail":"admin@joomla.org","authorUrl":"www.joomla.org","version":"3.4.8","description":"FILES_JOOMLA_XML_DESCRIPTION","group":""}', '', '', '', 0, '0000-00-00 00:00:00', 0, 0),
-(701, 'plg_system_jsntplframework', 'plugin', 'jsntplframework', 'system', 0, 1, 1, 1, '{"name":"plg_system_jsntplframework","type":"plugin","creationDate":"03\\/20\\/2015","author":"JoomlaShine.com","copyright":"Copyright (C) 2012 JoomlaShine.com. All Rights Reserved.","authorEmail":"admin@joomlashine.com","authorUrl":"www.joomlashine.com","version":"3.0.6","description":"","group":"","filename":"jsntplframework"}', '{"update-check":1458235569}', '', '', 0, '0000-00-00 00:00:00', 9999, 0),
+(701, 'plg_system_jsntplframework', 'plugin', 'jsntplframework', 'system', 0, 1, 1, 1, '{"name":"plg_system_jsntplframework","type":"plugin","creationDate":"03\\/20\\/2015","author":"JoomlaShine.com","copyright":"Copyright (C) 2012 JoomlaShine.com. All Rights Reserved.","authorEmail":"admin@joomlashine.com","authorUrl":"www.joomlashine.com","version":"3.0.6","description":"","group":"","filename":"jsntplframework"}', '{"update-check":1458338386}', '', '', 0, '0000-00-00 00:00:00', 9999, 0),
 (702, 'jsn_venture_free', 'template', 'jsn_venture_free', '', 0, 1, 1, 0, '{"name":"jsn_venture_free","type":"template","creationDate":"03\\/20\\/2015","author":"JoomlaShine.com","copyright":"Copyright (c) 2008 - 2013 - JoomlaShine.com","authorEmail":"support@joomlashine.com","authorUrl":"http:\\/\\/www.joomlashine.com","version":"1.0.9","description":"TPL_JSN_VENTURE_FREE_XML_DESCRIPTION","group":"jsntemplate","filename":"templateDetails"}', '[]', 'jsntemplate', '', 0, '0000-00-00 00:00:00', 0, 0),
 (703, 'JE SlideDown Menu', 'module', 'mod_je_menu', '', 0, 1, 0, 0, '{"name":"JE SlideDown Menu","type":"module","creationDate":"February, 2015","author":"jExtensions.com","copyright":"Copyright 2015 - jExtensions.com","authorEmail":"support@jExtensions.com","authorUrl":"http:\\/\\/jExtensions.com","version":"3.3","description":"\\t\\n\\t<h1 class=\\"sub-heading\\">JE Box Slide-Down Menu<\\/h1>\\t\\n\\t<div class=\\"description\\">Download more free extensions from <a href=\\"http:\\/\\/jextensions.com\\/\\" target=\\"_blank\\">jExtensions.com<\\/a><br\\/>\\n\\tNeed help? <a href=\\"http:\\/\\/jextensions.com\\/slide-down-box-menu-joomla-2.5\\/\\" target=\\"_blank\\">Click here to visit the support page<\\/a>.<br\\/>\\n\\t<span class=\\"credits\\">Credits: <a href=\\"http:\\/\\/tympanus.net\\/codrops\\/2010\\/07\\/16\\/slide-down-box-menu\\/\\" target=\\"_blank\\" >tympanus<\\/a><\\/span>\\n\\t<\\/div>\\n\\t\\t\\n\\t","group":"","filename":"mod_je_menu"}', '{"jQuery":"0","Easing":"1","mod_width":"960","fontStyle":"Open+Sans","menubg":"#666666","menulink":"#ffffff","menulinkH":"#fe9a00","startLevel":"1","endLevel":"0"}', '', '', 0, '0000-00-00 00:00:00', 0, 0),
 (704, 'plg_system_jsnframework', 'plugin', 'jsnframework', 'system', 0, 1, 1, 1, '{"name":"plg_system_jsnframework","type":"plugin","creationDate":"12/28/2015","author":"JoomlaShine.com","copyright":"Copyright (C) 2013 JoomlaShine.com. All Rights Reserved.","authorEmail":"admin@joomlashine.com","authorUrl":"www.joomlashine.com","version":"1.5.8","description":"PLG_SYSTEM_JSNFRAMEWORK_XML_DESCRIPTION","group":"","filename":"jsnframework","dependency":["poweradmin","uniform","mobilize","pagebuilder","easyslider"]}', '{"poweradmin":"poweradmin","uniform":"uniform","mobilize":"mobilize","pagebuilder":"pagebuilder","easyslider":"easyslider"}', '["poweradmin","uniform","mobilize","pagebuilder","easyslider"]', '', 0, '0000-00-00 00:00:00', -9999, 0),
@@ -1055,7 +1121,22 @@ INSERT INTO `cv0rg_extensions` (`extension_id`, `name`, `type`, `element`, `fold
 (742, 'JSN_EASYSLIDER_PLG_TEMPLATE', 'plugin', 'template', 'jsneasyslider', 0, 1, 1, 0, '{"name":"JSN_EASYSLIDER_PLG_TEMPLATE","type":"plugin","creationDate":"03/09/2016","author":"JoomlaShine.com","copyright":"Copyright (C) 2013 JoomlaShine.com. All Rights Reserved.","authorEmail":"admin@joomlashine.com","authorUrl":"www.joomlashine.com","version":"2.0.8","description":"JSN_EASYSLIDER_PLG_TEMPLATE_XML_DESCRIPTION","group":"","filename":"template","dependency":["easyslider"]}', '{"easyslider":"easyslider"}', '["easyslider"]', '', 0, '0000-00-00 00:00:00', 0, 0),
 (743, 'JSN EasySlider', 'module', 'mod_easyslider', '', 0, 1, 0, 1, '{"name":"JSN EasySlider","type":"module","creationDate":"03/09/2016","author":"JoomlaShine.com","copyright":"Copyright (c) 2008 - 2013 - JoomlaShine.com","authorEmail":"admin@joomlashine.com","authorUrl":"http://www.joomlashine.com","version":"2.0.8","description":"JSN_MODULE_JSN_EASYSLIDER_MODULE","group":"","filename":"mod_easyslider","dependency":["easyslider"]}', '{"easyslider":"easyslider"}', '["easyslider"]', '', 0, '0000-00-00 00:00:00', 0, 0),
 (744, 'JSN_EASYSLIDER_PLUGIN_BUTTON_TITLE', 'plugin', 'jsneasyslider', 'editors-xtd', 0, 1, 1, 1, '{"name":"JSN_EASYSLIDER_PLUGIN_BUTTON_TITLE","type":"plugin","creationDate":"03/09/2016","author":"JoomlaShine.com","copyright":"Copyright (C) 2012 JoomlaShine.com. All Rights Reserved.","authorEmail":"admin@joomlashine.com","authorUrl":"www.joomlashine.com","version":"2.0.8","description":"JSN_EASYSLIDER_PLUGIN_BUTTON_DESC","group":"","filename":"jsneasyslider","dependency":["easyslider"]}', '{"easyslider":"easyslider"}', '["easyslider"]', '', 0, '0000-00-00 00:00:00', 0, 0),
-(745, 'JSN_EASYSLIDER_PLUGIN_CONTENT_TITLE', 'plugin', 'jsneasyslider', 'content', 0, 1, 1, 1, '{"name":"JSN_EASYSLIDER_PLUGIN_CONTENT_TITLE","type":"plugin","creationDate":"03/09/2016","author":"JoomlaShine.com","copyright":"Copyright (C) 2012 JoomlaShine.com. All Rights Reserved.","authorEmail":"admin@joomlashine.com","authorUrl":"www.joomlashine.com","version":"2.0.8","description":"JSN_EASYSLIDER_PLUGIN_CONTENT_DESC","group":"","filename":"jsneasyslider","dependency":["easyslider"]}', '{"easyslider":"easyslider"}', '["easyslider"]', '', 0, '0000-00-00 00:00:00', 0, 0);
+(745, 'JSN_EASYSLIDER_PLUGIN_CONTENT_TITLE', 'plugin', 'jsneasyslider', 'content', 0, 1, 1, 1, '{"name":"JSN_EASYSLIDER_PLUGIN_CONTENT_TITLE","type":"plugin","creationDate":"03/09/2016","author":"JoomlaShine.com","copyright":"Copyright (C) 2012 JoomlaShine.com. All Rights Reserved.","authorEmail":"admin@joomlashine.com","authorUrl":"www.joomlashine.com","version":"2.0.8","description":"JSN_EASYSLIDER_PLUGIN_CONTENT_DESC","group":"","filename":"jsneasyslider","dependency":["easyslider"]}', '{"easyslider":"easyslider"}', '["easyslider"]', '', 0, '0000-00-00 00:00:00', 0, 0),
+(746, 'plg_content_kunenadiscuss', 'plugin', 'kunenadiscuss', 'content', 0, 0, 1, 0, '{"name":"plg_content_kunenadiscuss","type":"plugin","creationDate":"2016-01-21","author":"Kunena Team","copyright":"(C) 2008 - 2016 Kunena Team. All rights reserved.","authorEmail":"admin@kunena.org","authorUrl":"http:\\/\\/www.kunena.org","version":"3.1.2","description":"PLG_KUNENADISCUSS_DESCRIPTION","group":"","filename":"kunenadiscuss"}', '{"limit":"25","ordering":"1","show_front_page":"2","show_blog_page":"2","show_other_pages":"2","form":"1","form_location":"0","custom_topics":"1","create":"0","create_time":"1","close_time":"0","close_reason":"0","bbcode":"default","topic_owner":"","category_mapping":"","default_category":"","allow_categories":"","deny_categories":"","show_debug":"0","show_debug_userids":"","login_public":"1","add_article_snippet":"1"}', '', '', 0, '0000-00-00 00:00:00', 0, 0),
+(747, 'plg_system_kunena', 'plugin', 'kunena', 'system', 0, 1, 1, 0, '{"name":"plg_system_kunena","type":"plugin","creationDate":"2016-02-18","author":"Kunena Team","copyright":"www.kunena.org","authorEmail":"Kunena@kunena.org","authorUrl":"https:\\/\\/www.kunena.org","version":"4.0.10","description":"PLG_SYSTEM_KUNENA_DESC","group":"","filename":"kunena"}', '{"jcontentevents":"0","jcontentevent_target":"body"}', '', '', 0, '0000-00-00 00:00:00', 0, 0),
+(748, 'plg_quickicon_kunena', 'plugin', 'kunena', 'quickicon', 0, 1, 1, 0, '{"name":"plg_quickicon_kunena","type":"plugin","creationDate":"2016-02-18","author":"Kunena Team","copyright":"www.kunena.org","authorEmail":"Kunena@kunena.org","authorUrl":"https:\\/\\/www.kunena.org","version":"4.0.10","description":"PLG_QUICKICON_KUNENA_DESC","group":"","filename":"kunena"}', '{"context":"mod_quickicon"}', '', '', 0, '0000-00-00 00:00:00', 0, 0),
+(749, 'Kunena Framework', 'library', 'kunena', '', 0, 1, 1, 0, '{"name":"Kunena Framework","type":"library","creationDate":"2016-02-18","author":"Kunena Team","copyright":"(C) 2008 - 2016 Kunena Team. All rights reserved.","authorEmail":"kunena@kunena.org","authorUrl":"https:\\/\\/www.kunena.org","version":"4.0.10","description":"Kunena Framework.","group":"","filename":"kunena"}', '{}', '', '', 0, '0000-00-00 00:00:00', 0, 0),
+(750, 'Kunena Media Files', 'file', 'KunenaMediaFiles', '', 0, 1, 0, 0, '{"name":"Kunena Media Files","type":"file","creationDate":"2016-02-18","author":"Kunena Team","copyright":"(C) 2008 - 2016 Kunena Team. All rights reserved.","authorEmail":"kunena@kunena.org","authorUrl":"https:\\/\\/www.kunena.org","version":"4.0.10","description":"Kunena media files.","group":""}', '', '', '', 0, '0000-00-00 00:00:00', 0, 0),
+(751, 'com_kunena', 'component', 'com_kunena', '', 1, 1, 0, 0, '{"name":"com_kunena","type":"component","creationDate":"2016-02-18","author":"Kunena Team","copyright":"(C) 2008 - 2016 Kunena Team. All rights reserved.","authorEmail":"kunena@kunena.org","authorUrl":"https:\\/\\/www.kunena.org","version":"4.0.10","description":"COM_KUNENA_XML_DESCRIPTION","group":"","filename":"kunena"}', '{}', '', '', 0, '0000-00-00 00:00:00', 0, 0);
+INSERT INTO `cv0rg_extensions` (`extension_id`, `name`, `type`, `element`, `folder`, `client_id`, `enabled`, `access`, `protected`, `manifest_cache`, `params`, `custom_data`, `system_data`, `checked_out`, `checked_out_time`, `ordering`, `state`) VALUES
+(752, 'Kunena Forum Package', 'package', 'pkg_kunena', '', 0, 1, 1, 0, '{"name":"Kunena Forum Package","type":"package","creationDate":"2016-02-18","author":"Kunena Team","copyright":"(C) 2008 - 2016 Kunena Team. All rights reserved.","authorEmail":"kunena@kunena.org","authorUrl":"https:\\/\\/www.kunena.org","version":"4.0.10","description":"Kunena Forum Package.","group":"","filename":"pkg_kunena"}', '{}', '', '', 0, '0000-00-00 00:00:00', 0, 0),
+(753, 'plg_kunena_alphauserpoints', 'plugin', 'alphauserpoints', 'kunena', 0, 0, 1, 0, '{"name":"plg_kunena_alphauserpoints","type":"plugin","creationDate":"2016-02-18","author":"Kunena Team","copyright":"www.kunena.org","authorEmail":"Kunena@kunena.org","authorUrl":"https:\\/\\/www.kunena.org","version":"4.0.10","description":"PLG_KUNENA_ALPHAUSERPOINTS_DESCRIPTION","group":"","filename":"alphauserpoints"}', '{"activity":"1","avatar":"1","profile":"1","activity_points_limit":"0"}', '', '', 0, '0000-00-00 00:00:00', 1, 0),
+(754, 'plg_kunena_community', 'plugin', 'community', 'kunena', 0, 0, 1, 0, '{"name":"plg_kunena_community","type":"plugin","creationDate":"2016-02-18","author":"Kunena Team","copyright":"www.kunena.org","authorEmail":"Kunena@kunena.org","authorUrl":"https:\\/\\/www.kunena.org","version":"4.0.10","description":"PLG_KUNENA_COMMUNITY_DESCRIPTION","group":"","filename":"community"}', '{"access":"1","login":"1","activity":"1","avatar":"1","profile":"1","private":"1","activity_points_limit":"0"}', '', '', 0, '0000-00-00 00:00:00', 2, 0),
+(755, 'plg_kunena_comprofiler', 'plugin', 'comprofiler', 'kunena', 0, 0, 1, 0, '{"name":"plg_kunena_comprofiler","type":"plugin","creationDate":"2016-02-18","author":"Kunena Team","copyright":"www.kunena.org","authorEmail":"Kunena@kunena.org","authorUrl":"https:\\/\\/www.kunena.org","version":"4.0.10","description":"PLG_KUNENA_COMPROFILER_DESCRIPTION","group":"","filename":"comprofiler"}', '{"access":"1","login":"1","activity":"1","avatar":"1","profile":"1","private":"1"}', '', '', 0, '0000-00-00 00:00:00', 3, 0),
+(756, 'plg_kunena_gravatar', 'plugin', 'gravatar', 'kunena', 0, 0, 1, 0, '{"name":"plg_kunena_gravatar","type":"plugin","creationDate":"2016-02-18","author":"Kunena Team","copyright":"www.kunena.org","authorEmail":"Kunena@kunena.org","authorUrl":"https:\\/\\/www.kunena.org","version":"4.0.10","description":"PLG_KUNENA_GRAVATAR_DESCRIPTION","group":"","filename":"gravatar"}', '{"avatar":"1"}', '', '', 0, '0000-00-00 00:00:00', 4, 0),
+(757, 'plg_kunena_uddeim', 'plugin', 'uddeim', 'kunena', 0, 0, 1, 0, '{"name":"plg_kunena_uddeim","type":"plugin","creationDate":"2016-02-18","author":"Kunena Team","copyright":"www.kunena.org","authorEmail":"Kunena@kunena.org","authorUrl":"https:\\/\\/www.kunena.org","version":"4.0.10","description":"PLG_KUNENA_UDDEIM_DESCRIPTION","group":"","filename":"uddeim"}', '{"private":"1"}', '', '', 0, '0000-00-00 00:00:00', 5, 0),
+(758, 'plg_kunena_kunena', 'plugin', 'kunena', 'kunena', 0, 1, 1, 0, '{"name":"plg_kunena_kunena","type":"plugin","creationDate":"2016-02-18","author":"Kunena Team","copyright":"www.kunena.org","authorEmail":"Kunena@kunena.org","authorUrl":"https:\\/\\/www.kunena.org","version":"4.0.10","description":"PLG_KUNENA_KUNENA_DESCRIPTION","group":"","filename":"kunena"}', '{"avatar":"1","profile":"1"}', '', '', 0, '0000-00-00 00:00:00', 6, 0),
+(759, 'plg_kunena_joomla', 'plugin', 'joomla', 'kunena', 0, 1, 1, 0, '{"name":"plg_kunena_joomla","type":"plugin","creationDate":"2016-02-18","author":"Kunena Team","copyright":"www.kunena.org","authorEmail":"Kunena@kunena.org","authorUrl":"https:\\/\\/www.kunena.org","version":"4.0.10","description":"PLG_KUNENA_JOOMLA_25_30_DESCRIPTION","group":"","filename":"joomla"}', '{"access":"1","login":"1"}', '', '', 0, '0000-00-00 00:00:00', 7, 0);
 
 -- --------------------------------------------------------
 
@@ -1063,8 +1144,8 @@ INSERT INTO `cv0rg_extensions` (`extension_id`, `name`, `type`, `element`, `fold
 -- Table structure for table `cv0rg_finder_filters`
 --
 
-CREATE TABLE `cv0rg_finder_filters` (
-  `filter_id` int(10) unsigned NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_finder_filters` (
+  `filter_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
   `alias` varchar(255) NOT NULL,
   `state` tinyint(1) NOT NULL DEFAULT '1',
@@ -1077,8 +1158,9 @@ CREATE TABLE `cv0rg_finder_filters` (
   `checked_out_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `map_count` int(10) unsigned NOT NULL DEFAULT '0',
   `data` text NOT NULL,
-  `params` mediumtext
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `params` mediumtext,
+  PRIMARY KEY (`filter_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -1086,8 +1168,8 @@ CREATE TABLE `cv0rg_finder_filters` (
 -- Table structure for table `cv0rg_finder_links`
 --
 
-CREATE TABLE `cv0rg_finder_links` (
-  `link_id` int(10) unsigned NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_finder_links` (
+  `link_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `url` varchar(255) NOT NULL,
   `route` varchar(255) NOT NULL,
   `title` varchar(255) DEFAULT NULL,
@@ -1105,8 +1187,15 @@ CREATE TABLE `cv0rg_finder_links` (
   `list_price` double unsigned NOT NULL DEFAULT '0',
   `sale_price` double unsigned NOT NULL DEFAULT '0',
   `type_id` int(11) NOT NULL,
-  `object` mediumblob NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `object` mediumblob NOT NULL,
+  PRIMARY KEY (`link_id`),
+  KEY `idx_type` (`type_id`),
+  KEY `idx_title` (`title`),
+  KEY `idx_md5` (`md5sum`),
+  KEY `idx_url` (`url`(75)),
+  KEY `idx_published_list` (`published`,`state`,`access`,`publish_start_date`,`publish_end_date`,`list_price`),
+  KEY `idx_published_sale` (`published`,`state`,`access`,`publish_start_date`,`publish_end_date`,`sale_price`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -1114,10 +1203,13 @@ CREATE TABLE `cv0rg_finder_links` (
 -- Table structure for table `cv0rg_finder_links_terms0`
 --
 
-CREATE TABLE `cv0rg_finder_links_terms0` (
+CREATE TABLE IF NOT EXISTS `cv0rg_finder_links_terms0` (
   `link_id` int(10) unsigned NOT NULL,
   `term_id` int(10) unsigned NOT NULL,
-  `weight` float unsigned NOT NULL
+  `weight` float unsigned NOT NULL,
+  PRIMARY KEY (`link_id`,`term_id`),
+  KEY `idx_term_weight` (`term_id`,`weight`),
+  KEY `idx_link_term_weight` (`link_id`,`term_id`,`weight`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -1126,10 +1218,13 @@ CREATE TABLE `cv0rg_finder_links_terms0` (
 -- Table structure for table `cv0rg_finder_links_terms1`
 --
 
-CREATE TABLE `cv0rg_finder_links_terms1` (
+CREATE TABLE IF NOT EXISTS `cv0rg_finder_links_terms1` (
   `link_id` int(10) unsigned NOT NULL,
   `term_id` int(10) unsigned NOT NULL,
-  `weight` float unsigned NOT NULL
+  `weight` float unsigned NOT NULL,
+  PRIMARY KEY (`link_id`,`term_id`),
+  KEY `idx_term_weight` (`term_id`,`weight`),
+  KEY `idx_link_term_weight` (`link_id`,`term_id`,`weight`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -1138,10 +1233,13 @@ CREATE TABLE `cv0rg_finder_links_terms1` (
 -- Table structure for table `cv0rg_finder_links_terms2`
 --
 
-CREATE TABLE `cv0rg_finder_links_terms2` (
+CREATE TABLE IF NOT EXISTS `cv0rg_finder_links_terms2` (
   `link_id` int(10) unsigned NOT NULL,
   `term_id` int(10) unsigned NOT NULL,
-  `weight` float unsigned NOT NULL
+  `weight` float unsigned NOT NULL,
+  PRIMARY KEY (`link_id`,`term_id`),
+  KEY `idx_term_weight` (`term_id`,`weight`),
+  KEY `idx_link_term_weight` (`link_id`,`term_id`,`weight`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -1150,10 +1248,13 @@ CREATE TABLE `cv0rg_finder_links_terms2` (
 -- Table structure for table `cv0rg_finder_links_terms3`
 --
 
-CREATE TABLE `cv0rg_finder_links_terms3` (
+CREATE TABLE IF NOT EXISTS `cv0rg_finder_links_terms3` (
   `link_id` int(10) unsigned NOT NULL,
   `term_id` int(10) unsigned NOT NULL,
-  `weight` float unsigned NOT NULL
+  `weight` float unsigned NOT NULL,
+  PRIMARY KEY (`link_id`,`term_id`),
+  KEY `idx_term_weight` (`term_id`,`weight`),
+  KEY `idx_link_term_weight` (`link_id`,`term_id`,`weight`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -1162,10 +1263,13 @@ CREATE TABLE `cv0rg_finder_links_terms3` (
 -- Table structure for table `cv0rg_finder_links_terms4`
 --
 
-CREATE TABLE `cv0rg_finder_links_terms4` (
+CREATE TABLE IF NOT EXISTS `cv0rg_finder_links_terms4` (
   `link_id` int(10) unsigned NOT NULL,
   `term_id` int(10) unsigned NOT NULL,
-  `weight` float unsigned NOT NULL
+  `weight` float unsigned NOT NULL,
+  PRIMARY KEY (`link_id`,`term_id`),
+  KEY `idx_term_weight` (`term_id`,`weight`),
+  KEY `idx_link_term_weight` (`link_id`,`term_id`,`weight`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -1174,10 +1278,13 @@ CREATE TABLE `cv0rg_finder_links_terms4` (
 -- Table structure for table `cv0rg_finder_links_terms5`
 --
 
-CREATE TABLE `cv0rg_finder_links_terms5` (
+CREATE TABLE IF NOT EXISTS `cv0rg_finder_links_terms5` (
   `link_id` int(10) unsigned NOT NULL,
   `term_id` int(10) unsigned NOT NULL,
-  `weight` float unsigned NOT NULL
+  `weight` float unsigned NOT NULL,
+  PRIMARY KEY (`link_id`,`term_id`),
+  KEY `idx_term_weight` (`term_id`,`weight`),
+  KEY `idx_link_term_weight` (`link_id`,`term_id`,`weight`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -1186,10 +1293,13 @@ CREATE TABLE `cv0rg_finder_links_terms5` (
 -- Table structure for table `cv0rg_finder_links_terms6`
 --
 
-CREATE TABLE `cv0rg_finder_links_terms6` (
+CREATE TABLE IF NOT EXISTS `cv0rg_finder_links_terms6` (
   `link_id` int(10) unsigned NOT NULL,
   `term_id` int(10) unsigned NOT NULL,
-  `weight` float unsigned NOT NULL
+  `weight` float unsigned NOT NULL,
+  PRIMARY KEY (`link_id`,`term_id`),
+  KEY `idx_term_weight` (`term_id`,`weight`),
+  KEY `idx_link_term_weight` (`link_id`,`term_id`,`weight`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -1198,10 +1308,13 @@ CREATE TABLE `cv0rg_finder_links_terms6` (
 -- Table structure for table `cv0rg_finder_links_terms7`
 --
 
-CREATE TABLE `cv0rg_finder_links_terms7` (
+CREATE TABLE IF NOT EXISTS `cv0rg_finder_links_terms7` (
   `link_id` int(10) unsigned NOT NULL,
   `term_id` int(10) unsigned NOT NULL,
-  `weight` float unsigned NOT NULL
+  `weight` float unsigned NOT NULL,
+  PRIMARY KEY (`link_id`,`term_id`),
+  KEY `idx_term_weight` (`term_id`,`weight`),
+  KEY `idx_link_term_weight` (`link_id`,`term_id`,`weight`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -1210,10 +1323,13 @@ CREATE TABLE `cv0rg_finder_links_terms7` (
 -- Table structure for table `cv0rg_finder_links_terms8`
 --
 
-CREATE TABLE `cv0rg_finder_links_terms8` (
+CREATE TABLE IF NOT EXISTS `cv0rg_finder_links_terms8` (
   `link_id` int(10) unsigned NOT NULL,
   `term_id` int(10) unsigned NOT NULL,
-  `weight` float unsigned NOT NULL
+  `weight` float unsigned NOT NULL,
+  PRIMARY KEY (`link_id`,`term_id`),
+  KEY `idx_term_weight` (`term_id`,`weight`),
+  KEY `idx_link_term_weight` (`link_id`,`term_id`,`weight`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -1222,10 +1338,13 @@ CREATE TABLE `cv0rg_finder_links_terms8` (
 -- Table structure for table `cv0rg_finder_links_terms9`
 --
 
-CREATE TABLE `cv0rg_finder_links_terms9` (
+CREATE TABLE IF NOT EXISTS `cv0rg_finder_links_terms9` (
   `link_id` int(10) unsigned NOT NULL,
   `term_id` int(10) unsigned NOT NULL,
-  `weight` float unsigned NOT NULL
+  `weight` float unsigned NOT NULL,
+  PRIMARY KEY (`link_id`,`term_id`),
+  KEY `idx_term_weight` (`term_id`,`weight`),
+  KEY `idx_link_term_weight` (`link_id`,`term_id`,`weight`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -1234,10 +1353,13 @@ CREATE TABLE `cv0rg_finder_links_terms9` (
 -- Table structure for table `cv0rg_finder_links_termsa`
 --
 
-CREATE TABLE `cv0rg_finder_links_termsa` (
+CREATE TABLE IF NOT EXISTS `cv0rg_finder_links_termsa` (
   `link_id` int(10) unsigned NOT NULL,
   `term_id` int(10) unsigned NOT NULL,
-  `weight` float unsigned NOT NULL
+  `weight` float unsigned NOT NULL,
+  PRIMARY KEY (`link_id`,`term_id`),
+  KEY `idx_term_weight` (`term_id`,`weight`),
+  KEY `idx_link_term_weight` (`link_id`,`term_id`,`weight`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -1246,10 +1368,13 @@ CREATE TABLE `cv0rg_finder_links_termsa` (
 -- Table structure for table `cv0rg_finder_links_termsb`
 --
 
-CREATE TABLE `cv0rg_finder_links_termsb` (
+CREATE TABLE IF NOT EXISTS `cv0rg_finder_links_termsb` (
   `link_id` int(10) unsigned NOT NULL,
   `term_id` int(10) unsigned NOT NULL,
-  `weight` float unsigned NOT NULL
+  `weight` float unsigned NOT NULL,
+  PRIMARY KEY (`link_id`,`term_id`),
+  KEY `idx_term_weight` (`term_id`,`weight`),
+  KEY `idx_link_term_weight` (`link_id`,`term_id`,`weight`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -1258,10 +1383,13 @@ CREATE TABLE `cv0rg_finder_links_termsb` (
 -- Table structure for table `cv0rg_finder_links_termsc`
 --
 
-CREATE TABLE `cv0rg_finder_links_termsc` (
+CREATE TABLE IF NOT EXISTS `cv0rg_finder_links_termsc` (
   `link_id` int(10) unsigned NOT NULL,
   `term_id` int(10) unsigned NOT NULL,
-  `weight` float unsigned NOT NULL
+  `weight` float unsigned NOT NULL,
+  PRIMARY KEY (`link_id`,`term_id`),
+  KEY `idx_term_weight` (`term_id`,`weight`),
+  KEY `idx_link_term_weight` (`link_id`,`term_id`,`weight`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -1270,10 +1398,13 @@ CREATE TABLE `cv0rg_finder_links_termsc` (
 -- Table structure for table `cv0rg_finder_links_termsd`
 --
 
-CREATE TABLE `cv0rg_finder_links_termsd` (
+CREATE TABLE IF NOT EXISTS `cv0rg_finder_links_termsd` (
   `link_id` int(10) unsigned NOT NULL,
   `term_id` int(10) unsigned NOT NULL,
-  `weight` float unsigned NOT NULL
+  `weight` float unsigned NOT NULL,
+  PRIMARY KEY (`link_id`,`term_id`),
+  KEY `idx_term_weight` (`term_id`,`weight`),
+  KEY `idx_link_term_weight` (`link_id`,`term_id`,`weight`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -1282,10 +1413,13 @@ CREATE TABLE `cv0rg_finder_links_termsd` (
 -- Table structure for table `cv0rg_finder_links_termse`
 --
 
-CREATE TABLE `cv0rg_finder_links_termse` (
+CREATE TABLE IF NOT EXISTS `cv0rg_finder_links_termse` (
   `link_id` int(10) unsigned NOT NULL,
   `term_id` int(10) unsigned NOT NULL,
-  `weight` float unsigned NOT NULL
+  `weight` float unsigned NOT NULL,
+  PRIMARY KEY (`link_id`,`term_id`),
+  KEY `idx_term_weight` (`term_id`,`weight`),
+  KEY `idx_link_term_weight` (`link_id`,`term_id`,`weight`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -1294,10 +1428,13 @@ CREATE TABLE `cv0rg_finder_links_termse` (
 -- Table structure for table `cv0rg_finder_links_termsf`
 --
 
-CREATE TABLE `cv0rg_finder_links_termsf` (
+CREATE TABLE IF NOT EXISTS `cv0rg_finder_links_termsf` (
   `link_id` int(10) unsigned NOT NULL,
   `term_id` int(10) unsigned NOT NULL,
-  `weight` float unsigned NOT NULL
+  `weight` float unsigned NOT NULL,
+  PRIMARY KEY (`link_id`,`term_id`),
+  KEY `idx_term_weight` (`term_id`,`weight`),
+  KEY `idx_link_term_weight` (`link_id`,`term_id`,`weight`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -1306,14 +1443,20 @@ CREATE TABLE `cv0rg_finder_links_termsf` (
 -- Table structure for table `cv0rg_finder_taxonomy`
 --
 
-CREATE TABLE `cv0rg_finder_taxonomy` (
-  `id` int(10) unsigned NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_finder_taxonomy` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `parent_id` int(10) unsigned NOT NULL DEFAULT '0',
   `title` varchar(255) NOT NULL,
   `state` tinyint(1) unsigned NOT NULL DEFAULT '1',
   `access` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  `ordering` tinyint(1) unsigned NOT NULL DEFAULT '0'
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+  `ordering` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `parent_id` (`parent_id`),
+  KEY `state` (`state`),
+  KEY `ordering` (`ordering`),
+  KEY `access` (`access`),
+  KEY `idx_parent_published` (`parent_id`,`state`,`access`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
 
 --
 -- Dumping data for table `cv0rg_finder_taxonomy`
@@ -1328,9 +1471,12 @@ INSERT INTO `cv0rg_finder_taxonomy` (`id`, `parent_id`, `title`, `state`, `acces
 -- Table structure for table `cv0rg_finder_taxonomy_map`
 --
 
-CREATE TABLE `cv0rg_finder_taxonomy_map` (
+CREATE TABLE IF NOT EXISTS `cv0rg_finder_taxonomy_map` (
   `link_id` int(10) unsigned NOT NULL,
-  `node_id` int(10) unsigned NOT NULL
+  `node_id` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`link_id`,`node_id`),
+  KEY `link_id` (`link_id`),
+  KEY `node_id` (`node_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -1339,8 +1485,8 @@ CREATE TABLE `cv0rg_finder_taxonomy_map` (
 -- Table structure for table `cv0rg_finder_terms`
 --
 
-CREATE TABLE `cv0rg_finder_terms` (
-  `term_id` int(10) unsigned NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_finder_terms` (
+  `term_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `term` varchar(75) NOT NULL,
   `stem` varchar(75) NOT NULL,
   `common` tinyint(1) unsigned NOT NULL DEFAULT '0',
@@ -1348,8 +1494,13 @@ CREATE TABLE `cv0rg_finder_terms` (
   `weight` float unsigned NOT NULL DEFAULT '0',
   `soundex` varchar(75) NOT NULL,
   `links` int(10) NOT NULL DEFAULT '0',
-  `language` char(3) NOT NULL DEFAULT ''
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `language` char(3) NOT NULL DEFAULT '',
+  PRIMARY KEY (`term_id`),
+  UNIQUE KEY `idx_term` (`term`),
+  KEY `idx_term_phrase` (`term`,`phrase`),
+  KEY `idx_stem_phrase` (`stem`,`phrase`),
+  KEY `idx_soundex_phrase` (`soundex`,`phrase`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -1357,9 +1508,11 @@ CREATE TABLE `cv0rg_finder_terms` (
 -- Table structure for table `cv0rg_finder_terms_common`
 --
 
-CREATE TABLE `cv0rg_finder_terms_common` (
+CREATE TABLE IF NOT EXISTS `cv0rg_finder_terms_common` (
   `term` varchar(75) NOT NULL,
-  `language` varchar(3) NOT NULL
+  `language` varchar(3) NOT NULL,
+  KEY `idx_word_lang` (`term`,`language`),
+  KEY `idx_lang` (`language`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -1489,14 +1642,16 @@ INSERT INTO `cv0rg_finder_terms_common` (`term`, `language`) VALUES
 -- Table structure for table `cv0rg_finder_tokens`
 --
 
-CREATE TABLE `cv0rg_finder_tokens` (
+CREATE TABLE IF NOT EXISTS `cv0rg_finder_tokens` (
   `term` varchar(75) NOT NULL,
   `stem` varchar(75) NOT NULL,
   `common` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `phrase` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `weight` float unsigned NOT NULL DEFAULT '1',
   `context` tinyint(1) unsigned NOT NULL DEFAULT '2',
-  `language` char(3) NOT NULL DEFAULT ''
+  `language` char(3) NOT NULL DEFAULT '',
+  KEY `idx_word` (`term`),
+  KEY `idx_context` (`context`)
 ) ENGINE=MEMORY DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -1505,7 +1660,7 @@ CREATE TABLE `cv0rg_finder_tokens` (
 -- Table structure for table `cv0rg_finder_tokens_aggregate`
 --
 
-CREATE TABLE `cv0rg_finder_tokens_aggregate` (
+CREATE TABLE IF NOT EXISTS `cv0rg_finder_tokens_aggregate` (
   `term_id` int(10) unsigned NOT NULL,
   `map_suffix` char(1) NOT NULL,
   `term` varchar(75) NOT NULL,
@@ -1516,7 +1671,9 @@ CREATE TABLE `cv0rg_finder_tokens_aggregate` (
   `context` tinyint(1) unsigned NOT NULL DEFAULT '2',
   `context_weight` float unsigned NOT NULL,
   `total_weight` float unsigned NOT NULL,
-  `language` char(3) NOT NULL DEFAULT ''
+  `language` char(3) NOT NULL DEFAULT '',
+  KEY `token` (`term`),
+  KEY `keyword_id` (`term_id`)
 ) ENGINE=MEMORY DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -1525,11 +1682,13 @@ CREATE TABLE `cv0rg_finder_tokens_aggregate` (
 -- Table structure for table `cv0rg_finder_types`
 --
 
-CREATE TABLE `cv0rg_finder_types` (
-  `id` int(10) unsigned NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_finder_types` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(100) NOT NULL,
-  `mime` varchar(100) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `mime` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `title` (`title`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -1537,13 +1696,14 @@ CREATE TABLE `cv0rg_finder_types` (
 -- Table structure for table `cv0rg_imageshow_external_source_picasa`
 --
 
-CREATE TABLE `cv0rg_imageshow_external_source_picasa` (
-  `external_source_id` int(11) unsigned NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_imageshow_external_source_picasa` (
+  `external_source_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `external_source_profile_title` varchar(255) DEFAULT NULL,
   `picasa_username` varchar(255) DEFAULT '',
   `picasa_thumbnail_size` char(30) DEFAULT '144',
-  `picasa_image_size` char(30) DEFAULT '1024'
-) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+  `picasa_image_size` char(30) DEFAULT '1024',
+  PRIMARY KEY (`external_source_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
 
 --
 -- Dumping data for table `cv0rg_imageshow_external_source_picasa`
@@ -1558,8 +1718,8 @@ INSERT INTO `cv0rg_imageshow_external_source_picasa` (`external_source_id`, `ext
 -- Table structure for table `cv0rg_imageshow_images`
 --
 
-CREATE TABLE `cv0rg_imageshow_images` (
-  `image_id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_imageshow_images` (
+  `image_id` int(11) NOT NULL AUTO_INCREMENT,
   `showlist_id` int(11) NOT NULL,
   `image_extid` varchar(255) DEFAULT NULL,
   `album_extid` varchar(255) DEFAULT NULL,
@@ -1574,8 +1734,9 @@ CREATE TABLE `cv0rg_imageshow_images` (
   `sync` tinyint(1) DEFAULT '0',
   `image_size` varchar(25) DEFAULT NULL,
   `exif_data` text,
-  `image_alt_text` text
-) ENGINE=MyISAM AUTO_INCREMENT=368 DEFAULT CHARSET=utf8;
+  `image_alt_text` text,
+  PRIMARY KEY (`image_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=368 ;
 
 --
 -- Dumping data for table `cv0rg_imageshow_images`
@@ -1612,15 +1773,16 @@ INSERT INTO `cv0rg_imageshow_images` (`image_id`, `showlist_id`, `image_extid`, 
 -- Table structure for table `cv0rg_imageshow_log`
 --
 
-CREATE TABLE `cv0rg_imageshow_log` (
-  `log_id` int(11) unsigned NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_imageshow_log` (
+  `log_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `user_id` int(11) DEFAULT NULL,
   `url` varchar(255) DEFAULT NULL,
   `result` varchar(255) DEFAULT NULL,
   `screen` varchar(100) DEFAULT NULL,
   `action` varchar(50) DEFAULT NULL,
-  `time_created` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `time_created` datetime DEFAULT NULL,
+  PRIMARY KEY (`log_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -1628,16 +1790,17 @@ CREATE TABLE `cv0rg_imageshow_log` (
 -- Table structure for table `cv0rg_imageshow_showcase`
 --
 
-CREATE TABLE `cv0rg_imageshow_showcase` (
-  `showcase_id` int(11) unsigned NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_imageshow_showcase` (
+  `showcase_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `showcase_title` varchar(255) DEFAULT NULL,
   `published` tinyint(1) DEFAULT '0',
   `ordering` int(11) DEFAULT '0',
   `general_overall_width` char(30) DEFAULT NULL,
   `general_overall_height` char(30) DEFAULT NULL,
   `date_created` datetime DEFAULT '0000-00-00 00:00:00',
-  `date_modified` datetime DEFAULT '0000-00-00 00:00:00'
-) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
+  `date_modified` datetime DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`showcase_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=8 ;
 
 --
 -- Dumping data for table `cv0rg_imageshow_showcase`
@@ -1658,8 +1821,8 @@ INSERT INTO `cv0rg_imageshow_showcase` (`showcase_id`, `showcase_title`, `publis
 -- Table structure for table `cv0rg_imageshow_showlist`
 --
 
-CREATE TABLE `cv0rg_imageshow_showlist` (
-  `showlist_id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_imageshow_showlist` (
+  `showlist_id` int(11) NOT NULL AUTO_INCREMENT,
   `showlist_title` varchar(255) DEFAULT NULL,
   `published` tinyint(1) DEFAULT '0',
   `ordering` int(11) DEFAULT '0',
@@ -1678,8 +1841,9 @@ CREATE TABLE `cv0rg_imageshow_showlist` (
   `image_source_type` char(45) DEFAULT '',
   `image_source_name` char(45) DEFAULT '',
   `image_source_profile_id` char(11) DEFAULT '0',
-  `show_exif_data` char(100) DEFAULT ''
-) ENGINE=MyISAM AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
+  `show_exif_data` char(100) DEFAULT '',
+  PRIMARY KEY (`showlist_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=12 ;
 
 --
 -- Dumping data for table `cv0rg_imageshow_showlist`
@@ -1696,10 +1860,11 @@ INSERT INTO `cv0rg_imageshow_showlist` (`showlist_id`, `showlist_title`, `publis
 -- Table structure for table `cv0rg_imageshow_source_profile`
 --
 
-CREATE TABLE `cv0rg_imageshow_source_profile` (
-  `external_source_profile_id` int(11) NOT NULL,
-  `external_source_id` int(11) NOT NULL
-) ENGINE=MyISAM AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `cv0rg_imageshow_source_profile` (
+  `external_source_profile_id` int(11) NOT NULL AUTO_INCREMENT,
+  `external_source_id` int(11) NOT NULL,
+  PRIMARY KEY (`external_source_profile_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=11 ;
 
 --
 -- Dumping data for table `cv0rg_imageshow_source_profile`
@@ -1717,8 +1882,8 @@ INSERT INTO `cv0rg_imageshow_source_profile` (`external_source_profile_id`, `ext
 -- Table structure for table `cv0rg_imageshow_theme_carousel`
 --
 
-CREATE TABLE `cv0rg_imageshow_theme_carousel` (
-  `theme_id` int(11) unsigned NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_imageshow_theme_carousel` (
+  `theme_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `image_source` char(150) DEFAULT 'thumbnails',
   `image_width` char(150) DEFAULT '',
   `image_height` char(150) DEFAULT '',
@@ -1744,8 +1909,9 @@ CREATE TABLE `cv0rg_imageshow_theme_carousel` (
   `navigation_presentation` char(150) DEFAULT 'show',
   `auto_play` char(150) DEFAULT 'no',
   `slide_timing` char(150) DEFAULT '3',
-  `pause_on_mouse_over` char(150) DEFAULT 'yes'
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+  `pause_on_mouse_over` char(150) DEFAULT 'yes',
+  PRIMARY KEY (`theme_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
 
 --
 -- Dumping data for table `cv0rg_imageshow_theme_carousel`
@@ -1760,8 +1926,8 @@ INSERT INTO `cv0rg_imageshow_theme_carousel` (`theme_id`, `image_source`, `image
 -- Table structure for table `cv0rg_imageshow_theme_classic_flash`
 --
 
-CREATE TABLE `cv0rg_imageshow_theme_classic_flash` (
-  `theme_id` int(11) unsigned NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_imageshow_theme_classic_flash` (
+  `theme_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `imgpanel_presentation_mode` char(30) DEFAULT '0',
   `imgpanel_img_transition_type_fit` char(30) DEFAULT '',
   `imgpanel_img_click_action_fit` char(30) DEFAULT '',
@@ -1829,8 +1995,9 @@ CREATE TABLE `cv0rg_imageshow_theme_classic_flash` (
   `general_round_corner_radius` char(30) DEFAULT '',
   `general_border_color` char(30) DEFAULT '',
   `general_background_color` char(30) DEFAULT '',
-  `general_border_stroke` char(30) DEFAULT ''
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `general_border_stroke` char(30) DEFAULT '',
+  PRIMARY KEY (`theme_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -1838,8 +2005,8 @@ CREATE TABLE `cv0rg_imageshow_theme_classic_flash` (
 -- Table structure for table `cv0rg_imageshow_theme_classic_javascript`
 --
 
-CREATE TABLE `cv0rg_imageshow_theme_classic_javascript` (
-  `theme_id` int(11) unsigned NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_imageshow_theme_classic_javascript` (
+  `theme_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `imgpanel_presentation_mode` char(30) DEFAULT '0',
   `imgpanel_img_click_action_fit` char(30) DEFAULT '',
   `imgpanel_img_open_link_in_fit` char(30) DEFAULT 'new-browser',
@@ -1875,8 +2042,9 @@ CREATE TABLE `cv0rg_imageshow_theme_classic_javascript` (
   `general_border_color` char(30) DEFAULT '',
   `general_background_color` char(30) DEFAULT '',
   `general_border_stroke` char(30) DEFAULT '',
-  `toolbarpanel_show_counter` char(30) DEFAULT 'no'
-) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+  `toolbarpanel_show_counter` char(30) DEFAULT 'no',
+  PRIMARY KEY (`theme_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
 
 --
 -- Dumping data for table `cv0rg_imageshow_theme_classic_javascript`
@@ -1893,11 +2061,12 @@ INSERT INTO `cv0rg_imageshow_theme_classic_javascript` (`theme_id`, `imgpanel_pr
 -- Table structure for table `cv0rg_imageshow_theme_classic_parameters`
 --
 
-CREATE TABLE `cv0rg_imageshow_theme_classic_parameters` (
-  `id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_imageshow_theme_classic_parameters` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `general_swf_library` tinyint(1) DEFAULT '0',
-  `root_url` tinyint(1) DEFAULT '1'
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+  `root_url` tinyint(1) DEFAULT '1',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
 
 --
 -- Dumping data for table `cv0rg_imageshow_theme_classic_parameters`
@@ -1912,8 +2081,8 @@ INSERT INTO `cv0rg_imageshow_theme_classic_parameters` (`id`, `general_swf_libra
 -- Table structure for table `cv0rg_imageshow_theme_flow`
 --
 
-CREATE TABLE `cv0rg_imageshow_theme_flow` (
-  `theme_id` int(11) unsigned NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_imageshow_theme_flow` (
+  `theme_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `image_source` char(150) DEFAULT 'thumbnails',
   `image_width` char(150) DEFAULT '150',
   `image_height` char(150) DEFAULT '150',
@@ -1941,8 +2110,9 @@ CREATE TABLE `cv0rg_imageshow_theme_flow` (
   `caption_description_css` text,
   `auto_play` char(150) DEFAULT 'no',
   `slide_timing` char(150) DEFAULT '3',
-  `pause_on_mouse_over` char(150) DEFAULT 'yes'
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+  `pause_on_mouse_over` char(150) DEFAULT 'yes',
+  PRIMARY KEY (`theme_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
 
 --
 -- Dumping data for table `cv0rg_imageshow_theme_flow`
@@ -1957,8 +2127,8 @@ INSERT INTO `cv0rg_imageshow_theme_flow` (`theme_id`, `image_source`, `image_wid
 -- Table structure for table `cv0rg_imageshow_theme_grid`
 --
 
-CREATE TABLE `cv0rg_imageshow_theme_grid` (
-  `theme_id` int(11) unsigned NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_imageshow_theme_grid` (
+  `theme_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `img_layout` char(5) DEFAULT 'fixed',
   `background_color` char(30) DEFAULT '#ffffff',
   `thumbnail_width` int(11) DEFAULT '50',
@@ -1980,8 +2150,9 @@ CREATE TABLE `cv0rg_imageshow_theme_grid` (
   `auto_play` char(150) DEFAULT 'no',
   `slide_timing` char(150) DEFAULT '3',
   `item_per_page` char(150) DEFAULT '5',
-  `navigation_type` char(150) DEFAULT 'show_all'
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+  `navigation_type` char(150) DEFAULT 'show_all',
+  PRIMARY KEY (`theme_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
 
 --
 -- Dumping data for table `cv0rg_imageshow_theme_grid`
@@ -1997,7 +2168,7 @@ INSERT INTO `cv0rg_imageshow_theme_grid` (`theme_id`, `img_layout`, `background_
 -- Table structure for table `cv0rg_imageshow_theme_profile`
 --
 
-CREATE TABLE `cv0rg_imageshow_theme_profile` (
+CREATE TABLE IF NOT EXISTS `cv0rg_imageshow_theme_profile` (
   `theme_id` int(11) NOT NULL DEFAULT '0',
   `showcase_id` int(11) NOT NULL DEFAULT '0',
   `theme_name` varchar(255) NOT NULL DEFAULT '',
@@ -2025,8 +2196,8 @@ INSERT INTO `cv0rg_imageshow_theme_profile` (`theme_id`, `showcase_id`, `theme_n
 -- Table structure for table `cv0rg_imageshow_theme_slider`
 --
 
-CREATE TABLE `cv0rg_imageshow_theme_slider` (
-  `theme_id` int(11) unsigned NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_imageshow_theme_slider` (
+  `theme_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `img_transition_effect` char(30) DEFAULT 'random',
   `toolbar_navigation_arrows_presentation` char(30) DEFAULT 'show-on-mouse-over',
   `toolbar_slideshow_player_presentation` char(30) DEFAULT 'hide',
@@ -2049,8 +2220,9 @@ CREATE TABLE `cv0rg_imageshow_theme_slider` (
   `click_action` char(150) DEFAULT 'no_action',
   `open_link_in` char(150) DEFAULT 'current_browser',
   `img_transparent_background` char(150) DEFAULT 'no',
-  `transition_speed` char(150) DEFAULT '1'
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+  `transition_speed` char(150) DEFAULT '1',
+  PRIMARY KEY (`theme_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
 
 --
 -- Dumping data for table `cv0rg_imageshow_theme_slider`
@@ -2065,8 +2237,8 @@ INSERT INTO `cv0rg_imageshow_theme_slider` (`theme_id`, `img_transition_effect`,
 -- Table structure for table `cv0rg_imageshow_theme_strip`
 --
 
-CREATE TABLE `cv0rg_imageshow_theme_strip` (
-  `theme_id` int(11) unsigned NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_imageshow_theme_strip` (
+  `theme_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `slideshow_sliding_speed` char(150) NOT NULL DEFAULT '500',
   `image_orientation` char(150) NOT NULL DEFAULT 'horizontal',
   `image_width` char(150) NOT NULL DEFAULT '130',
@@ -2094,8 +2266,9 @@ CREATE TABLE `cv0rg_imageshow_theme_strip` (
   `container_side_fade` char(150) NOT NULL DEFAULT 'white',
   `open_link_in` char(150) DEFAULT 'current_browser',
   `slideshow_auto_play` char(150) DEFAULT 'no',
-  `slideshow_delay_time` char(150) DEFAULT '3000'
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+  `slideshow_delay_time` char(150) DEFAULT '3000',
+  PRIMARY KEY (`theme_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
 
 --
 -- Dumping data for table `cv0rg_imageshow_theme_strip`
@@ -2111,9 +2284,10 @@ INSERT INTO `cv0rg_imageshow_theme_strip` (`theme_id`, `slideshow_sliding_speed`
 -- Table structure for table `cv0rg_jsn_easyslider_config`
 --
 
-CREATE TABLE `cv0rg_jsn_easyslider_config` (
+CREATE TABLE IF NOT EXISTS `cv0rg_jsn_easyslider_config` (
   `name` varchar(255) NOT NULL,
-  `value` text NOT NULL
+  `value` text NOT NULL,
+  UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -2131,13 +2305,14 @@ INSERT INTO `cv0rg_jsn_easyslider_config` (`name`, `value`) VALUES
 -- Table structure for table `cv0rg_jsn_easyslider_item_templates`
 --
 
-CREATE TABLE `cv0rg_jsn_easyslider_item_templates` (
-  `model_id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_jsn_easyslider_item_templates` (
+  `model_id` int(11) NOT NULL AUTO_INCREMENT,
   `collection_id` varchar(30) NOT NULL,
   `name` varchar(255) NOT NULL,
   `data` text NOT NULL,
-  `type` varchar(15) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `type` varchar(15) NOT NULL,
+  PRIMARY KEY (`model_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -2145,12 +2320,14 @@ CREATE TABLE `cv0rg_jsn_easyslider_item_templates` (
 -- Table structure for table `cv0rg_jsn_easyslider_messages`
 --
 
-CREATE TABLE `cv0rg_jsn_easyslider_messages` (
-  `msg_id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_jsn_easyslider_messages` (
+  `msg_id` int(11) NOT NULL AUTO_INCREMENT,
   `msg_screen` varchar(150) DEFAULT NULL,
   `published` tinyint(1) DEFAULT '1',
-  `ordering` int(11) DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `ordering` int(11) DEFAULT '0',
+  PRIMARY KEY (`msg_id`),
+  UNIQUE KEY `message` (`msg_screen`,`ordering`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -2158,14 +2335,15 @@ CREATE TABLE `cv0rg_jsn_easyslider_messages` (
 -- Table structure for table `cv0rg_jsn_easyslider_sliders`
 --
 
-CREATE TABLE `cv0rg_jsn_easyslider_sliders` (
-  `slider_id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_jsn_easyslider_sliders` (
+  `slider_id` int(11) NOT NULL AUTO_INCREMENT,
   `slider_title` varchar(255) NOT NULL,
   `slider_data` longtext,
   `published` int(11) NOT NULL,
   `ordering` int(11) NOT NULL,
-  `access` int(11) NOT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+  `access` int(11) NOT NULL,
+  PRIMARY KEY (`slider_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
 
 --
 -- Dumping data for table `cv0rg_jsn_easyslider_sliders`
@@ -2180,13 +2358,14 @@ INSERT INTO `cv0rg_jsn_easyslider_sliders` (`slider_id`, `slider_title`, `slider
 -- Table structure for table `cv0rg_jsn_easyslider_slide_templates`
 --
 
-CREATE TABLE `cv0rg_jsn_easyslider_slide_templates` (
-  `model_id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_jsn_easyslider_slide_templates` (
+  `model_id` int(11) NOT NULL AUTO_INCREMENT,
   `collection_id` varchar(30) NOT NULL,
   `name` varchar(255) NOT NULL,
   `data` text NOT NULL,
-  `type` varchar(15) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `type` varchar(15) NOT NULL,
+  PRIMARY KEY (`model_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -2194,9 +2373,10 @@ CREATE TABLE `cv0rg_jsn_easyslider_slide_templates` (
 -- Table structure for table `cv0rg_jsn_imageshow_config`
 --
 
-CREATE TABLE `cv0rg_jsn_imageshow_config` (
+CREATE TABLE IF NOT EXISTS `cv0rg_jsn_imageshow_config` (
   `name` varchar(255) NOT NULL,
-  `value` text NOT NULL
+  `value` text NOT NULL,
+  UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -2217,12 +2397,13 @@ INSERT INTO `cv0rg_jsn_imageshow_config` (`name`, `value`) VALUES
 -- Table structure for table `cv0rg_jsn_imageshow_messages`
 --
 
-CREATE TABLE `cv0rg_jsn_imageshow_messages` (
-  `msg_id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_jsn_imageshow_messages` (
+  `msg_id` int(11) NOT NULL AUTO_INCREMENT,
   `msg_screen` varchar(150) DEFAULT NULL,
   `published` tinyint(1) DEFAULT '1',
-  `ordering` int(11) DEFAULT '0'
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+  `ordering` int(11) DEFAULT '0',
+  PRIMARY KEY (`msg_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
 
 --
 -- Dumping data for table `cv0rg_jsn_imageshow_messages`
@@ -2239,9 +2420,10 @@ INSERT INTO `cv0rg_jsn_imageshow_messages` (`msg_id`, `msg_screen`, `published`,
 -- Table structure for table `cv0rg_jsn_mobilize_config`
 --
 
-CREATE TABLE `cv0rg_jsn_mobilize_config` (
+CREATE TABLE IF NOT EXISTS `cv0rg_jsn_mobilize_config` (
   `name` varchar(255) NOT NULL,
-  `value` text NOT NULL
+  `value` text NOT NULL,
+  UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -2261,12 +2443,13 @@ INSERT INTO `cv0rg_jsn_mobilize_config` (`name`, `value`) VALUES
 -- Table structure for table `cv0rg_jsn_mobilize_design`
 --
 
-CREATE TABLE `cv0rg_jsn_mobilize_design` (
-  `design_id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_jsn_mobilize_design` (
+  `design_id` int(11) NOT NULL AUTO_INCREMENT,
   `profile_id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
-  `value` text NOT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8;
+  `value` text NOT NULL,
+  PRIMARY KEY (`design_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=23 ;
 
 --
 -- Dumping data for table `cv0rg_jsn_mobilize_design`
@@ -2302,12 +2485,14 @@ INSERT INTO `cv0rg_jsn_mobilize_design` (`design_id`, `profile_id`, `name`, `val
 -- Table structure for table `cv0rg_jsn_mobilize_messages`
 --
 
-CREATE TABLE `cv0rg_jsn_mobilize_messages` (
-  `msg_id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_jsn_mobilize_messages` (
+  `msg_id` int(11) NOT NULL AUTO_INCREMENT,
   `msg_screen` varchar(150) DEFAULT NULL,
   `published` tinyint(1) DEFAULT '1',
-  `ordering` int(11) DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `ordering` int(11) DEFAULT '0',
+  PRIMARY KEY (`msg_id`),
+  UNIQUE KEY `message` (`msg_screen`,`ordering`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -2315,13 +2500,14 @@ CREATE TABLE `cv0rg_jsn_mobilize_messages` (
 -- Table structure for table `cv0rg_jsn_mobilize_os`
 --
 
-CREATE TABLE `cv0rg_jsn_mobilize_os` (
-  `os_id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_jsn_mobilize_os` (
+  `os_id` int(11) NOT NULL AUTO_INCREMENT,
   `os_value` varchar(255) NOT NULL,
   `os_type` varchar(50) NOT NULL,
   `os_title` varchar(255) NOT NULL,
-  `os_order` int(11) NOT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
+  `os_order` int(11) NOT NULL,
+  PRIMARY KEY (`os_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=13 ;
 
 --
 -- Dumping data for table `cv0rg_jsn_mobilize_os`
@@ -2347,11 +2533,12 @@ INSERT INTO `cv0rg_jsn_mobilize_os` (`os_id`, `os_value`, `os_type`, `os_title`,
 -- Table structure for table `cv0rg_jsn_mobilize_os_support`
 --
 
-CREATE TABLE `cv0rg_jsn_mobilize_os_support` (
-  `support_id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_jsn_mobilize_os_support` (
+  `support_id` int(11) NOT NULL AUTO_INCREMENT,
   `profile_id` int(11) NOT NULL,
-  `os_id` int(11) NOT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=106 DEFAULT CHARSET=utf8;
+  `os_id` int(11) NOT NULL,
+  PRIMARY KEY (`support_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=106 ;
 
 --
 -- Dumping data for table `cv0rg_jsn_mobilize_os_support`
@@ -2369,16 +2556,17 @@ INSERT INTO `cv0rg_jsn_mobilize_os_support` (`support_id`, `profile_id`, `os_id`
 -- Table structure for table `cv0rg_jsn_mobilize_profiles`
 --
 
-CREATE TABLE `cv0rg_jsn_mobilize_profiles` (
-  `profile_id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_jsn_mobilize_profiles` (
+  `profile_id` int(11) NOT NULL AUTO_INCREMENT,
   `profile_title` varchar(255) NOT NULL,
   `profile_description` text NOT NULL,
   `profile_state` int(11) NOT NULL,
   `profile_minify` varchar(50) NOT NULL,
   `profile_optimize_images` int(11) NOT NULL,
   `ordering` int(11) NOT NULL,
-  `profile_device` varchar(10) NOT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+  `profile_device` varchar(10) NOT NULL,
+  PRIMARY KEY (`profile_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
 
 --
 -- Dumping data for table `cv0rg_jsn_mobilize_profiles`
@@ -2393,9 +2581,10 @@ INSERT INTO `cv0rg_jsn_mobilize_profiles` (`profile_id`, `profile_title`, `profi
 -- Table structure for table `cv0rg_jsn_pagebuilder_config`
 --
 
-CREATE TABLE `cv0rg_jsn_pagebuilder_config` (
+CREATE TABLE IF NOT EXISTS `cv0rg_jsn_pagebuilder_config` (
   `name` varchar(255) NOT NULL,
-  `value` text NOT NULL
+  `value` text NOT NULL,
+  UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -2404,12 +2593,13 @@ CREATE TABLE `cv0rg_jsn_pagebuilder_config` (
 -- Table structure for table `cv0rg_jsn_pagebuilder_content_custom_css`
 --
 
-CREATE TABLE `cv0rg_jsn_pagebuilder_content_custom_css` (
-  `id` bigint(20) unsigned NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_jsn_pagebuilder_content_custom_css` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `content` bigint(20) unsigned NOT NULL DEFAULT '0',
   `css_key` varchar(255) DEFAULT NULL,
-  `css_value` longtext
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `css_value` longtext,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -2417,12 +2607,14 @@ CREATE TABLE `cv0rg_jsn_pagebuilder_content_custom_css` (
 -- Table structure for table `cv0rg_jsn_pagebuilder_messages`
 --
 
-CREATE TABLE `cv0rg_jsn_pagebuilder_messages` (
-  `msg_id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_jsn_pagebuilder_messages` (
+  `msg_id` int(11) NOT NULL AUTO_INCREMENT,
   `msg_screen` varchar(150) DEFAULT NULL,
   `published` tinyint(1) DEFAULT '1',
-  `ordering` int(11) DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `ordering` int(11) DEFAULT '0',
+  PRIMARY KEY (`msg_id`),
+  UNIQUE KEY `message` (`msg_screen`,`ordering`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -2430,9 +2622,10 @@ CREATE TABLE `cv0rg_jsn_pagebuilder_messages` (
 -- Table structure for table `cv0rg_jsn_poweradmin_config`
 --
 
-CREATE TABLE `cv0rg_jsn_poweradmin_config` (
+CREATE TABLE IF NOT EXISTS `cv0rg_jsn_poweradmin_config` (
   `name` varchar(255) NOT NULL,
-  `value` text NOT NULL
+  `value` text NOT NULL,
+  UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -2441,14 +2634,15 @@ CREATE TABLE `cv0rg_jsn_poweradmin_config` (
 -- Table structure for table `cv0rg_jsn_poweradmin_favourite`
 --
 
-CREATE TABLE `cv0rg_jsn_poweradmin_favourite` (
-  `id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_jsn_poweradmin_favourite` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
   `title` varchar(500) NOT NULL,
   `icon` text NOT NULL,
   `created_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `url` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `url` text NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -2456,8 +2650,8 @@ CREATE TABLE `cv0rg_jsn_poweradmin_favourite` (
 -- Table structure for table `cv0rg_jsn_poweradmin_history`
 --
 
-CREATE TABLE `cv0rg_jsn_poweradmin_history` (
-  `id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_jsn_poweradmin_history` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(10) unsigned NOT NULL,
   `object_key` varchar(255) NOT NULL,
   `object_id` int(11) NOT NULL,
@@ -2472,8 +2666,9 @@ CREATE TABLE `cv0rg_jsn_poweradmin_history` (
   `icon` varchar(255) NOT NULL,
   `css` varchar(100) NOT NULL,
   `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
-  `visited` int(10) unsigned NOT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=latin1;
+  `visited` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=32 ;
 
 --
 -- Dumping data for table `cv0rg_jsn_poweradmin_history`
@@ -2517,7 +2712,7 @@ INSERT INTO `cv0rg_jsn_poweradmin_history` (`id`, `user_id`, `object_key`, `obje
 -- Table structure for table `cv0rg_jsn_poweradmin_menu_assets`
 --
 
-CREATE TABLE `cv0rg_jsn_poweradmin_menu_assets` (
+CREATE TABLE IF NOT EXISTS `cv0rg_jsn_poweradmin_menu_assets` (
   `menuId` int(16) NOT NULL,
   `assets` text,
   `type` enum('css','js') NOT NULL DEFAULT 'css',
@@ -2530,9 +2725,10 @@ CREATE TABLE `cv0rg_jsn_poweradmin_menu_assets` (
 -- Table structure for table `cv0rg_jsn_uniform_config`
 --
 
-CREATE TABLE `cv0rg_jsn_uniform_config` (
+CREATE TABLE IF NOT EXISTS `cv0rg_jsn_uniform_config` (
   `name` varchar(255) NOT NULL,
-  `value` text NOT NULL
+  `value` text NOT NULL,
+  UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -2553,8 +2749,8 @@ INSERT INTO `cv0rg_jsn_uniform_config` (`name`, `value`) VALUES
 -- Table structure for table `cv0rg_jsn_uniform_data`
 --
 
-CREATE TABLE `cv0rg_jsn_uniform_data` (
-  `data_id` int(10) unsigned NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_jsn_uniform_data` (
+  `data_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `form_id` int(10) unsigned NOT NULL,
   `user_id` int(10) unsigned DEFAULT NULL,
   `data_ip` varchar(40) COLLATE utf8_unicode_ci NOT NULL,
@@ -2566,8 +2762,10 @@ CREATE TABLE `cv0rg_jsn_uniform_data` (
   `data_os` varchar(45) COLLATE utf8_unicode_ci NOT NULL,
   `data_created_by` int(10) unsigned NOT NULL COMMENT '0 = Guest',
   `data_created_at` datetime NOT NULL,
-  `data_state` tinyint(1) unsigned NOT NULL COMMENT '-1 = Trashed; 0 = Unpublish; 1 = Published'
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `data_state` tinyint(1) unsigned NOT NULL COMMENT '-1 = Trashed; 0 = Unpublish; 1 = Published',
+  PRIMARY KEY (`data_id`),
+  KEY `fk_uniform_data_forms` (`form_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=6 ;
 
 --
 -- Dumping data for table `cv0rg_jsn_uniform_data`
@@ -2586,14 +2784,16 @@ INSERT INTO `cv0rg_jsn_uniform_data` (`data_id`, `form_id`, `user_id`, `data_ip`
 -- Table structure for table `cv0rg_jsn_uniform_emails`
 --
 
-CREATE TABLE `cv0rg_jsn_uniform_emails` (
-  `email_id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_jsn_uniform_emails` (
+  `email_id` int(11) NOT NULL AUTO_INCREMENT,
   `form_id` int(11) NOT NULL,
   `user_id` int(10) unsigned DEFAULT NULL,
   `email_name` varchar(70) COLLATE utf8_unicode_ci DEFAULT NULL,
   `email_address` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `email_state` tinyint(1) NOT NULL DEFAULT '1'
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `email_state` tinyint(1) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`email_id`),
+  KEY `fk_uniform_emails_forms` (`form_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=8 ;
 
 --
 -- Dumping data for table `cv0rg_jsn_uniform_emails`
@@ -2608,8 +2808,8 @@ INSERT INTO `cv0rg_jsn_uniform_emails` (`email_id`, `form_id`, `user_id`, `email
 -- Table structure for table `cv0rg_jsn_uniform_fields`
 --
 
-CREATE TABLE `cv0rg_jsn_uniform_fields` (
-  `field_id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_jsn_uniform_fields` (
+  `field_id` int(11) NOT NULL AUTO_INCREMENT,
   `form_id` int(11) NOT NULL,
   `field_type` varchar(45) COLLATE utf8_unicode_ci NOT NULL,
   `field_identifier` varchar(255) CHARACTER SET utf8 NOT NULL,
@@ -2617,8 +2817,10 @@ CREATE TABLE `cv0rg_jsn_uniform_fields` (
   `field_instructions` text COLLATE utf8_unicode_ci,
   `field_position` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `field_ordering` int(10) unsigned NOT NULL DEFAULT '0',
-  `field_settings` text COLLATE utf8_unicode_ci
-) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `field_settings` text COLLATE utf8_unicode_ci,
+  PRIMARY KEY (`field_id`),
+  KEY `fk_uniform_fields_forms` (`form_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=39 ;
 
 --
 -- Dumping data for table `cv0rg_jsn_uniform_fields`
@@ -2653,8 +2855,8 @@ INSERT INTO `cv0rg_jsn_uniform_fields` (`field_id`, `form_id`, `field_type`, `fi
 -- Table structure for table `cv0rg_jsn_uniform_forms`
 --
 
-CREATE TABLE `cv0rg_jsn_uniform_forms` (
-  `form_id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_jsn_uniform_forms` (
+  `form_id` int(11) NOT NULL AUTO_INCREMENT,
   `form_title` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `form_description` text COLLATE utf8_unicode_ci,
   `form_layout` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
@@ -2680,8 +2882,9 @@ CREATE TABLE `cv0rg_jsn_uniform_forms` (
   `form_edit_submission` int(11) NOT NULL,
   `form_payment_type` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `form_view_submission` int(11) NOT NULL DEFAULT '0',
-  `form_view_submission_access` int(11) NOT NULL DEFAULT '0'
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `form_view_submission_access` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`form_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=7 ;
 
 --
 -- Dumping data for table `cv0rg_jsn_uniform_forms`
@@ -2698,14 +2901,15 @@ INSERT INTO `cv0rg_jsn_uniform_forms` (`form_id`, `form_title`, `form_descriptio
 -- Table structure for table `cv0rg_jsn_uniform_form_pages`
 --
 
-CREATE TABLE `cv0rg_jsn_uniform_form_pages` (
-  `page_id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_jsn_uniform_form_pages` (
+  `page_id` int(11) NOT NULL AUTO_INCREMENT,
   `page_title` varchar(255) NOT NULL,
   `form_id` int(11) NOT NULL,
   `page_content` text NOT NULL,
   `page_template` text NOT NULL,
-  `page_container` longtext NOT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
+  `page_container` longtext NOT NULL,
+  PRIMARY KEY (`page_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=9 ;
 
 --
 -- Dumping data for table `cv0rg_jsn_uniform_form_pages`
@@ -2723,12 +2927,14 @@ INSERT INTO `cv0rg_jsn_uniform_form_pages` (`page_id`, `page_title`, `form_id`, 
 -- Table structure for table `cv0rg_jsn_uniform_messages`
 --
 
-CREATE TABLE `cv0rg_jsn_uniform_messages` (
-  `msg_id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_jsn_uniform_messages` (
+  `msg_id` int(11) NOT NULL AUTO_INCREMENT,
   `msg_screen` varchar(150) DEFAULT NULL,
   `published` tinyint(1) DEFAULT '1',
-  `ordering` int(11) DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `ordering` int(11) DEFAULT '0',
+  PRIMARY KEY (`msg_id`),
+  UNIQUE KEY `message` (`msg_screen`,`ordering`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -2736,8 +2942,8 @@ CREATE TABLE `cv0rg_jsn_uniform_messages` (
 -- Table structure for table `cv0rg_jsn_uniform_submissions`
 --
 
-CREATE TABLE `cv0rg_jsn_uniform_submissions` (
-  `submission_id` int(10) unsigned NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_jsn_uniform_submissions` (
+  `submission_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `form_id` int(10) unsigned NOT NULL,
   `user_id` int(10) unsigned DEFAULT NULL,
   `submission_form_location` text NOT NULL,
@@ -2750,8 +2956,9 @@ CREATE TABLE `cv0rg_jsn_uniform_submissions` (
   `submission_os` varchar(45) NOT NULL,
   `submission_created_by` int(10) unsigned NOT NULL COMMENT '0 = Guest',
   `submission_created_at` datetime NOT NULL,
-  `submission_state` tinyint(1) unsigned NOT NULL COMMENT '-1 = Trashed; 0 = Unpublish; 1 = Published'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `submission_state` tinyint(1) unsigned NOT NULL COMMENT '-1 = Trashed; 0 = Unpublish; 1 = Published',
+  PRIMARY KEY (`submission_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -2759,7 +2966,7 @@ CREATE TABLE `cv0rg_jsn_uniform_submissions` (
 -- Table structure for table `cv0rg_jsn_uniform_submissions_2`
 --
 
-CREATE TABLE `cv0rg_jsn_uniform_submissions_2` (
+CREATE TABLE IF NOT EXISTS `cv0rg_jsn_uniform_submissions_2` (
   `data_id` int(11) DEFAULT NULL,
   `sb_15` varchar(255) DEFAULT NULL,
   `sb_27` varchar(255) DEFAULT NULL,
@@ -2780,7 +2987,7 @@ INSERT INTO `cv0rg_jsn_uniform_submissions_2` (`data_id`, `sb_15`, `sb_27`, `sb_
 -- Table structure for table `cv0rg_jsn_uniform_submissions_4`
 --
 
-CREATE TABLE `cv0rg_jsn_uniform_submissions_4` (
+CREATE TABLE IF NOT EXISTS `cv0rg_jsn_uniform_submissions_4` (
   `data_id` int(11) DEFAULT NULL,
   `sb_18` varchar(255) DEFAULT NULL,
   `sb_19` varchar(255) DEFAULT NULL,
@@ -2806,14 +3013,19 @@ INSERT INTO `cv0rg_jsn_uniform_submissions_4` (`data_id`, `sb_18`, `sb_19`, `sb_
 -- Table structure for table `cv0rg_jsn_uniform_submission_data`
 --
 
-CREATE TABLE `cv0rg_jsn_uniform_submission_data` (
-  `submission_data_id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_jsn_uniform_submission_data` (
+  `submission_data_id` int(11) NOT NULL AUTO_INCREMENT,
   `submission_id` int(11) NOT NULL,
   `form_id` int(11) NOT NULL,
   `field_id` int(11) NOT NULL,
   `field_type` varchar(45) NOT NULL,
-  `submission_data_value` longtext NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `submission_data_value` longtext NOT NULL,
+  PRIMARY KEY (`submission_data_id`),
+  KEY `submission_data_id` (`submission_data_id`),
+  KEY `submission_id` (`submission_id`),
+  KEY `form_id` (`form_id`),
+  KEY `field_id` (`field_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -2821,16 +3033,18 @@ CREATE TABLE `cv0rg_jsn_uniform_submission_data` (
 -- Table structure for table `cv0rg_jsn_uniform_templates`
 --
 
-CREATE TABLE `cv0rg_jsn_uniform_templates` (
-  `template_id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_jsn_uniform_templates` (
+  `template_id` int(11) NOT NULL AUTO_INCREMENT,
   `form_id` int(11) NOT NULL,
   `template_notify_to` tinyint(1) NOT NULL COMMENT '0 = Send to submitter; 1 = Send to added emails',
   `template_from` varchar(75) COLLATE utf8_unicode_ci NOT NULL,
   `template_reply_to` varchar(75) COLLATE utf8_unicode_ci NOT NULL,
   `template_subject` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `template_message` longtext COLLATE utf8_unicode_ci NOT NULL,
-  `template_attach` text COLLATE utf8_unicode_ci NOT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `template_attach` text COLLATE utf8_unicode_ci NOT NULL,
+  PRIMARY KEY (`template_id`),
+  KEY `fk_uniform_templates_forms` (`form_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=17 ;
 
 --
 -- Dumping data for table `cv0rg_jsn_uniform_templates`
@@ -2851,11 +3065,693 @@ INSERT INTO `cv0rg_jsn_uniform_templates` (`template_id`, `form_id`, `template_n
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `cv0rg_kunena_aliases`
+--
+
+CREATE TABLE IF NOT EXISTS `cv0rg_kunena_aliases` (
+  `alias` varchar(255) NOT NULL,
+  `type` varchar(10) NOT NULL,
+  `item` varchar(32) NOT NULL,
+  `state` tinyint(4) NOT NULL DEFAULT '0',
+  UNIQUE KEY `alias` (`alias`),
+  KEY `state` (`state`),
+  KEY `item` (`item`),
+  KEY `type` (`type`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `cv0rg_kunena_aliases`
+--
+
+INSERT INTO `cv0rg_kunena_aliases` (`alias`, `type`, `item`, `state`) VALUES
+('announcement', 'view', 'announcement', 1),
+('category', 'view', 'category', 1),
+('category/create', 'layout', 'category.create', 1),
+('category/default', 'layout', 'category.default', 1),
+('category/edit', 'layout', 'category.edit', 1),
+('category/manage', 'layout', 'category.manage', 1),
+('category/moderate', 'layout', 'category.moderate', 1),
+('category/user', 'layout', 'category.user', 1),
+('common', 'view', 'common', 1),
+('create', 'layout', 'category.create', 0),
+('credits', 'view', 'credits', 1),
+('default', 'layout', 'category.default', 0),
+('edit', 'layout', 'category.edit', 0),
+('home', 'view', 'home', 1),
+('main-forum', 'catid', '1', 1),
+('manage', 'layout', 'category.manage', 0),
+('misc', 'view', 'misc', 1),
+('moderate', 'layout', 'category.moderate', 0),
+('search', 'view', 'search', 1),
+('statistics', 'view', 'statistics', 1),
+('suggestion-box', 'catid', '3', 1),
+('topic', 'view', 'topic', 1),
+('topics', 'view', 'topics', 1),
+('user', 'view', 'user', 1),
+('welcome-mat', 'catid', '2', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cv0rg_kunena_announcement`
+--
+
+CREATE TABLE IF NOT EXISTS `cv0rg_kunena_announcement` (
+  `id` int(3) NOT NULL AUTO_INCREMENT,
+  `title` tinytext NOT NULL,
+  `created_by` int(11) NOT NULL DEFAULT '0',
+  `sdescription` text NOT NULL,
+  `description` text NOT NULL,
+  `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `published` tinyint(1) NOT NULL DEFAULT '0',
+  `ordering` tinyint(4) NOT NULL DEFAULT '0',
+  `showdate` tinyint(1) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cv0rg_kunena_attachments`
+--
+
+CREATE TABLE IF NOT EXISTS `cv0rg_kunena_attachments` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `mesid` int(11) NOT NULL DEFAULT '0',
+  `userid` int(11) NOT NULL DEFAULT '0',
+  `protected` tinyint(4) NOT NULL DEFAULT '0',
+  `hash` char(32) DEFAULT NULL,
+  `size` int(11) DEFAULT NULL,
+  `folder` varchar(255) NOT NULL,
+  `filetype` varchar(20) NOT NULL,
+  `filename` varchar(255) NOT NULL,
+  `filename_real` varchar(255) NOT NULL DEFAULT '',
+  `caption` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`),
+  KEY `mesid` (`mesid`),
+  KEY `userid` (`userid`),
+  KEY `hash` (`hash`),
+  KEY `filename` (`filename`),
+  KEY `filename_real` (`filename_real`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cv0rg_kunena_categories`
+--
+
+CREATE TABLE IF NOT EXISTS `cv0rg_kunena_categories` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `parent_id` int(11) DEFAULT '0',
+  `name` tinytext,
+  `alias` varchar(255) NOT NULL,
+  `icon` varchar(60) NOT NULL,
+  `icon_id` tinyint(4) NOT NULL DEFAULT '0',
+  `locked` tinyint(4) NOT NULL DEFAULT '0',
+  `accesstype` varchar(20) NOT NULL DEFAULT 'joomla.level',
+  `access` int(11) NOT NULL DEFAULT '0',
+  `pub_access` int(11) NOT NULL DEFAULT '1',
+  `pub_recurse` tinyint(4) DEFAULT '1',
+  `admin_access` int(11) NOT NULL DEFAULT '0',
+  `admin_recurse` tinyint(4) DEFAULT '1',
+  `ordering` smallint(6) NOT NULL DEFAULT '0',
+  `published` tinyint(4) NOT NULL DEFAULT '0',
+  `channels` text,
+  `checked_out` tinyint(4) NOT NULL DEFAULT '0',
+  `checked_out_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `review` tinyint(4) NOT NULL DEFAULT '0',
+  `allow_anonymous` tinyint(4) NOT NULL DEFAULT '0',
+  `post_anonymous` tinyint(4) NOT NULL DEFAULT '0',
+  `hits` int(11) NOT NULL DEFAULT '0',
+  `description` text NOT NULL,
+  `headerdesc` text NOT NULL,
+  `class_sfx` varchar(20) NOT NULL,
+  `allow_polls` tinyint(4) NOT NULL DEFAULT '0',
+  `topic_ordering` varchar(16) NOT NULL DEFAULT 'lastpost',
+  `iconset` varchar(255) NOT NULL DEFAULT 'default',
+  `numTopics` mediumint(8) NOT NULL DEFAULT '0',
+  `numPosts` mediumint(8) NOT NULL DEFAULT '0',
+  `last_topic_id` int(11) NOT NULL DEFAULT '0',
+  `last_post_id` int(11) NOT NULL DEFAULT '0',
+  `last_post_time` int(11) NOT NULL DEFAULT '0',
+  `params` text NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `parent_id` (`parent_id`),
+  KEY `category_access` (`accesstype`,`access`),
+  KEY `published_pubaccess_id` (`published`,`pub_access`,`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
+
+--
+-- Dumping data for table `cv0rg_kunena_categories`
+--
+
+INSERT INTO `cv0rg_kunena_categories` (`id`, `parent_id`, `name`, `alias`, `icon`, `icon_id`, `locked`, `accesstype`, `access`, `pub_access`, `pub_recurse`, `admin_access`, `admin_recurse`, `ordering`, `published`, `channels`, `checked_out`, `checked_out_time`, `review`, `allow_anonymous`, `post_anonymous`, `hits`, `description`, `headerdesc`, `class_sfx`, `allow_polls`, `topic_ordering`, `iconset`, `numTopics`, `numPosts`, `last_topic_id`, `last_post_id`, `last_post_time`, `params`) VALUES
+(1, 0, 'Main Forum', 'main-forum', '', 0, 0, 'joomla.group', 0, 1, 1, 0, 1, 1, 1, NULL, 0, '0000-00-00 00:00:00', 0, 0, 0, 0, 'This is the main forum section. It serves as a container for categories for your topics.', 'The section header is used to display additional information about the categories of topics that it contains.', '', 0, 'lastpost', 'default', 0, 0, 0, 0, 0, ''),
+(2, 1, 'Welcome Mat', 'welcome-mat', '', 0, 0, 'joomla.group', 0, 1, 1, 0, 1, 1, 1, NULL, 0, '0000-00-00 00:00:00', 0, 0, 0, 0, 'We encourage new members to introduce themselves here. Get to know one another and share your interests.', '[b]Welcome to the Kunena forum![/b] \n\n Tell us and our members who you are, what you like and why you became a member of this site. \n We welcome all new members and hope to see you around a lot!', '', 0, 'lastpost', 'default', 1, 1, 1, 1, 1458356431, ''),
+(3, 1, 'Suggestion Box', 'suggestion-box', '', 0, 0, 'joomla.group', 0, 1, 1, 0, 1, 2, 1, NULL, 0, '0000-00-00 00:00:00', 0, 0, 0, 0, 'Have some feedback and input to share? \n Don''t be shy and drop us a note. We want to hear from you and strive to make our site better and more user friendly for our guests and members a like.', 'This is the optional category header for the Suggestion Box.', '', 1, 'lastpost', 'default', 0, 0, 0, 0, 0, '');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cv0rg_kunena_configuration`
+--
+
+CREATE TABLE IF NOT EXISTS `cv0rg_kunena_configuration` (
+  `id` int(11) NOT NULL DEFAULT '0',
+  `params` text,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cv0rg_kunena_keywords`
+--
+
+CREATE TABLE IF NOT EXISTS `cv0rg_kunena_keywords` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(40) NOT NULL,
+  `public_count` int(11) NOT NULL,
+  `total_count` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`),
+  KEY `public_count` (`public_count`),
+  KEY `total_count` (`total_count`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cv0rg_kunena_keywords_map`
+--
+
+CREATE TABLE IF NOT EXISTS `cv0rg_kunena_keywords_map` (
+  `keyword_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `topic_id` int(11) NOT NULL,
+  UNIQUE KEY `keyword_user_topic` (`keyword_id`,`user_id`,`topic_id`),
+  KEY `user_id` (`user_id`),
+  KEY `topic_user` (`topic_id`,`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cv0rg_kunena_messages`
+--
+
+CREATE TABLE IF NOT EXISTS `cv0rg_kunena_messages` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `parent` int(11) DEFAULT '0',
+  `thread` int(11) DEFAULT '0',
+  `catid` int(11) NOT NULL DEFAULT '0',
+  `name` tinytext,
+  `userid` int(11) NOT NULL DEFAULT '0',
+  `email` tinytext,
+  `subject` tinytext,
+  `time` int(11) NOT NULL DEFAULT '0',
+  `ip` varchar(128) DEFAULT NULL,
+  `topic_emoticon` int(11) NOT NULL DEFAULT '0',
+  `locked` tinyint(4) NOT NULL DEFAULT '0',
+  `hold` tinyint(4) NOT NULL DEFAULT '0',
+  `ordering` int(11) DEFAULT '0',
+  `hits` int(11) DEFAULT '0',
+  `moved` tinyint(4) DEFAULT '0',
+  `modified_by` int(7) DEFAULT NULL,
+  `modified_time` int(11) DEFAULT NULL,
+  `modified_reason` tinytext,
+  PRIMARY KEY (`id`),
+  KEY `thread` (`thread`),
+  KEY `ip` (`ip`),
+  KEY `userid` (`userid`),
+  KEY `time` (`time`),
+  KEY `locked` (`locked`),
+  KEY `hold_time` (`hold`,`time`),
+  KEY `parent_hits` (`parent`,`hits`),
+  KEY `catid_parent` (`catid`,`parent`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+
+--
+-- Dumping data for table `cv0rg_kunena_messages`
+--
+
+INSERT INTO `cv0rg_kunena_messages` (`id`, `parent`, `thread`, `catid`, `name`, `userid`, `email`, `subject`, `time`, `ip`, `topic_emoticon`, `locked`, `hold`, `ordering`, `hits`, `moved`, `modified_by`, `modified_time`, `modified_reason`) VALUES
+(1, 0, 1, 2, 'Kunena', 760, NULL, 'Welcome to Kunena!', 1458356431, '127.0.0.1', 0, 0, 0, 0, 0, 0, NULL, NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cv0rg_kunena_messages_text`
+--
+
+CREATE TABLE IF NOT EXISTS `cv0rg_kunena_messages_text` (
+  `mesid` int(11) NOT NULL DEFAULT '0',
+  `message` text NOT NULL,
+  PRIMARY KEY (`mesid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `cv0rg_kunena_messages_text`
+--
+
+INSERT INTO `cv0rg_kunena_messages_text` (`mesid`, `message`) VALUES
+(1, '[size=4][b]Welcome to Kunena![/b][/size] \n\n Thank you for choosing Kunena for your community forum needs in Joomla. \n\n Kunena, translated from Swahili meaning “to speak”, is built by a team of open source professionals with the goal of providing a top quality, tightly unified forum solution for Joomla. \n\n\n [size=4][b]Additional Kunena Resources[/b][/size] \n\n [b]Kunena Documentation:[/b] [url]https://www.kunena.org/docs[/url] \n\n [b]Kunena Support Forum[/b]: [url]https://www.kunena.org/forum[/url] \n\n [b]Kunena Downloads:[/b] [url]https://www.kunena.org/download[/url] \n\n [b]Kunena Blog:[/b] [url]https://www.kunena.org/blog[/url] \n\n [b]Follow Kunena on Twitter:[/b] [url]https://www.kunena.org/twitter[/url]');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cv0rg_kunena_polls`
+--
+
+CREATE TABLE IF NOT EXISTS `cv0rg_kunena_polls` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(100) NOT NULL,
+  `threadid` int(11) NOT NULL,
+  `polltimetolive` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `threadid` (`threadid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cv0rg_kunena_polls_options`
+--
+
+CREATE TABLE IF NOT EXISTS `cv0rg_kunena_polls_options` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `pollid` int(11) DEFAULT NULL,
+  `text` varchar(100) DEFAULT NULL,
+  `votes` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `pollid` (`pollid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cv0rg_kunena_polls_users`
+--
+
+CREATE TABLE IF NOT EXISTS `cv0rg_kunena_polls_users` (
+  `pollid` int(11) DEFAULT NULL,
+  `userid` int(11) DEFAULT NULL,
+  `votes` int(11) DEFAULT NULL,
+  `lasttime` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `lastvote` int(11) DEFAULT NULL,
+  UNIQUE KEY `pollid` (`pollid`,`userid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cv0rg_kunena_ranks`
+--
+
+CREATE TABLE IF NOT EXISTS `cv0rg_kunena_ranks` (
+  `rank_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
+  `rank_title` varchar(255) NOT NULL DEFAULT '',
+  `rank_min` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `rank_special` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `rank_image` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`rank_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=11 ;
+
+--
+-- Dumping data for table `cv0rg_kunena_ranks`
+--
+
+INSERT INTO `cv0rg_kunena_ranks` (`rank_id`, `rank_title`, `rank_min`, `rank_special`, `rank_image`) VALUES
+(1, 'New Member', 0, 0, 'rank1.gif'),
+(2, 'Junior Member', 20, 0, 'rank2.gif'),
+(3, 'Senior Member', 40, 0, 'rank3.gif'),
+(4, 'Premium Member', 80, 0, 'rank4.gif'),
+(5, 'Elite Member', 160, 0, 'rank5.gif'),
+(6, 'Platinum Member', 320, 0, 'rank6.gif'),
+(7, 'Administrator', 0, 1, 'rankadmin.gif'),
+(8, 'Moderator', 0, 1, 'rankmod.gif'),
+(9, 'Spammer', 0, 1, 'rankspammer.gif'),
+(10, 'Banned', 0, 1, 'rankbanned.gif');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cv0rg_kunena_sessions`
+--
+
+CREATE TABLE IF NOT EXISTS `cv0rg_kunena_sessions` (
+  `userid` int(11) NOT NULL DEFAULT '0',
+  `allowed` text,
+  `lasttime` int(11) NOT NULL DEFAULT '0',
+  `readtopics` text,
+  `currvisit` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`userid`),
+  KEY `currvisit` (`currvisit`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cv0rg_kunena_smileys`
+--
+
+CREATE TABLE IF NOT EXISTS `cv0rg_kunena_smileys` (
+  `id` int(4) NOT NULL AUTO_INCREMENT,
+  `code` varchar(12) NOT NULL DEFAULT '',
+  `location` varchar(50) NOT NULL DEFAULT '',
+  `greylocation` varchar(60) NOT NULL DEFAULT '',
+  `emoticonbar` tinyint(4) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=67 ;
+
+--
+-- Dumping data for table `cv0rg_kunena_smileys`
+--
+
+INSERT INTO `cv0rg_kunena_smileys` (`id`, `code`, `location`, `greylocation`, `emoticonbar`) VALUES
+(1, 'B)', 'cool.png', 'cool-grey.png', 1),
+(2, '8)', 'cool.png', 'cool-grey.png', 0),
+(3, '8-)', 'cool.png', 'cool-grey.png', 0),
+(4, ':-(', 'sad.png', 'sad-grey.png', 0),
+(5, ':(', 'sad.png', 'sad-grey.png', 1),
+(6, ':sad:', 'sad.png', 'sad-grey.png', 0),
+(7, ':cry:', 'sad.png', 'sad-grey.png', 0),
+(8, ':)', 'smile.png', 'smile-grey.png', 1),
+(9, ':-)', 'smile.png', 'smile-grey.png', 0),
+(10, ':cheer:', 'cheerful.png', 'cheerful-grey.png', 1),
+(11, ';)', 'wink.png', 'wink-grey.png', 1),
+(12, ';-)', 'wink.png', 'wink-grey.png', 0),
+(13, ':wink:', 'wink.png', 'wink-grey.png', 0),
+(14, ';-)', 'wink.png', 'wink-grey.png', 0),
+(15, ':P', 'tongue.png', 'tongue-grey.png', 1),
+(16, ':p', 'tongue.png', 'tongue-grey.png', 0),
+(17, ':-p', 'tongue.png', 'tongue-grey.png', 0),
+(18, ':-P', 'tongue.png', 'tongue-grey.png', 0),
+(19, ':razz:', 'tongue.png', 'tongue-grey.png', 0),
+(20, ':angry:', 'angry.png', 'angry-grey.png', 1),
+(21, ':mad:', 'angry.png', 'angry-grey.png', 0),
+(22, ':unsure:', 'unsure.png', 'unsure-grey.png', 1),
+(23, ':o', 'shocked.png', 'shocked-grey.png', 0),
+(24, ':-o', 'shocked.png', 'shocked-grey.png', 0),
+(25, ':O', 'shocked.png', 'shocked-grey.png', 0),
+(26, ':-O', 'shocked.png', 'shocked-grey.png', 0),
+(27, ':eek:', 'shocked.png', 'shocked-grey.png', 0),
+(28, ':ohmy:', 'shocked.png', 'shocked-grey.png', 1),
+(29, ':huh:', 'wassat.png', 'wassat-grey.png', 1),
+(30, ':?', 'confused.png', 'confused-grey.png', 0),
+(31, ':-?', 'confused.png', 'confused-grey.png', 0),
+(32, ':???', 'confused.png', 'confused-grey.png', 0),
+(33, ':dry:', 'ermm.png', 'ermm-grey.png', 1),
+(34, ':ermm:', 'ermm.png', 'ermm-grey.png', 0),
+(35, ':lol:', 'grin.png', 'grin-grey.png', 1),
+(36, ':X', 'sick.png', 'sick-grey.png', 0),
+(37, ':x', 'sick.png', 'sick-grey.png', 0),
+(38, ':sick:', 'sick.png', 'sick-grey.png', 1),
+(39, ':silly:', 'silly.png', 'silly-grey.png', 1),
+(40, ':y32b4:', 'silly.png', 'silly-grey.png', 0),
+(41, ':blink:', 'blink.png', 'blink-grey.png', 1),
+(42, ':blush:', 'blush.png', 'blush-grey.png', 1),
+(43, ':oops:', 'blush.png', 'blush-grey.png', 1),
+(44, ':kiss:', 'kissing.png', 'kissing-grey.png', 1),
+(45, ':rolleyes:', 'blink.png', 'blink-grey.png', 0),
+(46, ':roll:', 'blink.png', 'blink-grey.png', 0),
+(47, ':woohoo:', 'w00t.png', 'w00t-grey.png', 1),
+(48, ':side:', 'sideways.png', 'sideways-grey.png', 1),
+(49, ':S', 'dizzy.png', 'dizzy-grey.png', 1),
+(50, ':s', 'dizzy.png', 'dizzy-grey.png', 0),
+(51, ':evil:', 'devil.png', 'devil-grey.png', 1),
+(52, ':twisted:', 'devil.png', 'devil-grey.png', 0),
+(53, ':whistle:', 'whistling.png', 'whistling-grey.png', 1),
+(54, ':pinch:', 'pinch.png', 'pinch-grey.png', 1),
+(55, ':D', 'laughing.png', 'laughing-grey.png', 0),
+(56, ':-D', 'laughing.png', 'laughing-grey.png', 0),
+(57, ':grin:', 'laughing.png', 'laughing-grey.png', 0),
+(58, ':laugh:', 'laughing.png', 'laughing-grey.png', 0),
+(59, ':|', 'neutral.png', 'neutral-grey.png', 0),
+(60, ':-|', 'neutral.png', 'neutral-grey.png', 0),
+(61, ':neutral:', 'neutral.png', 'neutral-grey.png', 0),
+(62, ':mrgreen:', 'mrgreen.png', 'mrgreen-grey.png', 0),
+(63, ':?:', 'question.png', 'question-grey.png', 0),
+(64, ':!:', 'exclamation.png', 'exclamation-grey.png', 0),
+(65, ':arrow:', 'arrow.png', 'arrow-grey.png', 0),
+(66, ':idea:', 'idea.png', 'idea-grey.png', 0);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cv0rg_kunena_thankyou`
+--
+
+CREATE TABLE IF NOT EXISTS `cv0rg_kunena_thankyou` (
+  `postid` int(11) NOT NULL,
+  `userid` int(11) NOT NULL,
+  `targetuserid` int(11) NOT NULL,
+  `time` datetime NOT NULL,
+  UNIQUE KEY `postid` (`postid`,`userid`),
+  KEY `userid` (`userid`),
+  KEY `targetuserid` (`targetuserid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cv0rg_kunena_topics`
+--
+
+CREATE TABLE IF NOT EXISTS `cv0rg_kunena_topics` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `category_id` int(11) NOT NULL DEFAULT '0',
+  `subject` tinytext,
+  `icon_id` int(11) NOT NULL DEFAULT '0',
+  `locked` tinyint(4) NOT NULL DEFAULT '0',
+  `hold` tinyint(4) NOT NULL DEFAULT '0',
+  `ordering` int(11) NOT NULL DEFAULT '0',
+  `posts` int(11) NOT NULL DEFAULT '0',
+  `hits` int(11) NOT NULL DEFAULT '0',
+  `attachments` int(11) NOT NULL DEFAULT '0',
+  `poll_id` int(11) NOT NULL DEFAULT '0',
+  `moved_id` int(11) NOT NULL DEFAULT '0',
+  `first_post_id` int(11) NOT NULL DEFAULT '0',
+  `first_post_time` int(11) NOT NULL DEFAULT '0',
+  `first_post_userid` int(11) NOT NULL DEFAULT '0',
+  `first_post_message` text,
+  `first_post_guest_name` tinytext,
+  `last_post_id` int(11) NOT NULL DEFAULT '0',
+  `last_post_time` int(11) NOT NULL DEFAULT '0',
+  `last_post_userid` int(11) NOT NULL DEFAULT '0',
+  `last_post_message` text,
+  `last_post_guest_name` tinytext,
+  `params` text NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `category_id` (`category_id`),
+  KEY `locked` (`locked`),
+  KEY `hold` (`hold`),
+  KEY `posts` (`posts`),
+  KEY `hits` (`hits`),
+  KEY `first_post_userid` (`first_post_userid`),
+  KEY `last_post_userid` (`last_post_userid`),
+  KEY `first_post_time` (`first_post_time`),
+  KEY `last_post_time` (`last_post_time`),
+  KEY `last_post_id` (`last_post_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+
+--
+-- Dumping data for table `cv0rg_kunena_topics`
+--
+
+INSERT INTO `cv0rg_kunena_topics` (`id`, `category_id`, `subject`, `icon_id`, `locked`, `hold`, `ordering`, `posts`, `hits`, `attachments`, `poll_id`, `moved_id`, `first_post_id`, `first_post_time`, `first_post_userid`, `first_post_message`, `first_post_guest_name`, `last_post_id`, `last_post_time`, `last_post_userid`, `last_post_message`, `last_post_guest_name`, `params`) VALUES
+(1, 2, 'Welcome to Kunena!', 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1458356431, 760, '[size=4][b]Welcome to Kunena![/b][/size] \n\n Thank you for choosing Kunena for your community forum needs in Joomla. \n\n Kunena, translated from Swahili meaning “to speak”, is built by a team of open source professionals with the goal of providing a top quality, tightly unified forum solution for Joomla. \n\n\n [size=4][b]Additional Kunena Resources[/b][/size] \n\n [b]Kunena Documentation:[/b] [url]https://www.kunena.org/docs[/url] \n\n [b]Kunena Support Forum[/b]: [url]https://www.kunena.org/forum[/url] \n\n [b]Kunena Downloads:[/b] [url]https://www.kunena.org/download[/url] \n\n [b]Kunena Blog:[/b] [url]https://www.kunena.org/blog[/url] \n\n [b]Follow Kunena on Twitter:[/b] [url]https://www.kunena.org/twitter[/url]', 'Kunena', 1, 1458356431, 760, '[size=4][b]Welcome to Kunena![/b][/size] \n\n Thank you for choosing Kunena for your community forum needs in Joomla. \n\n Kunena, translated from Swahili meaning “to speak”, is built by a team of open source professionals with the goal of providing a top quality, tightly unified forum solution for Joomla. \n\n\n [size=4][b]Additional Kunena Resources[/b][/size] \n\n [b]Kunena Documentation:[/b] [url]https://www.kunena.org/docs[/url] \n\n [b]Kunena Support Forum[/b]: [url]https://www.kunena.org/forum[/url] \n\n [b]Kunena Downloads:[/b] [url]https://www.kunena.org/download[/url] \n\n [b]Kunena Blog:[/b] [url]https://www.kunena.org/blog[/url] \n\n [b]Follow Kunena on Twitter:[/b] [url]https://www.kunena.org/twitter[/url]', 'Kunena', '');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cv0rg_kunena_users`
+--
+
+CREATE TABLE IF NOT EXISTS `cv0rg_kunena_users` (
+  `userid` int(11) NOT NULL DEFAULT '0',
+  `status` tinyint(1) NOT NULL DEFAULT '0',
+  `status_text` varchar(255) NOT NULL,
+  `view` varchar(8) NOT NULL DEFAULT '',
+  `signature` text,
+  `moderator` int(11) DEFAULT '0',
+  `banned` datetime DEFAULT NULL,
+  `ordering` int(11) DEFAULT '0',
+  `posts` int(11) DEFAULT '0',
+  `avatar` varchar(255) DEFAULT NULL,
+  `karma` int(11) DEFAULT '0',
+  `karma_time` int(11) DEFAULT '0',
+  `group_id` int(4) DEFAULT '1',
+  `uhits` int(11) DEFAULT '0',
+  `personalText` tinytext,
+  `gender` tinyint(4) NOT NULL DEFAULT '0',
+  `birthdate` date NOT NULL DEFAULT '0001-01-01',
+  `location` varchar(50) DEFAULT NULL,
+  `icq` varchar(50) DEFAULT NULL,
+  `aim` varchar(50) DEFAULT NULL,
+  `yim` varchar(50) DEFAULT NULL,
+  `msn` varchar(50) DEFAULT NULL,
+  `skype` varchar(50) DEFAULT NULL,
+  `twitter` varchar(50) DEFAULT NULL,
+  `facebook` varchar(50) DEFAULT NULL,
+  `gtalk` varchar(50) DEFAULT NULL,
+  `myspace` varchar(50) DEFAULT NULL,
+  `linkedin` varchar(50) DEFAULT NULL,
+  `delicious` varchar(50) DEFAULT NULL,
+  `friendfeed` varchar(50) DEFAULT NULL,
+  `digg` varchar(50) DEFAULT NULL,
+  `blogspot` varchar(50) DEFAULT NULL,
+  `flickr` varchar(50) DEFAULT NULL,
+  `bebo` varchar(50) DEFAULT NULL,
+  `websitename` varchar(50) DEFAULT NULL,
+  `websiteurl` varchar(50) DEFAULT NULL,
+  `rank` tinyint(4) NOT NULL DEFAULT '0',
+  `hideEmail` tinyint(1) NOT NULL DEFAULT '1',
+  `showOnline` tinyint(1) NOT NULL DEFAULT '1',
+  `canSubscribe` tinyint(1) NOT NULL DEFAULT '-1',
+  `userListtime` int(11) DEFAULT '-2',
+  `thankyou` int(11) DEFAULT '0',
+  PRIMARY KEY (`userid`),
+  KEY `group_id` (`group_id`),
+  KEY `posts` (`posts`),
+  KEY `uhits` (`uhits`),
+  KEY `banned` (`banned`),
+  KEY `moderator` (`moderator`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `cv0rg_kunena_users`
+--
+
+INSERT INTO `cv0rg_kunena_users` (`userid`, `status`, `status_text`, `view`, `signature`, `moderator`, `banned`, `ordering`, `posts`, `avatar`, `karma`, `karma_time`, `group_id`, `uhits`, `personalText`, `gender`, `birthdate`, `location`, `icq`, `aim`, `yim`, `msn`, `skype`, `twitter`, `facebook`, `gtalk`, `myspace`, `linkedin`, `delicious`, `friendfeed`, `digg`, `blogspot`, `flickr`, `bebo`, `websitename`, `websiteurl`, `rank`, `hideEmail`, `showOnline`, `canSubscribe`, `userListtime`, `thankyou`) VALUES
+(760, 0, '', '', NULL, 0, NULL, 0, 1, NULL, 0, 0, 1, 0, NULL, 0, '0001-01-01', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 1, 1, -1, -2, 0);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cv0rg_kunena_users_banned`
+--
+
+CREATE TABLE IF NOT EXISTS `cv0rg_kunena_users_banned` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `userid` int(11) DEFAULT NULL,
+  `ip` varchar(128) DEFAULT NULL,
+  `blocked` tinyint(4) NOT NULL DEFAULT '0',
+  `expiration` datetime DEFAULT NULL,
+  `created_by` int(11) NOT NULL,
+  `created_time` datetime NOT NULL,
+  `reason_private` text,
+  `reason_public` text,
+  `modified_by` int(11) DEFAULT NULL,
+  `modified_time` datetime DEFAULT NULL,
+  `comments` text,
+  `params` text,
+  PRIMARY KEY (`id`),
+  KEY `userid` (`userid`),
+  KEY `ip` (`ip`),
+  KEY `expiration` (`expiration`),
+  KEY `created_time` (`created_time`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cv0rg_kunena_user_categories`
+--
+
+CREATE TABLE IF NOT EXISTS `cv0rg_kunena_user_categories` (
+  `user_id` int(11) NOT NULL,
+  `category_id` int(11) NOT NULL,
+  `role` tinyint(4) NOT NULL DEFAULT '0',
+  `allreadtime` int(11) NOT NULL DEFAULT '0',
+  `subscribed` tinyint(4) NOT NULL DEFAULT '0',
+  `params` text NOT NULL,
+  PRIMARY KEY (`user_id`,`category_id`),
+  KEY `category_subscribed` (`category_id`,`subscribed`),
+  KEY `role` (`role`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cv0rg_kunena_user_read`
+--
+
+CREATE TABLE IF NOT EXISTS `cv0rg_kunena_user_read` (
+  `user_id` int(11) NOT NULL,
+  `topic_id` int(11) NOT NULL,
+  `category_id` int(11) NOT NULL,
+  `message_id` int(11) NOT NULL,
+  `time` int(11) NOT NULL,
+  UNIQUE KEY `user_topic_id` (`user_id`,`topic_id`),
+  KEY `category_user_id` (`category_id`,`user_id`),
+  KEY `time` (`time`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cv0rg_kunena_user_topics`
+--
+
+CREATE TABLE IF NOT EXISTS `cv0rg_kunena_user_topics` (
+  `user_id` int(11) NOT NULL DEFAULT '0',
+  `topic_id` int(11) NOT NULL DEFAULT '0',
+  `category_id` int(11) NOT NULL,
+  `posts` mediumint(8) NOT NULL DEFAULT '0',
+  `last_post_id` int(11) NOT NULL DEFAULT '0',
+  `owner` tinyint(4) NOT NULL DEFAULT '0',
+  `favorite` tinyint(4) NOT NULL DEFAULT '0',
+  `subscribed` tinyint(4) NOT NULL DEFAULT '0',
+  `params` text NOT NULL,
+  UNIQUE KEY `user_topic_id` (`user_id`,`topic_id`),
+  KEY `topic_id` (`topic_id`),
+  KEY `posts` (`posts`),
+  KEY `owner` (`owner`),
+  KEY `favorite` (`favorite`),
+  KEY `subscribed` (`subscribed`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `cv0rg_kunena_user_topics`
+--
+
+INSERT INTO `cv0rg_kunena_user_topics` (`user_id`, `topic_id`, `category_id`, `posts`, `last_post_id`, `owner`, `favorite`, `subscribed`, `params`) VALUES
+(760, 1, 2, 1, 1, 1, 0, 0, '');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cv0rg_kunena_version`
+--
+
+CREATE TABLE IF NOT EXISTS `cv0rg_kunena_version` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `version` varchar(20) NOT NULL,
+  `versiondate` date NOT NULL,
+  `installdate` date NOT NULL,
+  `build` varchar(20) NOT NULL,
+  `versionname` varchar(40) DEFAULT NULL,
+  `state` text NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+
+--
+-- Dumping data for table `cv0rg_kunena_version`
+--
+
+INSERT INTO `cv0rg_kunena_version` (`id`, `version`, `versiondate`, `installdate`, `build`, `versionname`, `state`) VALUES
+(1, '4.0.10', '2016-02-18', '2016-03-18', '', 'Villavicencio', '');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `cv0rg_languages`
 --
 
-CREATE TABLE `cv0rg_languages` (
-  `lang_id` int(11) unsigned NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_languages` (
+  `lang_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `lang_code` char(7) NOT NULL,
   `title` varchar(50) NOT NULL,
   `title_native` varchar(50) NOT NULL,
@@ -2867,8 +3763,14 @@ CREATE TABLE `cv0rg_languages` (
   `sitename` varchar(1024) NOT NULL DEFAULT '',
   `published` int(11) NOT NULL DEFAULT '0',
   `access` int(10) unsigned NOT NULL DEFAULT '0',
-  `ordering` int(11) NOT NULL DEFAULT '0'
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+  `ordering` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`lang_id`),
+  UNIQUE KEY `idx_sef` (`sef`),
+  UNIQUE KEY `idx_image` (`image`),
+  UNIQUE KEY `idx_langcode` (`lang_code`),
+  KEY `idx_ordering` (`ordering`),
+  KEY `idx_access` (`access`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
 
 --
 -- Dumping data for table `cv0rg_languages`
@@ -2883,8 +3785,8 @@ INSERT INTO `cv0rg_languages` (`lang_id`, `lang_code`, `title`, `title_native`, 
 -- Table structure for table `cv0rg_menu`
 --
 
-CREATE TABLE `cv0rg_menu` (
-  `id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_menu` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `menutype` varchar(24) NOT NULL COMMENT 'The type of menu this item belongs to. FK to #__menu_types.menutype',
   `title` varchar(255) NOT NULL COMMENT 'The display title of the menu item.',
   `alias` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT 'The SEF alias of the menu item.',
@@ -2907,15 +3809,23 @@ CREATE TABLE `cv0rg_menu` (
   `rgt` int(11) NOT NULL DEFAULT '0' COMMENT 'Nested set rgt.',
   `home` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT 'Indicates if this menu item is the home or default page.',
   `language` char(7) NOT NULL DEFAULT '',
-  `client_id` tinyint(4) NOT NULL DEFAULT '0'
-) ENGINE=InnoDB AUTO_INCREMENT=1978 DEFAULT CHARSET=utf8;
+  `client_id` tinyint(4) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `idx_client_id_parent_id_alias_language` (`client_id`,`parent_id`,`alias`,`language`),
+  KEY `idx_componentid` (`component_id`,`menutype`,`published`,`access`),
+  KEY `idx_menutype` (`menutype`),
+  KEY `idx_left_right` (`lft`,`rgt`),
+  KEY `idx_alias` (`alias`),
+  KEY `idx_path` (`path`(255)),
+  KEY `idx_language` (`language`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2001 ;
 
 --
 -- Dumping data for table `cv0rg_menu`
 --
 
 INSERT INTO `cv0rg_menu` (`id`, `menutype`, `title`, `alias`, `note`, `path`, `link`, `type`, `published`, `parent_id`, `level`, `component_id`, `checked_out`, `checked_out_time`, `browserNav`, `access`, `img`, `template_style_id`, `params`, `lft`, `rgt`, `home`, `language`, `client_id`) VALUES
-(1, '', 'Menu_Item_Root', 'root', '', '', '', '', 1, 0, 0, 0, 0, '0000-00-00 00:00:00', 0, 0, '', 0, '', 0, 189, 0, '*', 0),
+(1, '', 'Menu_Item_Root', 'root', '', '', '', '', 1, 0, 0, 0, 0, '0000-00-00 00:00:00', 0, 0, '', 0, '', 0, 235, 0, '*', 0),
 (435, 'mainmenu', 'Home', 'home', '', 'home', 'index.php?option=com_content&view=featured', 'component', 1, 1, 1, 22, 0, '0000-00-00 00:00:00', 0, 1, '', 0, '{"featured_categories":[""],"layout_type":"blog","num_leading_articles":"1","num_intro_articles":"4","num_columns":"2","num_links":"4","multi_column_order":"1","orderby_pri":"none","orderby_sec":"","order_date":"","show_pagination":"2","show_pagination_results":"1","show_title":"0","link_titles":"","show_intro":"1","show_category":"0","link_category":"","show_parent_category":"","link_parent_category":"","show_author":"0","link_author":"","show_create_date":"use_article","show_modify_date":"","show_publish_date":"","show_item_navigation":"1","show_vote":"0","show_readmore":"","show_readmore_title":"1","show_icons":"1","show_print_icon":"0","show_email_icon":"0","show_hits":"","show_noauth":"0","show_feed_link":"","feed_summary":"","menu-anchor_title":"Start here","menu-anchor_css":"jsn-icon-home","menu_image":"","menu_text":1,"page_title":"","show_page_heading":0,"page_heading":"","pageclass_sfx":"jsn-demo-page","menu-meta_description":"","menu-meta_keywords":"","robots":"","secure":0}', 1, 2, 1, '*', 0),
 (466, 'mainmenu', 'Layout', 'layout', '', 'layout', 'index.php?option=com_content&view=article&id=71', 'component', 0, 1, 1, 22, 0, '0000-00-00 00:00:00', 0, 1, '', 0, '{"show_title":"","link_titles":"","show_intro":"","show_category":"","link_category":"","show_parent_category":"","link_parent_category":"","show_author":"","link_author":"","show_create_date":"","show_modify_date":"","show_publish_date":"","show_item_navigation":"","show_vote":"","show_icons":"","show_print_icon":"","show_email_icon":"","show_hits":"","show_noauth":"","urls_position":"","menu-anchor_title":"36 positions","menu-anchor_css":"jsn-icon-image","menu_image":"","menu_text":1,"page_title":"","show_page_heading":0,"page_heading":"","pageclass_sfx":"","menu-meta_description":"","menu-meta_keywords":"","robots":"","secure":0}', 7, 20, 0, '*', 0),
 (468, 'mainmenu', 'Menu Styles', 'menu-styles', '', 'menu-styles', 'index.php?option=com_content&view=article&id=72', 'component', 0, 1, 1, 22, 760, '2016-03-18 07:07:57', 0, 1, '', 0, '{"show_title":"","link_titles":"","show_intro":"","show_category":"","link_category":"","show_parent_category":"","link_parent_category":"","show_author":"","link_author":"","show_create_date":"","show_modify_date":"","show_publish_date":"","show_item_navigation":"","show_vote":"","show_icons":"","show_print_icon":"","show_email_icon":"","show_hits":"","show_noauth":"","urls_position":"","menu-anchor_title":"Efficient navigation","menu-anchor_css":"","menu_image":"","menu_text":1,"page_title":"","show_page_heading":0,"page_heading":"","pageclass_sfx":"","menu-meta_description":"","menu-meta_keywords":"","robots":"","secure":0}', 27, 32, 0, '*', 0),
@@ -2998,7 +3908,7 @@ INSERT INTO `cv0rg_menu` (`id`, `menutype`, `title`, `alias`, `note`, `path`, `l
 (1963, 'main', 'JSN_EASYSLIDER_MENU_SLIDERS_TEXT', 'jsn-easyslider-menu-sliders-text', '', 'jsn-easyslider-menu-text/jsn-easyslider-menu-sliders-text', 'index.php?option=com_easyslider&view=sliders', 'component', 0, 1962, 2, 740, 0, '0000-00-00 00:00:00', 0, 1, 'components/com_easyslider/assets/images/icons-16/icon-items.png', 0, '{}', 162, 163, 0, '', 1),
 (1964, 'main', 'JSN_EASYSLIDER_MENU_CONFIGURARTION_TEXT', 'jsn-easyslider-menu-configurartion-text', '', 'jsn-easyslider-menu-text/jsn-easyslider-menu-configurartion-text', 'index.php?option=com_easyslider&view=configuration', 'component', 0, 1962, 2, 740, 0, '0000-00-00 00:00:00', 0, 1, 'components/com_easyslider/assets/images/icons-16/icon-configuration.png', 0, '{}', 164, 165, 0, '', 1),
 (1965, 'main', 'JSN_EASYSLIDER_MENU_ABOUT_TEXT', 'jsn-easyslider-menu-about-text', '', 'jsn-easyslider-menu-text/jsn-easyslider-menu-about-text', 'index.php?option=com_easyslider&view=about', 'component', 0, 1962, 2, 740, 0, '0000-00-00 00:00:00', 0, 1, 'components/com_easyslider/assets/images/icons-16/icon-about.png', 0, '{}', 166, 167, 0, '', 1),
-(1966, 'mainmenu', 'My Diet', 'food', '', 'food', 'index.php?option=com_content&view=article&id=113', 'component', 1, 1, 1, 22, 760, '2016-03-18 17:25:27', 0, 1, ' ', 0, '{"show_title":"0","link_titles":"0","show_intro":"","info_block_position":"","show_category":"","link_category":"","show_parent_category":"","link_parent_category":"","show_author":"0","link_author":"","show_create_date":"0","show_modify_date":"0","show_publish_date":"0","show_item_navigation":"0","show_vote":"","show_icons":"","show_print_icon":"0","show_email_icon":"0","show_hits":"","show_tags":"","show_noauth":"","urls_position":"","menu-anchor_title":"","menu-anchor_css":"","menu_image":"","menu_text":1,"page_title":"","show_page_heading":"","page_heading":"","pageclass_sfx":"","menu-meta_description":"","menu-meta_keywords":"","robots":"","secure":0}', 169, 170, 0, '*', 0),
+(1966, 'mainmenu', 'My Diet', 'food', '', 'food', 'index.php?option=com_content&view=article&id=113', 'component', 0, 1, 1, 22, 0, '0000-00-00 00:00:00', 0, 1, ' ', 0, '{"show_title":"0","link_titles":"0","show_intro":"","info_block_position":"","show_category":"","link_category":"","show_parent_category":"","link_parent_category":"","show_author":"0","link_author":"","show_create_date":"0","show_modify_date":"0","show_publish_date":"0","show_item_navigation":"0","show_vote":"","show_icons":"","show_print_icon":"0","show_email_icon":"0","show_hits":"","show_tags":"","show_noauth":"","urls_position":"","menu-anchor_title":"","menu-anchor_css":"","menu_image":"","menu_text":1,"page_title":"","show_page_heading":"","page_heading":"","pageclass_sfx":"","menu-meta_description":"","menu-meta_keywords":"","robots":"","secure":0}', 169, 170, 0, '*', 0),
 (1967, 'main', 'JSN_UNIFORM_MENU_TEXT', 'jsn-uniform-menu-text', '', 'jsn-uniform-menu-text', 'index.php?option=com_uniform', 'component', 0, 1, 1, 726, 0, '0000-00-00 00:00:00', 0, 1, 'components/com_uniform/assets/images/icons-16/icon-uniform.png', 0, '{}', 171, 180, 0, '', 1),
 (1968, 'main', 'JSN_UNIFORM_MENU_FORMS_TEXT', 'jsn-uniform-menu-forms-text', '', 'jsn-uniform-menu-text/jsn-uniform-menu-forms-text', 'index.php?option=com_uniform&view=forms', 'component', 0, 1967, 2, 726, 0, '0000-00-00 00:00:00', 0, 1, 'components/com_uniform/assets/images/icons-16/icon-forms.png', 0, '{}', 172, 173, 0, '', 1),
 (1969, 'main', 'JSN_UNIFORM_MENU_SUBMISSIONS_TEXT', 'jsn-uniform-menu-submissions-text', '', 'jsn-uniform-menu-text/jsn-uniform-menu-submissions-text', 'index.php?option=com_uniform&view=submissions', 'component', 0, 1967, 2, 726, 0, '0000-00-00 00:00:00', 0, 1, 'components/com_uniform/assets/images/icons-16/icon-submissions.png', 0, '{}', 174, 175, 0, '', 1),
@@ -3009,7 +3919,31 @@ INSERT INTO `cv0rg_menu` (`id`, `menutype`, `title`, `alias`, `note`, `path`, `l
 (1974, 'mainmenu', 'Food Diary', 'food-diary', '', 'food-diary', 'index.php?option=com_content&view=article&id=114', 'component', 1, 1, 1, 22, 760, '2016-03-18 17:36:15', 0, 1, ' ', 0, '{"show_title":"0","link_titles":"0","show_intro":"","info_block_position":"","show_category":"","link_category":"","show_parent_category":"","link_parent_category":"","show_author":"0","link_author":"0","show_create_date":"","show_modify_date":"","show_publish_date":"","show_item_navigation":"","show_vote":"","show_icons":"","show_print_icon":"0","show_email_icon":"0","show_hits":"","show_tags":"","show_noauth":"","urls_position":"","menu-anchor_title":"","menu-anchor_css":"","menu_image":"","menu_text":1,"page_title":"","show_page_heading":"","page_heading":"","pageclass_sfx":"","menu-meta_description":"","menu-meta_keywords":"","robots":"","secure":0}', 181, 182, 0, '*', 0),
 (1975, 'mainmenu', 'Exercise Diary', 'exercise-diary', '', 'exercise-diary', 'index.php?option=com_content&view=article&id=115', 'component', 1, 1, 1, 22, 0, '0000-00-00 00:00:00', 0, 1, ' ', 0, '{"show_title":"0","link_titles":"0","show_intro":"","info_block_position":"","show_category":"","link_category":"","show_parent_category":"","link_parent_category":"","show_author":"0","link_author":"0","show_create_date":"","show_modify_date":"","show_publish_date":"","show_item_navigation":"","show_vote":"","show_icons":"","show_print_icon":"0","show_email_icon":"0","show_hits":"","show_tags":"","show_noauth":"","urls_position":"","menu-anchor_title":"","menu-anchor_css":"","menu_image":"","menu_text":1,"page_title":"","show_page_heading":"","page_heading":"","pageclass_sfx":"","menu-meta_description":"","menu-meta_keywords":"","robots":"","secure":0}', 183, 184, 0, '*', 0),
 (1976, 'mainmenu', 'Diet Calendar ', 'diet-calendar', '', 'diet-calendar', 'index.php?option=com_content&view=article&id=116', 'component', 1, 1, 1, 22, 0, '0000-00-00 00:00:00', 0, 1, ' ', 0, '{"show_title":"0","link_titles":"0","show_intro":"","info_block_position":"","show_category":"","link_category":"","show_parent_category":"","link_parent_category":"","show_author":"0","link_author":"0","show_create_date":"","show_modify_date":"","show_publish_date":"","show_item_navigation":"","show_vote":"","show_icons":"","show_print_icon":"0","show_email_icon":"0","show_hits":"","show_tags":"","show_noauth":"","urls_position":"","menu-anchor_title":"","menu-anchor_css":"","menu_image":"","menu_text":1,"page_title":"","show_page_heading":"","page_heading":"","pageclass_sfx":"","menu-meta_description":"","menu-meta_keywords":"","robots":"","secure":0}', 185, 186, 0, '*', 0),
-(1977, 'mainmenu', 'Weight Tracker', 'weight-tracker', '', 'weight-tracker', 'index.php?option=com_content&view=article&id=117', 'component', 1, 1, 1, 22, 0, '0000-00-00 00:00:00', 0, 1, ' ', 0, '{"show_title":"0","link_titles":"0","show_intro":"","info_block_position":"","show_category":"","link_category":"","show_parent_category":"","link_parent_category":"","show_author":"0","link_author":"0","show_create_date":"","show_modify_date":"","show_publish_date":"","show_item_navigation":"","show_vote":"","show_icons":"","show_print_icon":"0","show_email_icon":"0","show_hits":"","show_tags":"","show_noauth":"","urls_position":"","menu-anchor_title":"","menu-anchor_css":"","menu_image":"","menu_text":1,"page_title":"","show_page_heading":"","page_heading":"","pageclass_sfx":"","menu-meta_description":"","menu-meta_keywords":"","robots":"","secure":0}', 187, 188, 0, '*', 0);
+(1977, 'mainmenu', 'Weight Tracker', 'weight-tracker', '', 'weight-tracker', 'index.php?option=com_content&view=article&id=117', 'component', 1, 1, 1, 22, 0, '0000-00-00 00:00:00', 0, 1, ' ', 0, '{"show_title":"0","link_titles":"0","show_intro":"","info_block_position":"","show_category":"","link_category":"","show_parent_category":"","link_parent_category":"","show_author":"0","link_author":"0","show_create_date":"","show_modify_date":"","show_publish_date":"","show_item_navigation":"","show_vote":"","show_icons":"","show_print_icon":"0","show_email_icon":"0","show_hits":"","show_tags":"","show_noauth":"","urls_position":"","menu-anchor_title":"","menu-anchor_css":"","menu_image":"","menu_text":1,"page_title":"","show_page_heading":"","page_heading":"","pageclass_sfx":"","menu-meta_description":"","menu-meta_keywords":"","robots":"","secure":0}', 187, 188, 0, '*', 0),
+(1978, 'main', 'COM_KUNENA', 'com-kunena', '', 'com-kunena', 'index.php?option=com_kunena', 'component', 0, 1, 1, 751, 0, '0000-00-00 00:00:00', 0, 1, 'components/com_kunena/media/icons/favicons/kunena-logo-white.png', 0, '{}', 189, 212, 0, '', 1),
+(1979, 'main', 'COM_KUNENA_DASHBOARD', 'com-kunena-dashboard', '', 'com-kunena/com-kunena-dashboard', 'index.php?option=com_kunena&view=cpanel', 'component', 0, 1978, 2, 751, 0, '0000-00-00 00:00:00', 0, 1, 'components/com_kunena/media/icons/favicons/kunena-logo-white.png', 0, '{}', 190, 191, 0, '', 1),
+(1980, 'main', 'COM_KUNENA_CATEGORY_MANAGER', 'com-kunena-category-manager', '', 'com-kunena/com-kunena-category-manager', 'index.php?option=com_kunena&view=categories', 'component', 0, 1978, 2, 751, 0, '0000-00-00 00:00:00', 0, 1, 'components/com_kunena/media/icons/favicons/kunena-categories.png', 0, '{}', 192, 193, 0, '', 1),
+(1981, 'main', 'COM_KUNENA_USER_MANAGER', 'com-kunena-user-manager', '', 'com-kunena/com-kunena-user-manager', 'index.php?option=com_kunena&view=users', 'component', 0, 1978, 2, 751, 0, '0000-00-00 00:00:00', 0, 1, 'components/com_kunena/media/icons/favicons/kunena-users.png', 0, '{}', 194, 195, 0, '', 1),
+(1982, 'main', 'COM_KUNENA_FILE_MANAGER', 'com-kunena-file-manager', '', 'com-kunena/com-kunena-file-manager', 'index.php?option=com_kunena&view=attachments', 'component', 0, 1978, 2, 751, 0, '0000-00-00 00:00:00', 0, 1, 'components/com_kunena/media/icons/favicons/kunena-files.png', 0, '{}', 196, 197, 0, '', 1),
+(1983, 'main', 'COM_KUNENA_EMOTICON_MANAGER', 'com-kunena-emoticon-manager', '', 'com-kunena/com-kunena-emoticon-manager', 'index.php?option=com_kunena&view=smilies', 'component', 0, 1978, 2, 751, 0, '0000-00-00 00:00:00', 0, 1, 'components/com_kunena/media/icons/favicons/kunena-smileys.png', 0, '{}', 198, 199, 0, '', 1),
+(1984, 'main', 'COM_KUNENA_RANK_MANAGER', 'com-kunena-rank-manager', '', 'com-kunena/com-kunena-rank-manager', 'index.php?option=com_kunena&view=ranks', 'component', 0, 1978, 2, 751, 0, '0000-00-00 00:00:00', 0, 1, 'components/com_kunena/media/icons/favicons/kunena-ranks.png', 0, '{}', 200, 201, 0, '', 1),
+(1985, 'main', 'COM_KUNENA_TEMPLATE_MANAGER', 'com-kunena-template-manager', '', 'com-kunena/com-kunena-template-manager', 'index.php?option=com_kunena&view=templates', 'component', 0, 1978, 2, 751, 0, '0000-00-00 00:00:00', 0, 1, 'components/com_kunena/media/icons/favicons/kunena-templates.png', 0, '{}', 202, 203, 0, '', 1),
+(1986, 'main', 'COM_KUNENA_CONFIGURATION', 'com-kunena-configuration', '', 'com-kunena/com-kunena-configuration', 'index.php?option=com_kunena&view=config', 'component', 0, 1978, 2, 751, 0, '0000-00-00 00:00:00', 0, 1, 'components/com_kunena/media/icons/favicons/kunena-prune.png', 0, '{}', 204, 205, 0, '', 1),
+(1987, 'main', 'COM_KUNENA_PLUGIN_MANAGER', 'com-kunena-plugin-manager', '', 'com-kunena/com-kunena-plugin-manager', 'index.php?option=com_kunena&view=plugins', 'component', 0, 1978, 2, 751, 0, '0000-00-00 00:00:00', 0, 1, 'components/com_kunena/media/icons/favicons/kunena-plugins.png', 0, '{}', 206, 207, 0, '', 1),
+(1988, 'main', 'COM_KUNENA_FORUM_TOOLS', 'com-kunena-forum-tools', '', 'com-kunena/com-kunena-forum-tools', 'index.php?option=com_kunena&view=tools', 'component', 0, 1978, 2, 751, 0, '0000-00-00 00:00:00', 0, 1, 'components/com_kunena/media/icons/favicons/kunena-config.png', 0, '{}', 208, 209, 0, '', 1),
+(1989, 'main', 'COM_KUNENA_TRASH_MANAGER', 'com-kunena-trash-manager', '', 'com-kunena/com-kunena-trash-manager', 'index.php?option=com_kunena&view=trash', 'component', 0, 1978, 2, 751, 0, '0000-00-00 00:00:00', 0, 1, 'components/com_kunena/media/icons/favicons/kunena-trash.png', 0, '{}', 210, 211, 0, '', 1),
+(1990, 'kunenamenu', 'Forum', 'forum', '', 'forum', 'index.php?option=com_kunena&view=home&defaultmenu=1992', 'component', 1, 1, 1, 751, 0, '0000-00-00 00:00:00', 0, 1, ' ', 0, '{"menu-anchor_title":"","menu-anchor_css":"","menu_image":"","menu_text":1,"page_title":"","show_page_heading":0,"page_heading":"","pageclass_sfx":"","menu-meta_description":"","menu-meta_keywords":"","robots":"","secure":0,"catids":0}', 213, 230, 0, '*', 0),
+(1991, 'kunenamenu', 'Index', 'index', '', 'forum/index', 'index.php?option=com_kunena&view=category&layout=list', 'component', 1, 1990, 2, 751, 0, '0000-00-00 00:00:00', 0, 1, ' ', 0, '{"menu-anchor_title":"","menu-anchor_css":"","menu_image":"","menu_text":1,"page_title":"","show_page_heading":0,"page_heading":"","pageclass_sfx":"","menu-meta_description":"","menu-meta_keywords":"","robots":"","secure":0}', 214, 215, 0, '*', 0),
+(1992, 'kunenamenu', 'Recent Topics', 'recent', '', 'forum/recent', 'index.php?option=com_kunena&view=topics&mode=replies', 'component', 1, 1990, 2, 751, 0, '0000-00-00 00:00:00', 0, 1, ' ', 0, '{"menu-anchor_title":"","menu-anchor_css":"","menu_image":"","menu_text":1,"page_title":"","show_page_heading":0,"page_heading":"","pageclass_sfx":"","menu-meta_description":"","menu-meta_keywords":"","robots":"","secure":0,"topics_catselection":"","topics_categories":"","topics_time":""}', 216, 217, 0, '*', 0);
+INSERT INTO `cv0rg_menu` (`id`, `menutype`, `title`, `alias`, `note`, `path`, `link`, `type`, `published`, `parent_id`, `level`, `component_id`, `checked_out`, `checked_out_time`, `browserNav`, `access`, `img`, `template_style_id`, `params`, `lft`, `rgt`, `home`, `language`, `client_id`) VALUES
+(1993, 'kunenamenu', 'New Topic', 'newtopic', '', 'forum/newtopic', 'index.php?option=com_kunena&view=topic&layout=create', 'component', 1, 1990, 2, 751, 0, '0000-00-00 00:00:00', 0, 2, ' ', 0, '{"menu-anchor_title":"","menu-anchor_css":"","menu_image":"","menu_text":1,"page_title":"","show_page_heading":0,"page_heading":"","pageclass_sfx":"","menu-meta_description":"","menu-meta_keywords":"","robots":"","secure":0}', 218, 219, 0, '*', 0),
+(1994, 'kunenamenu', 'No Replies', 'noreplies', '', 'forum/noreplies', 'index.php?option=com_kunena&view=topics&mode=noreplies', 'component', 1, 1990, 2, 751, 0, '0000-00-00 00:00:00', 0, 2, ' ', 0, '{"menu-anchor_title":"","menu-anchor_css":"","menu_image":"","menu_text":1,"page_title":"","show_page_heading":0,"page_heading":"","pageclass_sfx":"","menu-meta_description":"","menu-meta_keywords":"","robots":"","secure":0,"topics_catselection":"","topics_categories":"","topics_time":""}', 220, 221, 0, '*', 0),
+(1995, 'kunenamenu', 'My Topics', 'mylatest', '', 'forum/mylatest', 'index.php?option=com_kunena&view=topics&layout=user&mode=default', 'component', 1, 1990, 2, 751, 0, '0000-00-00 00:00:00', 0, 2, ' ', 0, '{"menu-anchor_title":"","menu-anchor_css":"","menu_image":"","menu_text":1,"page_title":"","show_page_heading":0,"page_heading":"","pageclass_sfx":"","menu-meta_description":"","menu-meta_keywords":"","robots":"","secure":0,"topics_catselection":"2","topics_categories":"0","topics_time":""}', 222, 223, 0, '*', 0),
+(1996, 'kunenamenu', 'Profile', 'profile', '', 'forum/profile', 'index.php?option=com_kunena&view=user', 'component', 1, 1990, 2, 751, 0, '0000-00-00 00:00:00', 0, 2, ' ', 0, '{"menu-anchor_title":"","menu-anchor_css":"","menu_image":"","menu_text":1,"page_title":"","show_page_heading":0,"page_heading":"","pageclass_sfx":"","menu-meta_description":"","menu-meta_keywords":"","robots":"","secure":0,"integration":1}', 224, 225, 0, '*', 0),
+(1997, 'kunenamenu', 'Help', 'help', '', 'forum/help', 'index.php?option=com_kunena&view=misc', 'component', 1, 1990, 2, 751, 0, '0000-00-00 00:00:00', 0, 3, ' ', 0, '{"menu-anchor_title":"","menu-anchor_css":"","menu_image":"","menu_text":1,"page_title":"","show_page_heading":0,"page_heading":"","pageclass_sfx":"","menu-meta_description":"","menu-meta_keywords":"","robots":"","secure":0,"body":"This help page is a menu item inside [b]Kunena Menu[\\/b], which allows easy navigation in your forum. \\n\\n You can use Joomla Menu Manager to edit items in this menu. Please go to [b]Administration[\\/b] >> [b]Menus[\\/b] >> [b]Kunena Menu[\\/b] >> [b]Help[\\/b] to edit or remove this menu item. \\n\\n In this menu item you can use Plain Text, BBCode or HTML. If you want to bind article into this page, you may use article BBCode (with article id): [code][article=full]123[\\/article][\\/code] \\n\\n If you want to create your own menu for Kunena, please start by creating [b]Home Page[\\/b] first. In that page you can select default menu item, which is shown when you enter to Kunena.","body_format":"bbcode"}', 226, 227, 0, '*', 0),
+(1998, 'kunenamenu', 'Search', 'search', '', 'forum/search', 'index.php?option=com_kunena&view=search', 'component', 1, 1990, 2, 751, 0, '0000-00-00 00:00:00', 0, 1, ' ', 0, '{"menu-anchor_title":"","menu-anchor_css":"","menu_image":"","menu_text":1,"page_title":"","show_page_heading":0,"page_heading":"","pageclass_sfx":"","menu-meta_description":"","menu-meta_keywords":"","robots":"","secure":0}', 228, 229, 0, '*', 0),
+(1999, 'mainmenu', 'Forum', 'kunena-2016-03-19', '', 'kunena-2016-03-19', 'index.php?Itemid=1990', 'alias', 0, 1, 1, 0, 0, '0000-00-00 00:00:00', 0, 1, ' ', 0, '{"aliasoptions":"1990","menu-anchor_title":"","menu-anchor_css":"","menu_image":""}', 231, 232, 0, '*', 0),
+(2000, 'mainmenu', 'Discussion', 'discussion', '', 'discussion', 'index.php?option=com_kunena&view=home&defaultmenu=542', 'component', 1, 1, 1, 751, 0, '0000-00-00 00:00:00', 0, 1, ' ', 0, '{"menu-anchor_title":"","menu-anchor_css":"","menu_image":"","menu_text":1,"page_title":"","show_page_heading":"","page_heading":"","pageclass_sfx":"","menu-meta_description":"","menu-meta_keywords":"","robots":"","secure":0}', 233, 234, 0, '*', 0);
 
 -- --------------------------------------------------------
 
@@ -3017,12 +3951,14 @@ INSERT INTO `cv0rg_menu` (`id`, `menutype`, `title`, `alias`, `note`, `path`, `l
 -- Table structure for table `cv0rg_menu_types`
 --
 
-CREATE TABLE `cv0rg_menu_types` (
-  `id` int(10) unsigned NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_menu_types` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `menutype` varchar(24) NOT NULL,
   `title` varchar(48) NOT NULL,
-  `description` varchar(255) NOT NULL DEFAULT ''
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
+  `description` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `idx_menutype` (`menutype`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=13 ;
 
 --
 -- Dumping data for table `cv0rg_menu_types`
@@ -3033,7 +3969,8 @@ INSERT INTO `cv0rg_menu_types` (`id`, `menutype`, `title`, `description`) VALUES
 (8, 'topmenu', 'Top Menu', ''),
 (9, 'footermenu', 'Footer Menu', ''),
 (10, 'mustsee', 'Must-see Stuff', ''),
-(11, 'advanced-stuff', 'Advanced Stuff', '');
+(11, 'advanced-stuff', 'Advanced Stuff', ''),
+(12, 'kunenamenu', 'Kunena Menu', 'This is the default Kunena menu. It is used as the top navigation for Kunena. It can be publish in any module position. Simply unpublish items that are not required.');
 
 -- --------------------------------------------------------
 
@@ -3041,8 +3978,8 @@ INSERT INTO `cv0rg_menu_types` (`id`, `menutype`, `title`, `description`) VALUES
 -- Table structure for table `cv0rg_messages`
 --
 
-CREATE TABLE `cv0rg_messages` (
-  `message_id` int(10) unsigned NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_messages` (
+  `message_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `user_id_from` int(10) unsigned NOT NULL DEFAULT '0',
   `user_id_to` int(10) unsigned NOT NULL DEFAULT '0',
   `folder_id` tinyint(3) unsigned NOT NULL DEFAULT '0',
@@ -3050,8 +3987,10 @@ CREATE TABLE `cv0rg_messages` (
   `state` tinyint(1) NOT NULL DEFAULT '0',
   `priority` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `subject` varchar(255) NOT NULL DEFAULT '',
-  `message` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `message` text NOT NULL,
+  PRIMARY KEY (`message_id`),
+  KEY `useridto_state` (`user_id_to`,`state`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -3059,10 +3998,11 @@ CREATE TABLE `cv0rg_messages` (
 -- Table structure for table `cv0rg_messages_cfg`
 --
 
-CREATE TABLE `cv0rg_messages_cfg` (
+CREATE TABLE IF NOT EXISTS `cv0rg_messages_cfg` (
   `user_id` int(10) unsigned NOT NULL DEFAULT '0',
   `cfg_name` varchar(100) NOT NULL DEFAULT '',
-  `cfg_value` varchar(255) NOT NULL DEFAULT ''
+  `cfg_value` varchar(255) NOT NULL DEFAULT '',
+  UNIQUE KEY `idx_user_var_name` (`user_id`,`cfg_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -3071,8 +4011,8 @@ CREATE TABLE `cv0rg_messages_cfg` (
 -- Table structure for table `cv0rg_modules`
 --
 
-CREATE TABLE `cv0rg_modules` (
-  `id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_modules` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `asset_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'FK to the #__assets table.',
   `title` varchar(100) NOT NULL DEFAULT '',
   `note` varchar(255) NOT NULL DEFAULT '',
@@ -3089,8 +4029,12 @@ CREATE TABLE `cv0rg_modules` (
   `showtitle` tinyint(3) unsigned NOT NULL DEFAULT '1',
   `params` text NOT NULL,
   `client_id` tinyint(4) NOT NULL DEFAULT '0',
-  `language` char(7) NOT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=253 DEFAULT CHARSET=utf8;
+  `language` char(7) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `published` (`published`,`access`),
+  KEY `newsfeeds` (`module`,`published`),
+  KEY `idx_language` (`language`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=253 ;
 
 --
 -- Dumping data for table `cv0rg_modules`
@@ -3238,9 +4182,10 @@ INSERT INTO `cv0rg_modules` (`id`, `asset_id`, `title`, `note`, `content`, `orde
 -- Table structure for table `cv0rg_modules_menu`
 --
 
-CREATE TABLE `cv0rg_modules_menu` (
+CREATE TABLE IF NOT EXISTS `cv0rg_modules_menu` (
   `moduleid` int(11) NOT NULL DEFAULT '0',
-  `menuid` int(11) NOT NULL DEFAULT '0'
+  `menuid` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`moduleid`,`menuid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -3643,9 +4588,9 @@ INSERT INTO `cv0rg_modules_menu` (`moduleid`, `menuid`) VALUES
 -- Table structure for table `cv0rg_newsfeeds`
 --
 
-CREATE TABLE `cv0rg_newsfeeds` (
+CREATE TABLE IF NOT EXISTS `cv0rg_newsfeeds` (
   `catid` int(11) NOT NULL DEFAULT '0',
-  `id` int(10) unsigned NOT NULL,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL DEFAULT '',
   `alias` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '',
   `link` varchar(200) NOT NULL DEFAULT '',
@@ -3673,8 +4618,16 @@ CREATE TABLE `cv0rg_newsfeeds` (
   `description` text NOT NULL,
   `version` int(10) unsigned NOT NULL DEFAULT '1',
   `hits` int(10) unsigned NOT NULL DEFAULT '0',
-  `images` text NOT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+  `images` text NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_access` (`access`),
+  KEY `idx_checkout` (`checked_out`),
+  KEY `idx_state` (`published`),
+  KEY `idx_catid` (`catid`),
+  KEY `idx_createdby` (`created_by`),
+  KEY `idx_language` (`language`),
+  KEY `idx_xreference` (`xreference`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
 
 --
 -- Dumping data for table `cv0rg_newsfeeds`
@@ -3692,12 +4645,13 @@ INSERT INTO `cv0rg_newsfeeds` (`catid`, `id`, `name`, `alias`, `link`, `publishe
 -- Table structure for table `cv0rg_overrider`
 --
 
-CREATE TABLE `cv0rg_overrider` (
-  `id` int(10) NOT NULL COMMENT 'Primary Key',
+CREATE TABLE IF NOT EXISTS `cv0rg_overrider` (
+  `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'Primary Key',
   `constant` varchar(255) NOT NULL,
   `string` text NOT NULL,
-  `file` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `file` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -3705,8 +4659,8 @@ CREATE TABLE `cv0rg_overrider` (
 -- Table structure for table `cv0rg_postinstall_messages`
 --
 
-CREATE TABLE `cv0rg_postinstall_messages` (
-  `postinstall_message_id` bigint(20) unsigned NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_postinstall_messages` (
+  `postinstall_message_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `extension_id` bigint(20) NOT NULL DEFAULT '700' COMMENT 'FK to #__extensions',
   `title_key` varchar(255) NOT NULL DEFAULT '' COMMENT 'Lang key for the title',
   `description_key` varchar(255) NOT NULL DEFAULT '' COMMENT 'Lang key for description',
@@ -3719,8 +4673,9 @@ CREATE TABLE `cv0rg_postinstall_messages` (
   `condition_file` varchar(255) DEFAULT NULL COMMENT 'RAD URI to file holding display condition method',
   `condition_method` varchar(255) DEFAULT NULL COMMENT 'Display condition method, must return boolean',
   `version_introduced` varchar(50) NOT NULL DEFAULT '3.2.0' COMMENT 'Version when this message was introduced',
-  `enabled` tinyint(3) NOT NULL DEFAULT '1'
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+  `enabled` tinyint(3) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`postinstall_message_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
 
 --
 -- Dumping data for table `cv0rg_postinstall_messages`
@@ -3736,8 +4691,8 @@ INSERT INTO `cv0rg_postinstall_messages` (`postinstall_message_id`, `extension_i
 -- Table structure for table `cv0rg_redirect_links`
 --
 
-CREATE TABLE `cv0rg_redirect_links` (
-  `id` int(10) unsigned NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_redirect_links` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `old_url` varchar(255) NOT NULL,
   `new_url` varchar(255) DEFAULT NULL,
   `referer` varchar(150) NOT NULL,
@@ -3746,8 +4701,11 @@ CREATE TABLE `cv0rg_redirect_links` (
   `published` tinyint(4) NOT NULL,
   `created_date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `modified_date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `header` smallint(3) NOT NULL DEFAULT '301'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `header` smallint(3) NOT NULL DEFAULT '301',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `idx_link_old` (`old_url`),
+  KEY `idx_link_modifed` (`modified_date`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -3755,9 +4713,10 @@ CREATE TABLE `cv0rg_redirect_links` (
 -- Table structure for table `cv0rg_schemas`
 --
 
-CREATE TABLE `cv0rg_schemas` (
+CREATE TABLE IF NOT EXISTS `cv0rg_schemas` (
   `extension_id` int(11) NOT NULL,
-  `version_id` varchar(20) NOT NULL
+  `version_id` varchar(20) NOT NULL,
+  PRIMARY KEY (`extension_id`,`version_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -3784,14 +4743,17 @@ INSERT INTO `cv0rg_schemas` (`extension_id`, `version_id`) VALUES
 -- Table structure for table `cv0rg_session`
 --
 
-CREATE TABLE `cv0rg_session` (
+CREATE TABLE IF NOT EXISTS `cv0rg_session` (
   `session_id` varchar(200) NOT NULL DEFAULT '',
   `client_id` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `guest` tinyint(4) unsigned DEFAULT '1',
   `time` varchar(14) DEFAULT '',
   `data` mediumtext,
   `userid` int(11) DEFAULT '0',
-  `username` varchar(150) DEFAULT ''
+  `username` varchar(150) DEFAULT '',
+  PRIMARY KEY (`session_id`),
+  KEY `userid` (`userid`),
+  KEY `time` (`time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -3799,8 +4761,8 @@ CREATE TABLE `cv0rg_session` (
 --
 
 INSERT INTO `cv0rg_session` (`session_id`, `client_id`, `guest`, `time`, `data`, `userid`, `username`) VALUES
-('17fb9137ce7018fcdaa5a4d383fe1e64', 1, 0, '1458298554', 'joomla|s:38148:"TzoyNDoiSm9vbWxhXFJlZ2lzdHJ5XFJlZ2lzdHJ5IjoyOntzOjc6IgAqAGRhdGEiO086ODoic3RkQ2xhc3MiOjg6e3M6OToiX19kZWZhdWx0IjtPOjg6InN0ZENsYXNzIjoxMDE6e3M6Nzoic2Vzc2lvbiI7Tzo4OiJzdGRDbGFzcyI6Mzp7czo3OiJjb3VudGVyIjtpOjcyNTtzOjU6InRpbWVyIjtPOjg6InN0ZENsYXNzIjozOntzOjU6InN0YXJ0IjtpOjE0NTgyOTA4NjA7czo0OiJsYXN0IjtpOjE0NTgyOTg1NTM7czozOiJub3ciO2k6MTQ1ODI5ODU1NDt9czo1OiJ0b2tlbiI7czozMjoiZTM0NjJmNGFmMmViYjIyNmRhNWUzZDc3YWQxOGNiYzAiO31zOjg6InJlZ2lzdHJ5IjtPOjI0OiJKb29tbGFcUmVnaXN0cnlcUmVnaXN0cnkiOjI6e3M6NzoiACoAZGF0YSI7Tzo4OiJzdGRDbGFzcyI6MTQ6e3M6MTE6ImFwcGxpY2F0aW9uIjtPOjg6InN0ZENsYXNzIjoxOntzOjQ6ImxhbmciO3M6NToiZW4tR0IiO31zOjEzOiJjb21faW5zdGFsbGVyIjtPOjg6InN0ZENsYXNzIjo0OntzOjc6Im1lc3NhZ2UiO3M6MDoiIjtzOjE3OiJleHRlbnNpb25fbWVzc2FnZSI7czowOiIiO3M6MTI6InJlZGlyZWN0X3VybCI7czowOiIiO3M6NjoibWFuYWdlIjtPOjg6InN0ZENsYXNzIjo0OntzOjY6ImZpbHRlciI7Tzo4OiJzdGRDbGFzcyI6NTp7czo2OiJzZWFyY2giO3M6MDoiIjtzOjk6ImNsaWVudF9pZCI7czowOiIiO3M6Njoic3RhdHVzIjtzOjA6IiI7czo0OiJ0eXBlIjtzOjA6IiI7czo1OiJncm91cCI7czowOiIiO31zOjg6Im9yZGVyY29sIjtzOjQ6Im5hbWUiO3M6OToib3JkZXJkaXJuIjtzOjM6ImFzYyI7czoxMDoibGltaXRzdGFydCI7czoyOiI0MCI7fX1zOjE0OiJjb21fanNudW5pZm9ybSI7TjtzOjExOiJjb21fdW5pZm9ybSI7Tzo4OiJzdGRDbGFzcyI6MTp7czo0OiJlZGl0IjtPOjg6InN0ZENsYXNzIjoxOntzOjQ6ImZvcm0iO086ODoic3RkQ2xhc3MiOjI6e3M6MjoiaWQiO2E6Mjp7aTowO2k6NDtpOjE7aTozO31zOjQ6ImRhdGEiO047fX19czo5OiJjb21fbWVudXMiO086ODoic3RkQ2xhc3MiOjI6e3M6NToiaXRlbXMiO086ODoic3RkQ2xhc3MiOjQ6e3M6ODoibWVudXR5cGUiO3M6ODoibWFpbm1lbnUiO3M6MTA6ImxpbWl0c3RhcnQiO3M6MjoiMjAiO3M6NDoibGlzdCI7YToyOntzOjEyOiJmdWxsb3JkZXJpbmciO3M6OToiYS5sZnQgQVNDIjtzOjU6ImxpbWl0IjtzOjI6IjIwIjt9czo2OiJmaWx0ZXIiO2E6NTp7czo2OiJzZWFyY2giO3M6MDoiIjtzOjk6InB1Ymxpc2hlZCI7czowOiIiO3M6NjoiYWNjZXNzIjtzOjA6IiI7czo4OiJsYW5ndWFnZSI7czowOiIiO3M6NToibGV2ZWwiO3M6MDoiIjt9fXM6NDoiZWRpdCI7Tzo4OiJzdGRDbGFzcyI6MTp7czo0OiJpdGVtIjtPOjg6InN0ZENsYXNzIjo0OntzOjQ6ImRhdGEiO047czo0OiJ0eXBlIjtOO3M6NDoibGluayI7TjtzOjI6ImlkIjthOjM6e2k6MDtpOjE5NzI7aToxO2k6MTk2NjtpOjI7aToxOTc0O319fX1zOjQ6Iml0ZW0iO086ODoic3RkQ2xhc3MiOjE6e3M6NjoiZmlsdGVyIjtPOjg6InN0ZENsYXNzIjoxOntzOjg6Im1lbnV0eXBlIjtzOjg6Im1haW5tZW51Ijt9fXM6MTE6ImNvbV9wbHVnaW5zIjtPOjg6InN0ZENsYXNzIjoxOntzOjQ6ImVkaXQiO086ODoic3RkQ2xhc3MiOjE6e3M6NjoicGx1Z2luIjtPOjg6InN0ZENsYXNzIjoyOntzOjI6ImlkIjthOjI6e2k6MDtpOjQwNztpOjE7aTo3Mjg7fXM6NDoiZGF0YSI7Tjt9fX1zOjExOiJjb21fbW9kdWxlcyI7Tzo4OiJzdGRDbGFzcyI6Mzp7czo3OiJtb2R1bGVzIjtPOjg6InN0ZENsYXNzIjo0OntzOjY6ImZpbHRlciI7Tzo4OiJzdGRDbGFzcyI6ODp7czoxODoiY2xpZW50X2lkX3ByZXZpb3VzIjtpOjA7czo2OiJzZWFyY2giO3M6MDoiIjtzOjY6ImFjY2VzcyI7aTowO3M6NToic3RhdGUiO3M6MDoiIjtzOjg6InBvc2l0aW9uIjtzOjA6IiI7czo2OiJtb2R1bGUiO3M6MDoiIjtzOjk6ImNsaWVudF9pZCI7aTowO3M6ODoibGFuZ3VhZ2UiO3M6MDoiIjt9czo4OiJvcmRlcmNvbCI7czo4OiJwb3NpdGlvbiI7czo5OiJvcmRlcmRpcm4iO3M6MzoiYXNjIjtzOjEwOiJsaW1pdHN0YXJ0IjtzOjI6IjIwIjt9czo0OiJlZGl0IjtPOjg6InN0ZENsYXNzIjoxOntzOjY6Im1vZHVsZSI7Tzo4OiJzdGRDbGFzcyI6Mjp7czoyOiJpZCI7YTozNjp7aTowO2k6MjQ2O2k6MTtpOjc2O2k6MjtpOjQ0O2k6MztpOjIyMjtpOjQ7aTo3MjtpOjU7aToyMzU7aTo2O2k6MjY7aTo3O2k6Mjc7aTo4O2k6NTI7aTo5O2k6MjI0O2k6MTA7aToyMTQ7aToxMTtpOjExODtpOjEyO2k6MTIwO2k6MTM7aToyMTA7aToxNDtpOjIyODtpOjE1O2k6MTY4O2k6MTY7aToxNjE7aToxNztpOjM0O2k6MTg7aToxMTI7aToxOTtpOjIyNztpOjIwO2k6NDA7aToyMTtpOjIxMTtpOjIyO2k6MTYyO2k6MjM7aTozMDtpOjI0O2k6MTc7aToyNTtpOjI0NTtpOjI2O2k6NzM7aToyNztpOjc0O2k6Mjg7aTo3MDtpOjI5O2k6MjIwO2k6MzA7aTo2NTtpOjMxO2k6Njg7aTozMjtpOjU4O2k6MzM7aTo0ODtpOjM0O2k6MjM0O2k6MzU7aToyMjM7fXM6NDoiZGF0YSI7Tjt9fXM6MzoiYWRkIjtPOjg6InN0ZENsYXNzIjoxOntzOjY6Im1vZHVsZSI7Tzo4OiJzdGRDbGFzcyI6Mjp7czoxMjoiZXh0ZW5zaW9uX2lkIjtOO3M6NjoicGFyYW1zIjtOO319fXM6NjoiZ2xvYmFsIjtPOjg6InN0ZENsYXNzIjoxOntzOjQ6Imxpc3QiO086ODoic3RkQ2xhc3MiOjE6e3M6NToibGltaXQiO2k6MjA7fX1zOjEzOiJjb21faW1hZ2VzaG93IjtPOjg6InN0ZENsYXNzIjozOntzOjk6InNob3dsaXN0cyI7Tzo4OiJzdGRDbGFzcyI6MTp7czo4OiJvcmRlcmNvbCI7Tjt9czo2OiJpbWFnZXMiO086ODoic3RkQ2xhc3MiOjQ6e3M6NzoiaW1hZ2VJRCI7czoxOToiNTk0MzA2NDg4NzY1OTQyODIyNiI7czoxMDoic2hvd2xpc3RJRCI7czoxOiI5IjtzOjEwOiJzb3VyY2VOYW1lIjtzOjY6InBpY2FzYSI7czoxMDoic291cmNlVHlwZSI7czo4OiJleHRlcm5hbCI7fXM6OToic2hvd2Nhc2VzIjtPOjg6InN0ZENsYXNzIjoxOntzOjg6Im9yZGVyY29sIjtOO319czoxNToiY29tX2pzbm1vYmlsaXplIjtPOjg6InN0ZENsYXNzIjoxOntzOjg6InByb2ZpbGVzIjtPOjg6InN0ZENsYXNzIjoxOntzOjg6Im9yZGVyY29sIjtzOjEwOiJwLm9yZGVyaW5nIjt9fXM6MTI6ImNvbV9tb2JpbGl6ZSI7Tzo4OiJzdGRDbGFzcyI6MTp7czo0OiJlZGl0IjtPOjg6InN0ZENsYXNzIjoxOntzOjc6InByb2ZpbGUiO086ODoic3RkQ2xhc3MiOjI6e3M6MjoiaWQiO2E6MTp7aTowO2k6MTt9czo0OiJkYXRhIjtOO319fXM6MTE6ImNvbV9jb250ZW50IjtPOjg6InN0ZENsYXNzIjoyOntzOjg6ImFydGljbGVzIjtPOjg6InN0ZENsYXNzIjoyOntzOjU6Im1vZGFsIjtPOjg6InN0ZENsYXNzIjo1OntzOjY6ImZpbHRlciI7Tzo4OiJzdGRDbGFzcyI6NTp7czo2OiJzZWFyY2giO3M6MDoiIjtzOjY6ImFjY2VzcyI7czowOiIiO3M6OToicHVibGlzaGVkIjtzOjA6IiI7czoxMToiY2F0ZWdvcnlfaWQiO3M6MDoiIjtzOjg6Imxhbmd1YWdlIjtzOjA6IiI7fXM6ODoib3JkZXJjb2wiO3M6NDoiYS5pZCI7czo5OiJvcmRlcmRpcm4iO3M6NDoiZGVzYyI7czoxMDoibGltaXRzdGFydCI7czoyOiI4MCI7czo0OiJsaXN0IjthOjQ6e3M6OToiZGlyZWN0aW9uIjtzOjQ6ImRlc2MiO3M6NToibGltaXQiO2k6MjA7czo4OiJvcmRlcmluZyI7czo0OiJhLmlkIjtzOjU6InN0YXJ0IjtkOjEwMDt9fXM6NDoibGlzdCI7YTo0OntzOjk6ImRpcmVjdGlvbiI7czo0OiJkZXNjIjtzOjU6ImxpbWl0IjtpOjIwO3M6ODoib3JkZXJpbmciO3M6NDoiYS5pZCI7czo1OiJzdGFydCI7ZDowO319czo0OiJlZGl0IjtPOjg6InN0ZENsYXNzIjoxOntzOjc6ImFydGljbGUiO086ODoic3RkQ2xhc3MiOjI6e3M6MjoiaWQiO2E6Mjp7aToxO2k6MTEzO2k6MjtpOjExNDt9czo0OiJkYXRhIjtOO319fXM6MTg6ImNvbV9qc25wYWdlYnVpbGRlciI7Tzo4OiJzdGRDbGFzcyI6MTp7czoxMjoic2VsZWN0bW9kdWxlIjtPOjg6InN0ZENsYXNzIjoxOntzOjY6ImZpbHRlciI7Tzo4OiJzdGRDbGFzcyI6MTp7czoxODoiY2xpZW50X2lkX3ByZXZpb3VzIjtpOjA7fX19fXM6OToic2VwYXJhdG9yIjtzOjE6Ii4iO31zOjQ6InVzZXIiO086NToiSlVzZXIiOjI4OntzOjk6IgAqAGlzUm9vdCI7YjoxO3M6MjoiaWQiO3M6MzoiNzYwIjtzOjQ6Im5hbWUiO3M6MTA6IlN1cGVyIFVzZXIiO3M6ODoidXNlcm5hbWUiO3M6NToiYWRtaW4iO3M6NToiZW1haWwiO3M6MjA6ImRvbmd3YW54dWVAZ21haWwuY29tIjtzOjg6InBhc3N3b3JkIjtzOjYwOiIkMnkkMTAkV3F0WTdEMHYvNm5nckthTVJpcUlaT2x6ek9YZDU4cW5vcVJjOS5XSS44ZkhMRFI3N0JpSHUiO3M6MTQ6InBhc3N3b3JkX2NsZWFyIjtzOjA6IiI7czo1OiJibG9jayI7czoxOiIwIjtzOjk6InNlbmRFbWFpbCI7czoxOiIxIjtzOjEyOiJyZWdpc3RlckRhdGUiO3M6MTk6IjIwMTYtMDItMjMgMDA6MTM6NDEiO3M6MTM6Imxhc3R2aXNpdERhdGUiO3M6MTk6IjIwMTYtMDMtMTcgMjM6NDU6NTkiO3M6MTA6ImFjdGl2YXRpb24iO3M6MToiMCI7czo2OiJwYXJhbXMiO3M6MDoiIjtzOjY6Imdyb3VwcyI7YToxOntpOjg7czoxOiI4Ijt9czo1OiJndWVzdCI7aTowO3M6MTM6Imxhc3RSZXNldFRpbWUiO3M6MTk6IjAwMDAtMDAtMDAgMDA6MDA6MDAiO3M6MTA6InJlc2V0Q291bnQiO3M6MToiMCI7czoxMjoicmVxdWlyZVJlc2V0IjtzOjE6IjAiO3M6MTA6IgAqAF9wYXJhbXMiO086MjQ6Ikpvb21sYVxSZWdpc3RyeVxSZWdpc3RyeSI6Mjp7czo3OiIAKgBkYXRhIjtPOjg6InN0ZENsYXNzIjowOnt9czo5OiJzZXBhcmF0b3IiO3M6MToiLiI7fXM6MTQ6IgAqAF9hdXRoR3JvdXBzIjthOjI6e2k6MDtpOjE7aToxO2k6ODt9czoxNDoiACoAX2F1dGhMZXZlbHMiO2E6NTp7aTowO2k6MTtpOjE7aToxO2k6MjtpOjI7aTozO2k6MztpOjQ7aTo2O31zOjE1OiIAKgBfYXV0aEFjdGlvbnMiO047czoxMjoiACoAX2Vycm9yTXNnIjtOO3M6MTM6IgAqAHVzZXJIZWxwZXIiO086MTg6IkpVc2VyV3JhcHBlckhlbHBlciI6MDp7fXM6MTA6IgAqAF9lcnJvcnMiO2E6MDp7fXM6MzoiYWlkIjtpOjA7czo2OiJvdHBLZXkiO3M6MDoiIjtzOjQ6Im90ZXAiO3M6MDoiIjt9czoxMToiYXBwbGljYXRpb24iO086ODoic3RkQ2xhc3MiOjE6e3M6NToicXVldWUiO047fXM6MzI6ImNhOGQ2MDMxY2ZjZjg4OTA2OGRiMmU0ZjI1MzU4OGE4IjtOO3M6MzI6IjVhZmVmZGQ0MGVjMmQxYThlOGEwYTYwZTdiMmM5OTk4IjtOO3M6MzI6Ijk0OTU4YTk5YWM1OWYzOTRlMGYwNGNlZGI3MmQ2M2Y5IjtOO3M6MjI6ImVtYWlsc2V0dGluZ3Nfbm90aWZ5XzEiO047czoyMjoiZW1haWxzZXR0aW5nc19ub3RpZnlfMCI7TjtzOjMyOiIwZWI5YTg3ODkwYTUzMDE5NjUxODRiZmM1YTk2NDczOSI7TjtzOjMyOiIwNGE2NzZkNTRiNzhmZjI4NDEyN2ExZDY1MDJjZGM5NSI7TjtzOjMyOiI0ZGRjYzk1MDhjZDAxNmYzMzdhZTJiZGU5NWQ2NDlhNSI7TjtzOjMyOiI5NjE0ZWQ5NjlkMjAxNGIxMTU3ZTUyZDIyYjBiNjEzZSI7TjtzOjMyOiJhNWMyMGVhMGU1MjE2YWU4MmVhYmQ4MWJmYjkwM2IxZSI7TjtzOjMyOiIyYTAxZGZmMWJjNTI5ZmExZjZiODUxODhhMDY5MDIyMyI7TjtzOjMyOiIxODBjNjgwMGI5ZThkZmI0NzBlMzJkOGNhMTQzZDM3OCI7TjtzOjMyOiJiOWZjNzA5NTljNGVkYjc4Y2ZhZDUyODhkMjdiNTQ4YyI7TjtzOjMyOiI1NDlkNGM1NWE5ZWMzYWMyMDUyMzZkOTNmZjM4MjI4OSI7TjtzOjMyOiJlYzE0MDAxMzNhZDM4YzhiMGFhOTRjMTdkMjM3OWVjYSI7TjtzOjMyOiJjZTQ1OTNhZWFkM2VlMjNkZTU1OTJmODZmYjY2OGZmYiI7TjtzOjMyOiI5MTFlZmI4OTYzODFkMmJkYzkyNzI1ZDAzZmY1NDE0NiI7TjtzOjMyOiI3MjY0NzkyYzMzOTdkMjk5MmQzNzgxMjE4MjFlNTNjZSI7TjtzOjMyOiIwNGFlMWU1NzUwZTQ0YTE0NmU4MmViYmYwNDYzOWE5MiI7TjtzOjMyOiJmODhmMDBkYzRkOTAwYjJkNGY0YWJhZDcwZjRhZTRiZCI7TjtzOjMyOiJkODY4ZGQxMmNhMzRhMzZlNDhmZTc5MmM1YTIzYTE1NiI7TjtzOjMyOiI2NDNmNzU1M2ExNDM1OTEyNzkxOTljOTI5YjM1MDI2NSI7TjtzOjMyOiJiYmUxMGJmOGIxM2IzYTM5ZTJiYzhkNmI0NzI2NTU0YyI7TjtzOjMyOiI0NDc5ZjYwNDdhZWQ4ZGVjMjFkMjA1YTg1NWI2NDY1MSI7TjtzOjMyOiIwMjFlMDEzMzNjOGVlN2MyNGM3NzhlMzdmYzZiNzE4NSI7TjtzOjMyOiIxMmE3NWQ2OGJjMDRkMmI0M2Y2ZjViYTkxNjkzYmMzYSI7TjtzOjMyOiIwZWIzNWNkYWNmM2NhMWYwMGI0YTViYTA3NTYxZDI5NCI7TjtzOjMyOiJlYWFlNzY3NzQ2YWI0MzcwMjdlMTY0NmM0ZjkwYWYzYyI7TjtzOjMyOiIzYTQzYjFjNGJiMmQ5M2VmYWZmMDc3Y2JjODVkNTdlOCI7TjtzOjMyOiJmOWU4MTZlMGM0MWY1ZWNjODc0ZTEwNWRjZjU3ZDA4NSI7TjtzOjMyOiIzZjU2Mjc4NjliMWRkMmEwODlhNzY5NTE4NjMzMzc0OSI7TjtzOjMyOiIwODgwODczODlmMDJkMDE5MWY1MmE2NDQxYmM0ZTFlZSI7TjtzOjMyOiJjY2I3NjFhZTEwNGVkNzYzYTNlNDhjMGZiY2Q5ZjBmZSI7TjtzOjMyOiI3MmQ2YzcwNDU0ZWIxYjhmNmMyZDkyYjNiYjlkMmE5MCI7TjtzOjMyOiJhNWJhNDA3ZWQ1YTkxMTQ2OWY5YjlhMjdmNjBjNmE2YyI7TjtzOjMyOiI5ODE3MjVlZDQzYmU1MWYwYzQ0MzZhZDU2ODFjOTBhOSI7TjtzOjMyOiJjZWJmNjg5N2MwOTE4ZDdiNDA4NDkxYTc0ZjMxNzkyOCI7TjtzOjMyOiIxNjVjNDMwNGYwYTJhZGZkNWE1YTdmNGE4MWI1MjRhNCI7TjtzOjMyOiI5ZWUwOGVmY2NlZWU5ZmNlYWU5OWJmMDE4NWQyZjc2MyI7TjtzOjMyOiI2OTVkMTQ2NGFhZjRiZmFjOWU1MWUwYjUwMTY4NWI0ZSI7TjtzOjMyOiIyODdmY2RkMDEzZjM1MjAyYjM5N2JjN2VhNjMzN2M1OSI7TjtzOjMyOiJkOTBmNjBkYzNlMjZjOGQ5NGM1YzY1M2ZlODZhNjYwNCI7TjtzOjMyOiI1MWE0NjMxOGNjZWQ4NGY4MGExYzhiMjUyYWYyM2EzOCI7czoxNzg6InsicXVlcnlTdHJpbmciOiJvcHRpb249Y29tX2ltYWdlc2hvdyZjb250cm9sbGVyPWltYWdlJnRhc2s9ZWRpdGltYWdlJnNvdXJjZU5hbWU9cGljYXNhJnNvdXJjZVR5cGU9ZXh0ZXJuYWwmdG1wbD1jb21wb25lbnQmc2hvd0xpc3RJRD05JmltYWdlSUQ9NTk0MzA2NDg4NzY1OTQyODIyNiIsIm9iamVjdF9pZCI6MH0iO3M6MzI6IjAzOWFkN2Y1ZjBiZTdmNmUwYzAxOWVhZTJjOTVhNDdkIjtOO3M6MzI6ImNjM2MyOWU5YmQxNDk0NjRkYmU1NTNiNzk4Nzc0NDE2IjtOO3M6MzI6ImNiNGYxODhkNThjNjkxODZhMWY5YjBiODg3OTIxMmFkIjtOO3M6MzI6IjkyODIzYzdkMGRiOTAyOWNkZmIwNTg2YmYzYmQ5MTMyIjtOO3M6MjA6InNob3djYXNlVGhlbWVTZXNzaW9uIjtOO3M6MzI6ImI3MWZkOWY4NWJiNmVhMjFhNWU2YjNlMGYxZWJkOGZmIjtOO3M6MzI6Ijg0OTlkNzUxNzg5M2EyYWEzOWFmYmRlYTg1YzRiMzA3IjtOO3M6MzI6ImMwZWU4MjI4OTQwNTA1MTdjNTc4NTA1ODQxZTZjZGRiIjtOO3M6MzI6ImMyNjAyODZhYzhmOTBiNGE3ZGYwMTU1OWJmNTMyODQ5IjtOO3M6MzI6IjIzMTZmNjcyYmVmMDRkYWE4MWZiMGIzY2QxYTQ2ZjBkIjtOO3M6MzI6IjMyNDIzYmEzMDQzMzNhNDQzZTVlNTFmNzE2NDE3OTIzIjtOO3M6MzI6ImZjODc4OTg2MWU5ZGY1MzVhNzczOTVjN2IxMWJjOGJhIjtOO3M6MzI6IjJkNjEzNDRjYjg4NGVhZGU2ZGEzMjgwMWFkNDhiMGZlIjtOO3M6MzI6IjAxY2NkODQ4NjcxYTBiMDdiMGJkOTZmNDdjNDA0OWMzIjtOO3M6MzI6IjYxMDdmMTE1MGM2YmE0YmYzYmVlM2I2ZGE0ZTlmYzUwIjtOO3M6MzI6ImEzMzg3Y2VlZjUyYWQwNTBhMWFmZWY4N2Q3MTA5ZjUzIjtOO3M6MzI6ImUzYmU2MzlhYzUyZGE5ZDViZDdiYTU2ZGQxMWIyNDIxIjtOO3M6MzI6Ijc5NWFiODRkYWI3ZDY0MDc2MGMyZjViNDdjZjRiZDk5IjtOO3M6MzI6Ijc3MGJiODU1ODEwYjVlM2MwOGU2NWYwNjgwMTQ1MDFiIjtOO3M6MzI6IjJkNjQyMmZjOTc1ZGJkNDdmODk0YTYxZWM1OWJkZDk5IjtOO3M6MzI6IjA5NjRmMmU1ODhkODZjNjEwMThlZWQ0MDFiNTZjYjhhIjtOO3M6MzI6ImUxYzIyY2Y0MjdlZWVkYjJlMmRmY2EwODEwMDUyMmEwIjtOO3M6MjI6IkpTTlBBX1NIT1JUQ09ERUNPTlRFTlQiO3M6MTE2OiJbcGJfbW9kdWxlIGVsX3RpdGxlPSJNb2R1bGUgMSIgbW9kdWxlX2FsaWdubWVudD0ibGVmdCIgbW9kdWxlX3Nob3dfdGl0bGU9InllcyIgYXBwZWFyaW5nX2FuaW1hdGlvbj0iMCIgXVsvcGJfbW9kdWxlXSI7czozMjoiYzQwYmRmNDY3YmU4MWMyZGVhZDY3MTZiZjNjNjY5Y2EiO047czozMjoiMDc5ZjMwMzI1NmMwNGQ5NjMwNGNmZGYyYTYyZGUwNTEiO047czozMjoiMmQ3OTRmMjQ1ZWU5MjI1OWM3YmQ2N2ZkYzEzM2U1YzgiO047czozMjoiN2I5YmEzMWIyYzdiNDM2ZDczZjRhOWJiOTgyZWU5NWUiO047czozMjoiNTNiZDBhZTRmMWFjZDc3MmFlYjIxY2M2ZmEzMTVmNTciO047czozMjoiYzViNjQ0YmMyNGFkZjQyMDJkZmE4NDIzZTAyNjFjYjkiO047czozMjoiYTI0MTQyNzEwYTQ1ZDM2ODljMjIzNGJhYjRlZjU3MzkiO047czozMjoiZjZlYTJkZTZiZTBjOGYxZjQ0OWZlNjkxNDE2MTAxNmIiO047czozMjoiNjczZDg1ZjI4YWY2YmE1ZTlhNmE0ZGNmMmRkZDJjNWEiO047czozMjoiYzBmOTM1Y2E1YzJkYzQyYmUwMTVkZTkzZjZmMGYzNTUiO047czozMjoiODg5NGI2ODFkYjgyYjdmM2UxMzMwY2U3NjQyYTg5YzUiO047czozMjoiMjgwOTc5MTZmYTI3YTFhYzE0MzhiNDYzZDJhZjA1YTYiO047czozMjoiMWUyOTMwZDQ2ZmQ1MGM0NThmZGJjNWUxYTk0ZmVlZTUiO047czozMjoiZmQ5NzRmZjM2OTAxNTMwOWMxODYzNWM2YWQxMTVlNmIiO047czozMjoiNmYzMWVjMmY0OGY4ZTllZjRmZDViZTMwOWY1NzlhNmQiO047czozMjoiNjRmYWZkZjRkZDMzOThjZmM3OWQ3MjY1OWZmYjJkMDgiO047czozMjoiZmRmNDMxMmZmMjczNGM3NDhhNzEwM2E2ZGNkNWEwMTQiO047czozMjoiOGM1MDc1Zjc4ZDcwNzJkYzdmYjFiZWQ5ZGMxZGE2YzUiO047czozMjoiN2M5YTk5MmY0MDVlNGVlMmRiNmZkMzE2MTFhNTRmNDMiO047czozMjoiZmNhMzhmY2JiZGVlNzRhMjlkMjFjOWQ3OWNiYWUzNjIiO047czozMjoiOGEyN2NjZGI4NzEzZjUyODcyZTJmYWZlYTM5YzMwYTIiO047czozMjoiOTViMzQ5NGZkYTZkNjgxMDA4N2ZiNDg4YjI5NzIxZDUiO047czozMjoiNzE5NDg0YWM2MjBhODlmMTYyYjkyOWIxZjhiMTU4ODgiO047czozMjoiZmM0OWMzYzY5NzM5MjE4NzlmMGMxM2YyNzZjZGNiYTEiO047czozMjoiMjdiMGQ5MGE4NmViZGVlNjk3NGIxYjQyMTJmZDc3NjQiO047czozMjoiNzEzNGVjNWE5NjU3YTBkNjg0YTFlMzNkY2E1MjYzODgiO047czozMjoiMjdlYTg4ODkzZTFlNDk2NmJlMWUyNTY5MTU1MjFhOWIiO047czozMjoiYzdmNjg1YjlkYzE4ZTNmNjQyYjBlMDY5ZGNlOWQ1NTgiO047czozMjoiNjY3MTQ4MGVhOWZiMTUwYTcwZGVjNDQ0OWI3NjRlMWUiO047czozMjoiMDkwNzJkY2I0MzRkNzkwMzA2ZTljMDVmYWJmMTRhOGIiO047czozMjoiMmU4MmMzZTdiZDM4ZDJkZWI0ZWY5YTA5MWFlMDc1NTYiO3M6MTA1OiJ7InF1ZXJ5U3RyaW5nIjoib3B0aW9uPWNvbV9jb250ZW50JmxheW91dD1tb2RhbCZ0bXBsPWNvbXBvbmVudCZ0YXNrPWFydGljbGUuZWRpdCZpZD0xMTQiLCJvYmplY3RfaWQiOjExNH0iO31zOjE1OiJfX2Zvcm0tZGVzaWduLTIiO086ODoic3RkQ2xhc3MiOjU6e3M6MTA6ImZvcm1fcGFnZV8iO047czoxNDoiZm9ybV9saXN0X3BhZ2UiO3M6MTY6IltbIjQiLCJQYWdlIDEiXV0iO3M6MTE6ImZvcm1fcGFnZV80IjtzOjEyMzQ6Ilt7ImlkIjoyNywiaWRlbnRpZnkiOiJuYW1lIiwib3B0aW9ucyI6eyJsYWJlbCI6Ik5hbWUiLCJpbnN0cnVjdGlvbiI6IiIsInJlcXVpcmVkIjoiMSIsImxpbWl0YXRpb24iOjAsImxpbWl0TWluIjowLCJsaW1pdE1heCI6MCwibGltaXRUeXBlIjoiV29yZHMiLCJzaXplIjoianNuLWlucHV0LXhsYXJnZS1mbHVpZCIsInZhbHVlIjoiWW91ciBOYW1lIiwiaWRlbnRpZnkiOiJuYW1lIn0sInR5cGUiOiJzaW5nbGUtbGluZS10ZXh0IiwicG9zaXRpb24iOiJsZWZ0IiwidG9rZW4iOiI2MDNkNDY2NDg0YzQ5MmViOTFmMDdiZjg4OGM4NGU0YiJ9LHsiaWQiOjE1LCJpZGVudGlmeSI6ImVtYWlsIiwib3B0aW9ucyI6eyJsYWJlbCI6IkVtYWlsIiwiaW5zdHJ1Y3Rpb24iOiIiLCJyZXF1aXJlZCI6IjEiLCJub0R1cGxpY2F0ZXMiOjAsImF1dG9JbnNlcnRFbWFpbCI6MCwic2l6ZSI6Impzbi1pbnB1dC14bGFyZ2UtZmx1aWQiLCJ2YWx1ZSI6IllvdXIgZW1haWwiLCJ2YWx1ZUNvbmZpcm0iOiIiLCJpZGVudGlmeSI6ImVtYWlsIn0sInR5cGUiOiJlbWFpbCIsInBvc2l0aW9uIjoibGVmdCIsInRva2VuIjoiNjAzZDQ2NjQ4NGM0OTJlYjkxZjA3YmY4ODhjODRlNGIifSx7ImlkIjoyOCwiaWRlbnRpZnkiOiJzdWJqZWN0Iiwib3B0aW9ucyI6eyJsYWJlbCI6IlN1YmplY3QiLCJpbnN0cnVjdGlvbiI6IiIsInJlcXVpcmVkIjowLCJsaW1pdGF0aW9uIjowLCJsaW1pdE1pbiI6MCwibGltaXRNYXgiOjAsImxpbWl0VHlwZSI6IldvcmRzIiwic2l6ZSI6Impzbi1pbnB1dC14bGFyZ2UtZmx1aWQiLCJ2YWx1ZSI6IlN1YmplY3QiLCJpZGVudGlmeSI6InN1YmplY3QifSwidHlwZSI6InNpbmdsZS1saW5lLXRleHQiLCJwb3NpdGlvbiI6ImxlZnQiLCJ0b2tlbiI6IjYwM2Q0NjY0ODRjNDkyZWI5MWYwN2JmODg4Yzg0ZTRiIn0seyJpZCI6MjksImlkZW50aWZ5IjoibWFzc2FnZSIsIm9wdGlvbnMiOnsibGFiZWwiOiJNYXNzYWdlIiwiaW5zdHJ1Y3Rpb24iOiIiLCJyZXF1aXJlZCI6IjEiLCJsaW1pdGF0aW9uIjowLCJsaW1pdE1pbiI6MCwibGltaXRNYXgiOjAsInJvd3MiOiI4Iiwic2l6ZSI6Impzbi1pbnB1dC14bGFyZ2UtZmx1aWQiLCJsaW1pdFR5cGUiOiJXb3JkcyIsInZhbHVlIjoiWW91ciBtZXNzYWdlIiwiaWRlbnRpZnkiOiJtYXNzYWdlIn0sInR5cGUiOiJwYXJhZ3JhcGgtdGV4dCIsInBvc2l0aW9uIjoibGVmdCIsInRva2VuIjoiNjAzZDQ2NjQ4NGM0OTJlYjkxZjA3YmY4ODhjODRlNGIifV0iO3M6MjE6ImZvcm1fY29udGFpbmVyX3BhZ2VfNCI7czo0ODoiW1t7ImNvbHVtbk5hbWUiOiJsZWZ0IiwiY29sdW1uQ2xhc3MiOiJzcGFuMTIifV1dIjtzOjEyOiJwYWdlX2NvbnRlbnQiO3M6NToiWyI0Il0iO31zOjE0OiJfX2Zvcm0tZGVzaWduLSI7Tzo4OiJzdGRDbGFzcyI6Njp7czoxMDoiZm9ybV9wYWdlXyI7TjtzOjE0OiJmb3JtX2xpc3RfcGFnZSI7TjtzOjMwOiJmb3JtX2NvbnRhaW5lcl9wYWdlXzI3Mjg4NTM5NzciO3M6NDg6IltbeyJjb2x1bW5OYW1lIjoibGVmdCIsImNvbHVtbkNsYXNzIjoic3BhbjEyIn1dXSI7czoyMDoiZm9ybV9wYWdlXzI3Mjg4NTM5NzciO3M6MjoiW10iO3M6MzA6ImZvcm1fY29udGFpbmVyX3BhZ2VfOTUzNjQ3NTI3MCI7czo0ODoiW1t7ImNvbHVtbk5hbWUiOiJsZWZ0IiwiY29sdW1uQ2xhc3MiOiJzcGFuMTIifV1dIjtzOjIwOiJmb3JtX3BhZ2VfOTUzNjQ3NTI3MCI7czoyOiJbXSI7fXM6MTU6Il9fZm9ybS1kZXNpZ24tNCI7Tzo4OiJzdGRDbGFzcyI6NTp7czoxMDoiZm9ybV9wYWdlXyI7TjtzOjE0OiJmb3JtX2xpc3RfcGFnZSI7TjtzOjExOiJmb3JtX3BhZ2VfNiI7czo1MDcxOiJbeyJpZCI6MTgsInR5cGUiOiJjaG9pY2VzIiwicG9zaXRpb24iOiJsZWZ0IiwiaWRlbnRpZnkiOiJtdWx0aXBsZV9jaG9pY2UiLCJsYWJlbCI6Ik11bHRpcGxlIENob2ljZSIsImluc3RydWN0aW9uIjoiIiwib3B0aW9ucyI6eyJsYWJlbCI6Ik11bHRpcGxlIENob2ljZSIsImluc3RydWN0aW9uIjoiIiwicmVxdWlyZWQiOiIxIiwicmFuZG9taXplIjowLCJsYWJlbE90aGVycyI6Ik90aGVycyIsImxheW91dCI6Impzbi1jb2x1bW5zLWNvdW50LW9uZSIsIml0ZW1zIjpbeyJ0ZXh0IjoiSW5kaXZpZHVhbCBidWlsZGluZyB3ZWJzaXRlIGZvciBoaW1zZWxmICIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJGcmVlbGFuY2VyIGJ1aWxkaW5nIHdlYnNpdGVzIGZvciBjbGllbnRzICIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJXZWIgQWdlbmN5ICIsImNoZWNrZWQiOmZhbHNlfV0sInZhbHVlIjoiIiwiaWRlbnRpZnkiOiJtdWx0aXBsZV9jaG9pY2UiLCJpdGVtQWN0aW9uIjoiIiwiYWxsb3dPdGhlciI6IjEifX0seyJpZCI6MTksInR5cGUiOiJjaG9pY2VzIiwicG9zaXRpb24iOiJsZWZ0IiwiaWRlbnRpZnkiOiJ5b3VyX2pvb21sYV9leHBlcmllbmNlXyIsImxhYmVsIjoiWW91ciBKb29tbGEgZXhwZXJpZW5jZTogIiwiaW5zdHJ1Y3Rpb24iOiIiLCJvcHRpb25zIjp7ImxhYmVsIjoiWW91ciBKb29tbGEgZXhwZXJpZW5jZTogIiwiaW5zdHJ1Y3Rpb24iOiIiLCJyZXF1aXJlZCI6IjEiLCJyYW5kb21pemUiOjAsImxhYmVsT3RoZXJzIjoiT3RoZXJzIiwibGF5b3V0IjoianNuLWNvbHVtbnMtY291bnQtb25lIiwiaXRlbXMiOlt7InRleHQiOiJMZXNzIHRoYW4gMSB5ZWFyICIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiIxLTMgeWVhcnMgIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6Ik1vcmUgdGhhbiAzIHllYXJzICIsImNoZWNrZWQiOmZhbHNlfV0sInZhbHVlIjoiIiwiaWRlbnRpZnkiOiJ5b3VyX2pvb21sYV9leHBlcmllbmNlXyIsIml0ZW1BY3Rpb24iOiIifX0seyJpZCI6MjAsInR5cGUiOiJjaG9pY2VzIiwicG9zaXRpb24iOiJsZWZ0IiwiaWRlbnRpZnkiOiJ3aGljaF9mb3J1bV9leHRlbnNpb25fZG9feW91X2xpa2VfdG9fc2VlX2pvb21sYXNoaW5lX3RlbXBsYXRlX2NvbXBhdGlibGVfd2l0aF8iLCJsYWJlbCI6IldoaWNoIGZvcnVtIGV4dGVuc2lvbiBkbyB5b3UgbGlrZSB0byBzZWUgSm9vbWxhU2hpbmUgdGVtcGxhdGUgY29tcGF0aWJsZSB3aXRoPyIsImluc3RydWN0aW9uIjoiIiwib3B0aW9ucyI6eyJsYWJlbCI6IldoaWNoIGZvcnVtIGV4dGVuc2lvbiBkbyB5b3UgbGlrZSB0byBzZWUgSm9vbWxhU2hpbmUgdGVtcGxhdGUgY29tcGF0aWJsZSB3aXRoPyIsImluc3RydWN0aW9uIjoiIiwicmVxdWlyZWQiOiIxIiwicmFuZG9taXplIjowLCJsYWJlbE90aGVycyI6Ik90aGVycyIsImxheW91dCI6Impzbi1jb2x1bW5zLWNvdW50LW9uZSIsIml0ZW1zIjpbeyJ0ZXh0IjoiS3VuZW5hICIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJEaXNjdXNzaW9ucyAiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiTmluamFib2FyZCAiLCJjaGVja2VkIjpmYWxzZX1dLCJ2YWx1ZSI6IiIsImN1c3RvbUNsYXNzIjoiIiwiaXRlbUFjdGlvbiI6IiIsImFsbG93T3RoZXIiOiIxIiwiaWRlbnRpZnkiOiJ3aGljaF9mb3J1bV9leHRlbnNpb25fZG9feW91X2xpa2VfdG9fc2VlX2pvb21sYXNoaW5lX3RlbXBsYXRlX2NvbXBhdGlibGVfd2l0aF8ifX0seyJpZCI6MjEsInR5cGUiOiJjaG9pY2VzIiwicG9zaXRpb24iOiJsZWZ0IiwiaWRlbnRpZnkiOiJhYm91dF9zYW1wbGVfZGF0YV93aGljaF93YXlfZG9feW91X3ByZWZlcl8iLCJsYWJlbCI6IkFib3V0IHNhbXBsZSBkYXRhLCB3aGljaCB3YXkgZG8geW91IHByZWZlcj8iLCJpbnN0cnVjdGlvbiI6IiIsIm9wdGlvbnMiOnsibGFiZWwiOiJBYm91dCBzYW1wbGUgZGF0YSwgd2hpY2ggd2F5IGRvIHlvdSBwcmVmZXI/IiwiaW5zdHJ1Y3Rpb24iOiIiLCJyZXF1aXJlZCI6IjEiLCJyYW5kb21pemUiOjAsImxhYmVsT3RoZXJzIjoiT3RoZXJzIiwibGF5b3V0IjoianNuLWNvbHVtbnMtY291bnQtb25lIiwiaXRlbXMiOlt7InRleHQiOiJTYW1wbGUgZGF0YSBpbnN0YWxsYXRpb24gb24geW91ciBjdXJyZW50IHdlYnNpdGUgIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6Ildob2xlIEpvb21sYSEgc2l0ZSBpbnN0YWxsYXRpb24gcGFja2FnZSB3aXRoIHNhbXBsZSBkYXRhICIsImNoZWNrZWQiOmZhbHNlfV0sInZhbHVlIjoiIiwiaWRlbnRpZnkiOiJhYm91dF9zYW1wbGVfZGF0YV93aGljaF93YXlfZG9feW91X3ByZWZlcl8iLCJpdGVtQWN0aW9uIjoiIn19LHsiaWQiOjIyLCJ0eXBlIjoicGFyYWdyYXBoLXRleHQiLCJwb3NpdGlvbiI6ImxlZnQiLCJpZGVudGlmeSI6IndoYXRfbWFrZXNfeW91X2xvdmVfam9vbWxhc2hpbmVfdGVtcGxhdGVfIiwibGFiZWwiOiJXaGF0IG1ha2VzIHlvdSBsb3ZlIEpvb21sYVNoaW5lIHRlbXBsYXRlPyIsImluc3RydWN0aW9uIjoiIiwib3B0aW9ucyI6eyJsYWJlbCI6IldoYXQgbWFrZXMgeW91IGxvdmUgSm9vbWxhU2hpbmUgdGVtcGxhdGU/IiwiaW5zdHJ1Y3Rpb24iOiIiLCJyZXF1aXJlZCI6IjEiLCJsaW1pdGF0aW9uIjowLCJsaW1pdE1pbiI6MCwibGltaXRNYXgiOjAsInJvd3MiOiI0Iiwic2l6ZSI6Impzbi1pbnB1dC14bGFyZ2UtZmx1aWQiLCJsaW1pdFR5cGUiOiJXb3JkcyIsInZhbHVlIjoiIiwiaWRlbnRpZnkiOiJ3aGF0X21ha2VzX3lvdV9sb3ZlX2pvb21sYXNoaW5lX3RlbXBsYXRlXyJ9fSx7ImlkIjoyMywidHlwZSI6InBhcmFncmFwaC10ZXh0IiwicG9zaXRpb24iOiJsZWZ0IiwiaWRlbnRpZnkiOiJ3aGljaF9hcmVfdGhlX3RoaW5nc195b3VfZG9uX3RfbGlrZV9pbl9qb29tbGFzaGluZV90ZW1wbGF0ZV8iLCJsYWJlbCI6IldoaWNoIGFyZSB0aGUgdGhpbmdzIHlvdSBkb24ndCBsaWtlIGluIEpvb21sYVNoaW5lIHRlbXBsYXRlPyIsImluc3RydWN0aW9uIjoiIiwib3B0aW9ucyI6eyJsYWJlbCI6IldoaWNoIGFyZSB0aGUgdGhpbmdzIHlvdSBkb24ndCBsaWtlIGluIEpvb21sYVNoaW5lIHRlbXBsYXRlPyIsImluc3RydWN0aW9uIjoiIiwicmVxdWlyZWQiOiIxIiwibGltaXRhdGlvbiI6MCwibGltaXRNaW4iOjAsImxpbWl0TWF4IjowLCJyb3dzIjoiNCIsInNpemUiOiJqc24taW5wdXQteGxhcmdlLWZsdWlkIiwibGltaXRUeXBlIjoiV29yZHMiLCJ2YWx1ZSI6IiIsImlkZW50aWZ5Ijoid2hpY2hfYXJlX3RoZV90aGluZ3NfeW91X2Rvbl90X2xpa2VfaW5fam9vbWxhc2hpbmVfdGVtcGxhdGVfIn19LHsiaWQiOjI0LCJ0eXBlIjoiY2hvaWNlcyIsInBvc2l0aW9uIjoibGVmdCIsImlkZW50aWZ5Ijoid2hpY2hfZmVhdHVyZXNfZG9feW91X2xpa2VfdG9fc2VlX2pvb21sYXNoaW5lX3RlbXBsYXRlX2hhdmVfIiwibGFiZWwiOiJXaGljaCBmZWF0dXJlcyBkbyB5b3UgbGlrZSB0byBzZWUgSm9vbWxhU2hpbmUgdGVtcGxhdGUgaGF2ZT8iLCJpbnN0cnVjdGlvbiI6IiIsIm9wdGlvbnMiOnsibGFiZWwiOiJXaGljaCBmZWF0dXJlcyBkbyB5b3UgbGlrZSB0byBzZWUgSm9vbWxhU2hpbmUgdGVtcGxhdGUgaGF2ZT8iLCJpbnN0cnVjdGlvbiI6IiIsInJlcXVpcmVkIjoiMSIsInJhbmRvbWl6ZSI6MCwibGFiZWxPdGhlcnMiOiJPdGhlcnMiLCJsYXlvdXQiOiJqc24tY29sdW1ucy1jb3VudC1vbmUiLCJpdGVtcyI6W3sidGV4dCI6IkNvbnRyb2wgUGFuZWwgdG8gY3VzdG9taXplIHN0eWxlICIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJNZWdhIG1lbnUgIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6Ik1vcmUgaWNvbnMgdG8gdXNlICIsImNoZWNrZWQiOmZhbHNlfV0sInZhbHVlIjoiIiwiaWRlbnRpZnkiOiJ3aGljaF9mZWF0dXJlc19kb195b3VfbGlrZV90b19zZWVfam9vbWxhc2hpbmVfdGVtcGxhdGVfaGF2ZV8iLCJpdGVtQWN0aW9uIjoiIiwiYWxsb3dPdGhlciI6IjEifX0seyJpZCI6MjUsInR5cGUiOiJwYXJhZ3JhcGgtdGV4dCIsInBvc2l0aW9uIjoibGVmdCIsImlkZW50aWZ5Ijoid2hhdF9kZXNpZ25fc3R5bGVfeW91X3dhbnRfdG9fc2VlX2luX3RoZV9mdXJ0aGVyX2pvb21sYXNoaW5lX3RlbXBsYXRlc19naXZlX3VzX3RoZV91cmxfdG9fdGhlX2Rlc2lnbl8iLCJsYWJlbCI6IldoYXQgZGVzaWduIHN0eWxlIHlvdSB3YW50IHRvIHNlZSBpbiB0aGUgZnVydGhlciBKb29tbGFTaGluZSB0ZW1wbGF0ZXMsIGdpdmUgdXMgdGhlIFVSTCB0byB0aGUgZGVzaWduPyAiLCJpbnN0cnVjdGlvbiI6IiIsIm9wdGlvbnMiOnsibGFiZWwiOiJXaGF0IGRlc2lnbiBzdHlsZSB5b3Ugd2FudCB0byBzZWUgaW4gdGhlIGZ1cnRoZXIgSm9vbWxhU2hpbmUgdGVtcGxhdGVzLCBnaXZlIHVzIHRoZSBVUkwgdG8gdGhlIGRlc2lnbj8gIiwiaW5zdHJ1Y3Rpb24iOiIiLCJyZXF1aXJlZCI6MCwibGltaXRhdGlvbiI6MCwibGltaXRNaW4iOjAsImxpbWl0TWF4IjowLCJyb3dzIjoiMyIsInNpemUiOiJqc24taW5wdXQteGxhcmdlLWZsdWlkIiwibGltaXRUeXBlIjoiV29yZHMiLCJ2YWx1ZSI6IiIsImlkZW50aWZ5Ijoid2hhdF9kZXNpZ25fc3R5bGVfeW91X3dhbnRfdG9fc2VlX2luX3RoZV9mdXJ0aGVyX2pvb21sYXNoaW5lX3RlbXBsYXRlc19naXZlX3VzX3RoZV91cmxfdG9fdGhlX2Rlc2lnbl8ifX0seyJpZCI6MjYsInR5cGUiOiJkYXRlIiwicG9zaXRpb24iOiJsZWZ0IiwiaWRlbnRpZnkiOiJkYXRlX3RpbWUiLCJsYWJlbCI6IkRhdGVcL1RpbWUiLCJpbnN0cnVjdGlvbiI6IiIsIm9wdGlvbnMiOnsibGFiZWwiOiJEYXRlXC9UaW1lIiwiaW5zdHJ1Y3Rpb24iOiIiLCJyZXF1aXJlZCI6MCwiZW5hYmxlUmFnZVNlbGVjdGlvbiI6IjEiLCJzaXplIjoianNuLWlucHV0LXNtYWxsLWZsdWlkIiwidGltZUZvcm1hdCI6MCwiZGF0ZUZvcm1hdCI6IjEiLCJ5ZWFyUmFuZ2VNaW4iOiIxOTMwIiwieWVhclJhbmdlTWF4IjoiMjAyMyIsImlkZW50aWZ5IjoiZGF0ZV90aW1lIiwiZGF0ZVZhbHVlIjoiIiwiZGF0ZVZhbHVlUmFuZ2UiOiIiLCJkYXRlT3B0aW9uRm9ybWF0IjoibW1cL2RkXC95eSIsImN1c3RvbUZvcm1hdERhdGUiOiIiLCJ0aW1lT3B0aW9uRm9ybWF0IjoiaGg6bW0gdHQifX1dIjtzOjIxOiJmb3JtX2NvbnRhaW5lcl9wYWdlXzYiO3M6NDg6IltbeyJjb2x1bW5OYW1lIjoibGVmdCIsImNvbHVtbkNsYXNzIjoic3BhbjEyIn1dXSI7czoxMjoicGFnZV9jb250ZW50IjtzOjU6IlsiNiJdIjt9czoxNToiX19mb3JtLWRlc2lnbi0zIjtPOjg6InN0ZENsYXNzIjo1OntzOjEwOiJmb3JtX3BhZ2VfIjtOO3M6MTQ6ImZvcm1fbGlzdF9wYWdlIjtOO3M6MTE6ImZvcm1fcGFnZV81IjtzOjU1MjoiW3siaWQiOjE2LCJ0eXBlIjoic3RhdGljLWNvbnRlbnQiLCJwb3NpdGlvbiI6ImxlZnQiLCJpZGVudGlmeSI6InN0YXRpY19jb250ZW50IiwibGFiZWwiOiJTdGF0aWMgQ29udGVudCIsImluc3RydWN0aW9uIjpudWxsLCJvcHRpb25zIjp7ImxhYmVsIjoiU3RhdGljIENvbnRlbnQiLCJ2YWx1ZSI6Ik5ld3MgU3Vic2NyaXB0aW9uIiwiY3VzdG9tQ2xhc3MiOiJkZW1vLXN1YnNjcmliZS1mb3JtLWRlc2MiLCJpZGVudGlmeSI6InN0YXRpY19jb250ZW50In19LHsiaWQiOjMwLCJ0eXBlIjoiZW1haWwiLCJwb3NpdGlvbiI6ImxlZnQiLCJpZGVudGlmeSI6ImVtYWlsIiwibGFiZWwiOiJFbWFpbCIsImluc3RydWN0aW9uIjoiIiwib3B0aW9ucyI6eyJsYWJlbCI6IkVtYWlsIiwiaW5zdHJ1Y3Rpb24iOiIiLCJyZXF1aXJlZCI6IjEiLCJub0R1cGxpY2F0ZXMiOjAsInNpemUiOiJqc24taW5wdXQtbWVkaXVtLWZsdWlkIiwidmFsdWUiOiJFbnRlciB5b3VyIGVtYWlsIGFkZHJlc3MiLCJpZGVudGlmeSI6ImVtYWlsIiwiY3VzdG9tQ2xhc3MiOiIiLCJ2YWx1ZUNvbmZpcm0iOiIifX1dIjtzOjIxOiJmb3JtX2NvbnRhaW5lcl9wYWdlXzUiO3M6NDg6IltbeyJjb2x1bW5OYW1lIjoibGVmdCIsImNvbHVtbkNsYXNzIjoic3BhbjEyIn1dXSI7czoxMjoicGFnZV9jb250ZW50IjtzOjU6IlsiNSJdIjt9czoxNToiX19mb3JtLWRlc2lnbi01IjtPOjg6InN0ZENsYXNzIjo1OntzOjEwOiJmb3JtX3BhZ2VfIjtOO3M6MTQ6ImZvcm1fbGlzdF9wYWdlIjtzOjE2OiJbWyI3IiwiUGFnZSAxIl1dIjtzOjExOiJmb3JtX3BhZ2VfNyI7czo5NzYxOiJbeyJpZCI6MzEsImlkZW50aWZ5IjoiZW1haWxfODAxNDIxNjc1MV81M18zOSIsIm9wdGlvbnMiOnsibGFiZWwiOiJFbWFpbCBBZGRyZXNzIiwiaW5zdHJ1Y3Rpb24iOiIiLCJyZXF1aXJlZCI6IjEiLCJub0R1cGxpY2F0ZXMiOjAsImF1dG9JbnNlcnRFbWFpbCI6MCwic2l6ZSI6Impzbi1pbnB1dC1tZWRpdW0tZmx1aWQiLCJ2YWx1ZSI6InRlc3RAZXhhbXBsZS5jb20iLCJpZGVudGlmeSI6ImVtYWlsXzgwMTQyMTY3NTFfNTNfMzkiLCJjdXN0b21DbGFzcyI6IiIsInZhbHVlQ29uZmlybSI6IiJ9LCJ0eXBlIjoiZW1haWwiLCJwb3NpdGlvbiI6ImxlZnQiLCJ0b2tlbiI6IjYwM2Q0NjY0ODRjNDkyZWI5MWYwN2JmODg4Yzg0ZTRiIn0seyJpZGVudGlmeSI6InBhc3N3b3JkXzUwODE5NjY1NjJfNl8yMSIsIm9wdGlvbnMiOnsibGFiZWwiOiJQYXNzd29yZCIsImluc3RydWN0aW9uIjoiTWluaW11bSA4IGNoYXJhY3RlcnMiLCJyZXF1aXJlZCI6IjEiLCJsaW1pdE1pbiI6IjAiLCJsaW1pdE1heCI6IjgiLCJjb25maXJtYXRpb24iOiIxIiwiZW5jcnlwdCI6InRleHQiLCJoaWRlRmllbGQiOmZhbHNlLCJ2YWx1ZSI6IiIsImlkZW50aWZ5IjoicGFzc3dvcmRfNTA4MTk2NjU2Ml82XzIxIiwiY3VzdG9tQ2xhc3MiOiIiLCJzaXplIjoianNuLWlucHV0LW1lZGl1bS1mbHVpZCIsInZhbHVlQ29uZmlybWF0aW9uIjoicmUtZW50ZXIgcGFzc3dvcmQiLCJsaW1pdGF0aW9uIjoiMSJ9LCJ0eXBlIjoicGFzc3dvcmQiLCJwb3NpdGlvbiI6ImxlZnQiLCJ0b2tlbiI6IjYwM2Q0NjY0ODRjNDkyZWI5MWYwN2JmODg4Yzg0ZTRiIn0seyJpZCI6MzIsImlkZW50aWZ5IjoibmFtZV82MjMxMjg1ODQxXzUzXzExIiwib3B0aW9ucyI6eyJsYWJlbCI6Ik5hbWUiLCJpbnN0cnVjdGlvbiI6IiIsInJlcXVpcmVkIjoiMSIsImF1dG9JbnNlcnROYW1lIjowLCJzaXplIjoianNuLWlucHV0LW1pbmktZmx1aWQiLCJpdGVtcyI6W3sidGV4dCI6Ik1ycyIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJNciIsImNoZWNrZWQiOnRydWV9LHsidGV4dCI6Ik1zIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6IkJhYnkiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiTWFzdGVyIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6IlByb2YiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiRHIiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiR2VuIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6IlJlcCIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJTZW4iLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiU3QiLCJjaGVja2VkIjpmYWxzZX1dLCJpZGVudGlmeSI6Im5hbWVfNjIzMTI4NTg0MV81M18xMSIsImN1c3RvbUNsYXNzIjoiIiwidnRpdGxlIjoiMSIsInZmaXJzdCI6IjEiLCJ2bWlkZGxlIjoiMSIsInZsYXN0IjoiMSIsInNvcnRhYmxlRmllbGQiOiJbXCJ2dGl0bGVcIiwgXCJ2Zmlyc3RcIiwgXCJ2bWlkZGxlXCIsIFwidmxhc3RcIl0ifSwidHlwZSI6Im5hbWUiLCJwb3NpdGlvbiI6ImxlZnQiLCJ0b2tlbiI6IjYwM2Q0NjY0ODRjNDkyZWI5MWYwN2JmODg4Yzg0ZTRiIn0seyJpZCI6MzMsImlkZW50aWZ5IjoiY2hvaWNlc18zMjU5NTk4MjAxXzU1XzYiLCJvcHRpb25zIjp7ImxhYmVsIjoiR2VuZGVyIiwiaW5zdHJ1Y3Rpb24iOiIiLCJyZXF1aXJlZCI6MCwicmFuZG9taXplIjowLCJsYWJlbE90aGVycyI6Ik90aGVycyIsImxheW91dCI6Impzbi1jb2x1bW5zLWNvdW50LW9uZSIsIml0ZW1zIjpbeyJ0ZXh0IjoiRmVtYWxlIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6Ik1hbGUiLCJjaGVja2VkIjpmYWxzZX1dLCJ2YWx1ZSI6IiIsImlkZW50aWZ5IjoiY2hvaWNlc18zMjU5NTk4MjAxXzU1XzYiLCJjdXN0b21DbGFzcyI6IiIsIml0ZW1BY3Rpb24iOiIifSwidHlwZSI6ImNob2ljZXMiLCJwb3NpdGlvbiI6ImxlZnQiLCJ0b2tlbiI6IjYwM2Q0NjY0ODRjNDkyZWI5MWYwN2JmODg4Yzg0ZTRiIn0seyJpZCI6MzQsImlkZW50aWZ5IjoiYWRkcmVzc181NzI4NzYxMzgxXzUzXzMwIiwib3B0aW9ucyI6eyJsYWJlbCI6IkFkZHJlc3MiLCJpbnN0cnVjdGlvbiI6IiIsInJlcXVpcmVkIjowLCJ2c3RyZWV0QWRkcmVzcyI6IjEiLCJ2c3RyZWV0QWRkcmVzczIiOiIxIiwidmNpdHkiOiIxIiwidnN0YXRlIjoiMSIsInZjb2RlIjoiMSIsInZjb3VudHJ5IjoiMSIsImNvdW50cnkiOlt7InRleHQiOiJBZmdoYW5pc3RhbiIsImNoZWNrZWQiOnRydWV9LHsidGV4dCI6IkFsYmFuaWEiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiQWxnZXJpYSIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJBbmRvcnJhIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6IkFuZ29sYSIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJBbnRpZ3VhIGFuZCBCYXJidWRhIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6IkFyZ2VudGluYSIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJBcm1lbmlhIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6IkF1c3RyYWxpYSIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJBdXN0cmlhIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6IkF6ZXJiYWlqYW4iLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiQmFoYW1hcyIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJCYWhyYWluIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6IkJhbmdsYWRlc2giLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiQmFyYmFkb3MiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiQmVsYXJ1cyIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJCZWxnaXVtIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6IkJlbGl6ZSIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJCZW5pbiIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJCaHV0YW4iLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiQm9saXZpYSIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJCb3NuaWEgYW5kIEhlcnplZ292aW5hIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6IkJvdHN3YW5hIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6IkJyYXppbCIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJCcnVuZWkiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiQnVsZ2FyaWEiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiQnVya2luYSBGYXNvIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6IkJ1cnVuZGkiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiQ2FtYm9kaWEiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiQ2FtZXJvb24iLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiQ2FuYWRhIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6IkNhcGUgVmVyZGUiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiQ2VudHJhbCBBZnJpY2FuIFJlcHVibGljIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6IkNoYWQiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiQ2hpbGUiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiQ2hpbmEiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiQ29sb21iaSIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJDb21vcm9zIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6IkNvbmdvIChCcmF6emF2aWxsZSkiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiQ29uZ28iLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiQ29zdGEgUmljYSIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJDb3RlIGQnSXZvaXJlIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6IkNyb2F0aWEiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiQ3ViYSIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJDeXBydXMiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiQ3plY2ggUmVwdWJsaWMiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiRGVubWFyayIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJEamlib3V0aSIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJEb21pbmljYSIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJEb21pbmljYW4gUmVwdWJsaWMiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiRWFzdCBUaW1vciAoVGltb3IgVGltdXIpIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6IkVjdWFkb3IiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiRWd5cHQiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiRWwgU2FsdmFkb3IiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiRXF1YXRvcmlhbCBHdWluZWEiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiRXJpdHJlYSIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJFc3RvbmlhIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6IkV0aGlvcGlhIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6IkZpamkiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiRmlubGFuZCIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJGcmFuY2UiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiR2Fib24iLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiR2FtYmlhLCBUaGUiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiR2VvcmdpYSIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJHZXJtYW55IiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6IkdoYW5hIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6IkdyZWVjZSIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJHcmVuYWRhIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6Ikd1YXRlbWFsYSIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJHdWluZWEiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiR3VpbmVhLUJpc3NhdSIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJHdXlhbmEiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiSGFpdGkiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiSG9uZHVyYXMiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiSHVuZ2FyeSIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJJY2VsYW5kIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6IkluZGlhIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6IkluZG9uZXNpYSIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJJcmFuIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6IklyYXEiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiSXJlbGFuZCIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJJc3JhZWwiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiSXRhbHkiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiSmFtYWljYSIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJKYXBhbiIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJKb3JkYW4iLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiS2F6YWtoc3RhbiIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJLZW55YSIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJLaXJpYmF0aSIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJLb3JlYSwgTm9ydGgiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiS29yZWEsIFNvdXRoIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6Ikt1d2FpdCIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJLeXJneXpzdGFuIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6Ikxhb3MiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiTGF0dmlhIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6IkxlYmFub24iLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiTGVzb3RobyIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJMaWJlcmlhIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6IkxpYnlhIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6IkxpZWNodGVuc3RlaW4iLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiTGl0aHVhbmlhIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6Ikx1eGVtYm91cmciLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiTWFjZWRvbmlhIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6Ik1hZGFnYXNjYXIiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiTWFsYXdpIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6Ik1hbGF5c2lhIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6Ik1hbGRpdmVzIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6Ik1hbGkiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiTWFsdGEiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiTWFyc2hhbGwgSXNsYW5kcyIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJNYXVyaXRhbmlhIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6Ik1hdXJpdGl1cyIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJNZXhpY28iLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiTWljcm9uZXNpYSIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJNb2xkb3ZhIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6Ik1vbmFjbyIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJNb25nb2xpYSIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJNb3JvY2NvIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6Ik1vemFtYmlxdWUiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiTXlhbm1hciIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJOYW1pYmlhIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6Ik5hdXJ1IiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6Ik5lcGEiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiTmV0aGVybGFuZHMiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiTmV3IFplYWxhbmQiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiTmljYXJhZ3VhIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6Ik5pZ2VyIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6Ik5pZ2VyaWEiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiTm9yd2F5IiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6Ik9tYW4iLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiUGFraXN0YW4iLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiUGFsYXUiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiUGFuYW1hIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6IlBhcHVhIE5ldyBHdWluZWEiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiUGFyYWd1YXkiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiUGVydSIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJQaGlsaXBwaW5lcyIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJQb2xhbmQiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiUG9ydHVnYWwiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiUWF0YXIiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiUm9tYW5pYSIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJSdXNzaWEiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiUndhbmRhIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6IlNhaW50IEtpdHRzIGFuZCBOZXZpcyIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJTYWludCBMdWNpYSIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJTYWludCBWaW5jZW50IiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6IlNhbW9hIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6IlNhbiBNYXJpbm8iLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiU2FvIFRvbWUgYW5kIFByaW5jaXBlIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6IlNhdWRpIEFyYWJpYSIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJTZW5lZ2FsIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6IlNlcmJpYSBhbmQgTW9udGVuZWdybyIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJTZXljaGVsbGVzIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6IlNpZXJyYSBMZW9uZSIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJTaW5nYXBvcmUiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiU2xvdmFraWEiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiU2xvdmVuaWEiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiU29sb21vbiBJc2xhbmRzIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6IlNvbWFsaWEiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiU291dGggQWZyaWNhIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6IlNwYWluIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6IlNyaSBMYW5rYSIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJTdWRhbiIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJTdXJpbmFtZSIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJTd2F6aWxhbmQiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiU3dlZGVuIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6IlN3aXR6ZXJsYW5kIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6IlN5cmlhIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6IlRhaXdhbiIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJUYWppa2lzdGFuIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6IlRhbnphbmlhIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6IlRoYWlsYW5kIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6IlRvZ28iLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiVG9uZ2EiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiVHJpbmlkYWQgYW5kIFRvYmFnbyIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJUdW5pc2lhIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6IlR1cmtleSIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJUdXJrbWVuaXN0YW4iLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiVHV2YWx1IiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6IlVnYW5kYSIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJVa3JhaW5lIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6IlVuaXRlZCBBcmFiIEVtaXJhdGVzIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6IlVuaXRlZCBLaW5nZG9tIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6IlVuaXRlZCBTdGF0ZXMiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiVXJ1Z3VheSIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJVemJla2lzdGFuIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6IlZhbnVhdHUiLCJjaGVja2VkIjpmYWxzZX0seyJ0ZXh0IjoiVmF0aWNhbiBDaXR5IiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6IlZlbmV6dWVsYSIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJWaWV0bmFtIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6IlllbWVuIiwiY2hlY2tlZCI6ZmFsc2V9LHsidGV4dCI6IlphbWJpYSIsImNoZWNrZWQiOmZhbHNlfSx7InRleHQiOiJaaW1iYWJ3ZSIsImNoZWNrZWQiOmZhbHNlfV0sImlkZW50aWZ5IjoiYWRkcmVzc181NzI4NzYxMzgxXzUzXzMwIiwiY3VzdG9tQ2xhc3MiOiIiLCJzb3J0YWJsZUZpZWxkIjoiW1widnN0cmVldEFkZHJlc3NcIiwgXCJ2c3RyZWV0QWRkcmVzczJcIiwgXCJ2Y2l0eVwiLCBcInZzdGF0ZVwiLCBcInZjb2RlXCIsIFwidmNvdW50cnlcIl0ifSwidHlwZSI6ImFkZHJlc3MiLCJwb3NpdGlvbiI6ImxlZnQiLCJ0b2tlbiI6IjYwM2Q0NjY0ODRjNDkyZWI5MWYwN2JmODg4Yzg0ZTRiIn0seyJpZCI6MzUsImlkZW50aWZ5IjoicGhvbmVfNTYzMjE5NzY0MV81NF8zMyIsIm9wdGlvbnMiOnsibGFiZWwiOiJQaG9uZSIsImluc3RydWN0aW9uIjoiIiwicmVxdWlyZWQiOjAsImZvcm1hdCI6IjMtZmllbGQiLCJ2YWx1ZSI6IiIsImlkZW50aWZ5IjoicGhvbmVfNTYzMjE5NzY0MV81NF8zMyIsImN1c3RvbUNsYXNzIjoiIiwib25lRmllbGQiOiIiLCJ0d29GaWVsZCI6IiIsInRocmVlRmllbGQiOiIifSwidHlwZSI6InBob25lIiwicG9zaXRpb24iOiJsZWZ0IiwidG9rZW4iOiI2MDNkNDY2NDg0YzQ5MmViOTFmMDdiZjg4OGM4NGU0YiJ9XSI7czoyMToiZm9ybV9jb250YWluZXJfcGFnZV83IjtzOjQ4OiJbW3siY29sdW1uTmFtZSI6ImxlZnQiLCJjb2x1bW5DbGFzcyI6InNwYW4xMiJ9XV0iO3M6MTI6InBhZ2VfY29udGVudCI7czo1OiJbIjciXSI7fXM6MTU6Il9fZm9ybS1kZXNpZ24tNiI7Tzo4OiJzdGRDbGFzcyI6NTp7czoxMDoiZm9ybV9wYWdlXyI7TjtzOjE0OiJmb3JtX2xpc3RfcGFnZSI7czoxNjoiW1siOCIsIlBhZ2UgMSJdXSI7czoxMToiZm9ybV9wYWdlXzgiO3M6NzM1OiJbeyJpZCI6MzYsImlkZW50aWZ5IjoiZW1haWxfMzU5NzY4ODk1Ml81XzQiLCJvcHRpb25zIjp7ImxhYmVsIjoiRW1haWwiLCJpbnN0cnVjdGlvbiI6IiIsInJlcXVpcmVkIjoiMSIsIm5vRHVwbGljYXRlcyI6MCwiYXV0b0luc2VydEVtYWlsIjowLCJzaXplIjoianNuLWlucHV0LW1lZGl1bS1mbHVpZCIsInZhbHVlIjoidGVzdEBleGFtcGxlLmNvbSIsImlkZW50aWZ5IjoiZW1haWxfMzU5NzY4ODk1Ml81XzQiLCJjdXN0b21DbGFzcyI6IiIsInZhbHVlQ29uZmlybSI6IiJ9LCJ0eXBlIjoiZW1haWwiLCJwb3NpdGlvbiI6ImxlZnQiLCJ0b2tlbiI6IjYwM2Q0NjY0ODRjNDkyZWI5MWYwN2JmODg4Yzg0ZTRiIn0seyJpZCI6MzcsImlkZW50aWZ5IjoicGFzc3dvcmRfNzAzODc0MjcyXzVfMjciLCJvcHRpb25zIjp7ImxhYmVsIjoiUGFzc3dvcmQiLCJpbnN0cnVjdGlvbiI6IiIsInJlcXVpcmVkIjoiMSIsImxpbWl0TWluIjowLCJsaW1pdE1heCI6MCwiY29uZmlybWF0aW9uIjpmYWxzZSwiZW5jcnlwdCI6InRleHQiLCJoaWRlRmllbGQiOmZhbHNlLCJ2YWx1ZSI6IiIsImlkZW50aWZ5IjoicGFzc3dvcmRfNzAzODc0MjcyXzVfMjciLCJjdXN0b21DbGFzcyI6IiIsInNpemUiOiJqc24taW5wdXQtbWluaS1mbHVpZCIsInZhbHVlQ29uZmlybWF0aW9uIjoiIn0sInR5cGUiOiJwYXNzd29yZCIsInBvc2l0aW9uIjoibGVmdCIsInRva2VuIjoiNjAzZDQ2NjQ4NGM0OTJlYjkxZjA3YmY4ODhjODRlNGIifV0iO3M6MjE6ImZvcm1fY29udGFpbmVyX3BhZ2VfOCI7czo0ODoiW1t7ImNvbHVtbk5hbWUiOiJsZWZ0IiwiY29sdW1uQ2xhc3MiOiJzcGFuMTIifV1dIjtzOjEyOiJwYWdlX2NvbnRlbnQiO3M6NToiWyI4Il0iO31zOjIxOiJfX2pzbmltYWdlc2hvd3Nlc3Npb24iO086ODoic3RkQ2xhc3MiOjE6e3M6MzI6ImFiMWVlZTdlNTM4OWY5NjUzNjdiOWM0YzQwZGVlZTM5IjtzOjA6IiI7fX1zOjk6InNlcGFyYXRvciI7czoxOiIuIjt9";', 760, 'admin'),
-('2f8cc124c963a39983d1181fd2b69349', 0, 1, '1458298584', 'joomla|s:2640:"TzoyNDoiSm9vbWxhXFJlZ2lzdHJ5XFJlZ2lzdHJ5IjoyOntzOjc6IgAqAGRhdGEiO086ODoic3RkQ2xhc3MiOjE6e3M6OToiX19kZWZhdWx0IjtPOjg6InN0ZENsYXNzIjo1OntzOjc6InNlc3Npb24iO086ODoic3RkQ2xhc3MiOjM6e3M6NzoiY291bnRlciI7aTo2MjtzOjU6InRpbWVyIjtPOjg6InN0ZENsYXNzIjozOntzOjU6InN0YXJ0IjtpOjE0NTgyOTMzMDY7czo0OiJsYXN0IjtpOjE0NTgyOTg1ODQ7czozOiJub3ciO2k6MTQ1ODI5ODU4NDt9czo1OiJ0b2tlbiI7czozMjoiOGQzYmEzMzk4MGQ1YWJmYzJjYzgyNDg1MmJlMjUwOWYiO31zOjg6InJlZ2lzdHJ5IjtPOjI0OiJKb29tbGFcUmVnaXN0cnlcUmVnaXN0cnkiOjI6e3M6NzoiACoAZGF0YSI7Tzo4OiJzdGRDbGFzcyI6MDp7fXM6OToic2VwYXJhdG9yIjtzOjE6Ii4iO31zOjQ6InVzZXIiO086NToiSlVzZXIiOjI2OntzOjk6IgAqAGlzUm9vdCI7YjowO3M6MjoiaWQiO2k6MDtzOjQ6Im5hbWUiO047czo4OiJ1c2VybmFtZSI7TjtzOjU6ImVtYWlsIjtOO3M6ODoicGFzc3dvcmQiO047czoxNDoicGFzc3dvcmRfY2xlYXIiO3M6MDoiIjtzOjU6ImJsb2NrIjtOO3M6OToic2VuZEVtYWlsIjtpOjA7czoxMjoicmVnaXN0ZXJEYXRlIjtOO3M6MTM6Imxhc3R2aXNpdERhdGUiO047czoxMDoiYWN0aXZhdGlvbiI7TjtzOjY6InBhcmFtcyI7TjtzOjY6Imdyb3VwcyI7YToxOntpOjA7czoxOiI5Ijt9czo1OiJndWVzdCI7aToxO3M6MTM6Imxhc3RSZXNldFRpbWUiO047czoxMDoicmVzZXRDb3VudCI7TjtzOjEyOiJyZXF1aXJlUmVzZXQiO047czoxMDoiACoAX3BhcmFtcyI7TzoyNDoiSm9vbWxhXFJlZ2lzdHJ5XFJlZ2lzdHJ5IjoyOntzOjc6IgAqAGRhdGEiO086ODoic3RkQ2xhc3MiOjA6e31zOjk6InNlcGFyYXRvciI7czoxOiIuIjt9czoxNDoiACoAX2F1dGhHcm91cHMiO2E6Mjp7aTowO2k6MTtpOjE7aTo5O31zOjE0OiIAKgBfYXV0aExldmVscyI7YTozOntpOjA7aToxO2k6MTtpOjE7aToyO2k6NTt9czoxNToiACoAX2F1dGhBY3Rpb25zIjtOO3M6MTI6IgAqAF9lcnJvck1zZyI7TjtzOjEzOiIAKgB1c2VySGVscGVyIjtPOjE4OiJKVXNlcldyYXBwZXJIZWxwZXIiOjA6e31zOjEwOiIAKgBfZXJyb3JzIjthOjA6e31zOjM6ImFpZCI7aTowO31zOjIwOiJqc25fbW9iaWxpemVfcHJvZmlsZSI7TjtzOjEwOiJjb21fbWFpbHRvIjtPOjg6InN0ZENsYXNzIjoxOntzOjU6ImxpbmtzIjthOjQ6e3M6NDA6IjFiOTdkYzRhOTUxMTVkY2QzNzcwMGVkM2E2Yjc4MDM4OTgzZGMwMjYiO086ODoic3RkQ2xhc3MiOjI6e3M6NDoibGluayI7czo2ODoiaHR0cDovL2xvY2FsaG9zdDo4ODg4L0hlYWx0aF9JbmZvcm1hdGlvbl9TeXN0ZW0vaW5kZXgucGhwL2Zvb2QtZGlhcnkiO3M6NjoiZXhwaXJ5IjtpOjE0NTgyOTY2Mjg7fXM6NDA6IjRjOTRhM2EzMTBhMzJhNWI5YWM2ZGI4NzQxZGQxY2Y5MDhjOWRkNzMiO086ODoic3RkQ2xhc3MiOjI6e3M6NDoibGluayI7czo3MjoiaHR0cDovL2xvY2FsaG9zdDo4ODg4L0hlYWx0aF9JbmZvcm1hdGlvbl9TeXN0ZW0vaW5kZXgucGhwL2V4ZXJjaXNlLWRpYXJ5IjtzOjY6ImV4cGlyeSI7aToxNDU4Mjk2NDE1O31zOjQwOiI4MGZhN2U0NTk0NjlhMGU2ZjQ4MjgyNjEwYzMyNTQ4N2FlYjEwODc1IjtPOjg6InN0ZENsYXNzIjoyOntzOjQ6ImxpbmsiO3M6NzE6Imh0dHA6Ly9sb2NhbGhvc3Q6ODg4OC9IZWFsdGhfSW5mb3JtYXRpb25fU3lzdGVtL2luZGV4LnBocC9kaWV0LWNhbGVuZGFyIjtzOjY6ImV4cGlyeSI7aToxNDU4Mjk2Njg3O31zOjQwOiI0OTEyNzFmNTliMTMwOTI4OGRkZTg0MmRjZmFhOTkxNzNlODQ4Njc4IjtPOjg6InN0ZENsYXNzIjoyOntzOjQ6ImxpbmsiO3M6NzI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODg4OC9IZWFsdGhfSW5mb3JtYXRpb25fU3lzdGVtL2luZGV4LnBocC93ZWlnaHQtdHJhY2tlciI7czo2OiJleHBpcnkiO2k6MTQ1ODI5NjQyNzt9fX19fXM6OToic2VwYXJhdG9yIjtzOjE6Ii4iO30=";', 0, '');
+('el2g0i7qq1h4pm94onc0nt5or5', 1, 0, '1458356898', 'joomla|s:9400:"TzoyNDoiSm9vbWxhXFJlZ2lzdHJ5XFJlZ2lzdHJ5IjoyOntzOjc6IgAqAGRhdGEiO086ODoic3RkQ2xhc3MiOjE6e3M6OToiX19kZWZhdWx0IjtPOjg6InN0ZENsYXNzIjo1OntzOjc6InNlc3Npb24iO086ODoic3RkQ2xhc3MiOjM6e3M6NzoiY291bnRlciI7aTo0MDtzOjU6InRpbWVyIjtPOjg6InN0ZENsYXNzIjozOntzOjU6InN0YXJ0IjtpOjE0NTgzNTYxNDU7czo0OiJsYXN0IjtpOjE0NTgzNTY4OTE7czozOiJub3ciO2k6MTQ1ODM1Njg5Mzt9czo1OiJ0b2tlbiI7czozMjoiYjg2YTMwYWNiM2Q2MTQxZjM2YjY0OWU0NjE1NzI2YmEiO31zOjg6InJlZ2lzdHJ5IjtPOjI0OiJKb29tbGFcUmVnaXN0cnlcUmVnaXN0cnkiOjI6e3M6NzoiACoAZGF0YSI7Tzo4OiJzdGRDbGFzcyI6NDp7czoxMToiYXBwbGljYXRpb24iO086ODoic3RkQ2xhc3MiOjE6e3M6NDoibGFuZyI7czo1OiJlbi1HQiI7fXM6MTM6ImNvbV9pbnN0YWxsZXIiO086ODoic3RkQ2xhc3MiOjM6e3M6NzoibWVzc2FnZSI7czowOiIiO3M6MTc6ImV4dGVuc2lvbl9tZXNzYWdlIjtzOjA6IiI7czoxMjoicmVkaXJlY3RfdXJsIjtOO31zOjEwOiJjb21fa3VuZW5hIjtPOjg6InN0ZENsYXNzIjoyOntzOjc6Imluc3RhbGwiO086ODoic3RkQ2xhc3MiOjk6e3M6Njoic3RhdHVzIjthOjMzOntpOjA7YTo0OntzOjQ6InN0ZXAiO2k6MTtzOjQ6InRhc2siO3M6MjA6IlByZXBhcmUgSW5zdGFsbGF0aW9uIjtzOjc6InN1Y2Nlc3MiO2I6MTtzOjM6Im1zZyI7czowOiIiO31pOjE7YTo0OntzOjQ6InN0ZXAiO2k6MjtzOjQ6InRhc2siO3M6NDM6Ikluc3RhbGxpbmcgS3VuZW5hIC0gQWxwaGF1c2VycG9pbnRzIHBsdWctaW4iO3M6Nzoic3VjY2VzcyI7YjoxO3M6MzoibXNnIjtzOjA6IiI7fWk6MjthOjQ6e3M6NDoic3RlcCI7aToyO3M6NDoidGFzayI7czozNzoiSW5zdGFsbGluZyBLdW5lbmEgLSBDb21tdW5pdHkgcGx1Zy1pbiI7czo3OiJzdWNjZXNzIjtiOjE7czozOiJtc2ciO3M6MDoiIjt9aTozO2E6NDp7czo0OiJzdGVwIjtpOjI7czo0OiJ0YXNrIjtzOjM5OiJJbnN0YWxsaW5nIEt1bmVuYSAtIENvbXByb2ZpbGVyIHBsdWctaW4iO3M6Nzoic3VjY2VzcyI7YjoxO3M6MzoibXNnIjtzOjA6IiI7fWk6NDthOjQ6e3M6NDoic3RlcCI7aToyO3M6NDoidGFzayI7czozNjoiSW5zdGFsbGluZyBLdW5lbmEgLSBHcmF2YXRhciBwbHVnLWluIjtzOjc6InN1Y2Nlc3MiO2I6MTtzOjM6Im1zZyI7czowOiIiO31pOjU7YTo0OntzOjQ6InN0ZXAiO2k6MjtzOjQ6InRhc2siO3M6MzQ6Ikluc3RhbGxpbmcgS3VuZW5hIC0gVWRkZWltIHBsdWctaW4iO3M6Nzoic3VjY2VzcyI7YjoxO3M6MzoibXNnIjtzOjA6IiI7fWk6NjthOjQ6e3M6NDoic3RlcCI7aToyO3M6NDoidGFzayI7czozNDoiSW5zdGFsbGluZyBLdW5lbmEgLSBLdW5lbmEgcGx1Zy1pbiI7czo3OiJzdWNjZXNzIjtiOjE7czozOiJtc2ciO3M6MDoiIjt9aTo3O2E6NDp7czo0OiJzdGVwIjtpOjI7czo0OiJ0YXNrIjtzOjM0OiJJbnN0YWxsaW5nIEt1bmVuYSAtIEpvb21sYSBwbHVnLWluIjtzOjc6InN1Y2Nlc3MiO2I6MTtzOjM6Im1zZyI7czowOiIiO31pOjg7YTo0OntzOjQ6InN0ZXAiO2k6MztzOjQ6InRhc2siO3M6MjE6IkNyZWF0ZSBrdW5lbmFfYWxpYXNlcyI7czo3OiJzdWNjZXNzIjtiOjE7czozOiJtc2ciO3M6MDoiIjt9aTo5O2E6NDp7czo0OiJzdGVwIjtpOjM7czo0OiJ0YXNrIjtzOjI2OiJDcmVhdGUga3VuZW5hX2Fubm91bmNlbWVudCI7czo3OiJzdWNjZXNzIjtiOjE7czozOiJtc2ciO3M6MDoiIjt9aToxMDthOjQ6e3M6NDoic3RlcCI7aTozO3M6NDoidGFzayI7czoyNToiQ3JlYXRlIGt1bmVuYV9hdHRhY2htZW50cyI7czo3OiJzdWNjZXNzIjtiOjE7czozOiJtc2ciO3M6MDoiIjt9aToxMTthOjQ6e3M6NDoic3RlcCI7aTozO3M6NDoidGFzayI7czoyNDoiQ3JlYXRlIGt1bmVuYV9jYXRlZ29yaWVzIjtzOjc6InN1Y2Nlc3MiO2I6MTtzOjM6Im1zZyI7czowOiIiO31pOjEyO2E6NDp7czo0OiJzdGVwIjtpOjM7czo0OiJ0YXNrIjtzOjI3OiJDcmVhdGUga3VuZW5hX2NvbmZpZ3VyYXRpb24iO3M6Nzoic3VjY2VzcyI7YjoxO3M6MzoibXNnIjtzOjA6IiI7fWk6MTM7YTo0OntzOjQ6InN0ZXAiO2k6MztzOjQ6InRhc2siO3M6MjI6IkNyZWF0ZSBrdW5lbmFfa2V5d29yZHMiO3M6Nzoic3VjY2VzcyI7YjoxO3M6MzoibXNnIjtzOjA6IiI7fWk6MTQ7YTo0OntzOjQ6InN0ZXAiO2k6MztzOjQ6InRhc2siO3M6MjY6IkNyZWF0ZSBrdW5lbmFfa2V5d29yZHNfbWFwIjtzOjc6InN1Y2Nlc3MiO2I6MTtzOjM6Im1zZyI7czowOiIiO31pOjE1O2E6NDp7czo0OiJzdGVwIjtpOjM7czo0OiJ0YXNrIjtzOjIwOiJDcmVhdGUga3VuZW5hX3RvcGljcyI7czo3OiJzdWNjZXNzIjtiOjE7czozOiJtc2ciO3M6MDoiIjt9aToxNjthOjQ6e3M6NDoic3RlcCI7aTozO3M6NDoidGFzayI7czoyMjoiQ3JlYXRlIGt1bmVuYV9tZXNzYWdlcyI7czo3OiJzdWNjZXNzIjtiOjE7czozOiJtc2ciO3M6MDoiIjt9aToxNzthOjQ6e3M6NDoic3RlcCI7aTozO3M6NDoidGFzayI7czoyNzoiQ3JlYXRlIGt1bmVuYV9tZXNzYWdlc190ZXh0IjtzOjc6InN1Y2Nlc3MiO2I6MTtzOjM6Im1zZyI7czowOiIiO31pOjE4O2E6NDp7czo0OiJzdGVwIjtpOjM7czo0OiJ0YXNrIjtzOjE5OiJDcmVhdGUga3VuZW5hX3BvbGxzIjtzOjc6InN1Y2Nlc3MiO2I6MTtzOjM6Im1zZyI7czowOiIiO31pOjE5O2E6NDp7czo0OiJzdGVwIjtpOjM7czo0OiJ0YXNrIjtzOjI3OiJDcmVhdGUga3VuZW5hX3BvbGxzX29wdGlvbnMiO3M6Nzoic3VjY2VzcyI7YjoxO3M6MzoibXNnIjtzOjA6IiI7fWk6MjA7YTo0OntzOjQ6InN0ZXAiO2k6MztzOjQ6InRhc2siO3M6MjU6IkNyZWF0ZSBrdW5lbmFfcG9sbHNfdXNlcnMiO3M6Nzoic3VjY2VzcyI7YjoxO3M6MzoibXNnIjtzOjA6IiI7fWk6MjE7YTo0OntzOjQ6InN0ZXAiO2k6MztzOjQ6InRhc2siO3M6MTk6IkNyZWF0ZSBrdW5lbmFfcmFua3MiO3M6Nzoic3VjY2VzcyI7YjoxO3M6MzoibXNnIjtzOjA6IiI7fWk6MjI7YTo0OntzOjQ6InN0ZXAiO2k6MztzOjQ6InRhc2siO3M6MjI6IkNyZWF0ZSBrdW5lbmFfc2Vzc2lvbnMiO3M6Nzoic3VjY2VzcyI7YjoxO3M6MzoibXNnIjtzOjA6IiI7fWk6MjM7YTo0OntzOjQ6InN0ZXAiO2k6MztzOjQ6InRhc2siO3M6MjE6IkNyZWF0ZSBrdW5lbmFfc21pbGV5cyI7czo3OiJzdWNjZXNzIjtiOjE7czozOiJtc2ciO3M6MDoiIjt9aToyNDthOjQ6e3M6NDoic3RlcCI7aTozO3M6NDoidGFzayI7czoyMjoiQ3JlYXRlIGt1bmVuYV90aGFua3lvdSI7czo3OiJzdWNjZXNzIjtiOjE7czozOiJtc2ciO3M6MDoiIjt9aToyNTthOjQ6e3M6NDoic3RlcCI7aTozO3M6NDoidGFzayI7czoyOToiQ3JlYXRlIGt1bmVuYV91c2VyX2NhdGVnb3JpZXMiO3M6Nzoic3VjY2VzcyI7YjoxO3M6MzoibXNnIjtzOjA6IiI7fWk6MjY7YTo0OntzOjQ6InN0ZXAiO2k6MztzOjQ6InRhc2siO3M6MjM6IkNyZWF0ZSBrdW5lbmFfdXNlcl9yZWFkIjtzOjc6InN1Y2Nlc3MiO2I6MTtzOjM6Im1zZyI7czowOiIiO31pOjI3O2E6NDp7czo0OiJzdGVwIjtpOjM7czo0OiJ0YXNrIjtzOjI1OiJDcmVhdGUga3VuZW5hX3VzZXJfdG9waWNzIjtzOjc6InN1Y2Nlc3MiO2I6MTtzOjM6Im1zZyI7czowOiIiO31pOjI4O2E6NDp7czo0OiJzdGVwIjtpOjM7czo0OiJ0YXNrIjtzOjE5OiJDcmVhdGUga3VuZW5hX3VzZXJzIjtzOjc6InN1Y2Nlc3MiO2I6MTtzOjM6Im1zZyI7czowOiIiO31pOjI5O2E6NDp7czo0OiJzdGVwIjtpOjM7czo0OiJ0YXNrIjtzOjI2OiJDcmVhdGUga3VuZW5hX3VzZXJzX2Jhbm5lZCI7czo3OiJzdWNjZXNzIjtiOjE7czozOiJtc2ciO3M6MDoiIjt9aTozMDthOjQ6e3M6NDoic3RlcCI7aTozO3M6NDoidGFzayI7czoxOToiSW5zdGFsbCBTYW1wbGUgRGF0YSI7czo3OiJzdWNjZXNzIjtiOjE7czozOiJtc2ciO3M6MDoiIjt9czo3OiJyZWNvdW50IjthOjQ6e3M6NDoic3RlcCI7aTozO3M6NDoidGFzayI7czoyNzoiUmVjb3VudGluZyBmb3J1bSBzdGF0aXN0aWNzIjtzOjc6InN1Y2Nlc3MiO2I6MTtzOjM6Im1zZyI7czowOiIiO31pOjMxO2E6NDp7czo0OiJzdGVwIjtpOjQ7czo0OiJ0YXNrIjtzOjM2OiJJbnN0YWxsYXRpb24gY29tcGxldGVkIHN1Y2Nlc3NmdWxseS4iO3M6Nzoic3VjY2VzcyI7YjoxO3M6MzoibXNnIjtzOjA6IiI7fX1zOjY6ImFjdGlvbiI7czo3OiJpbnN0YWxsIjtzOjQ6InN0ZXAiO2k6NTtzOjQ6InRhc2siO2k6MDtzOjc6InZlcnNpb24iO086ODoic3RkQ2xhc3MiOjEzOntzOjI6ImlkIjtpOjA7czo5OiJjb21wb25lbnQiO047czo3OiJ2ZXJzaW9uIjtzOjA6IiI7czoxMToidmVyc2lvbmRhdGUiO047czoxMToiaW5zdGFsbGRhdGUiO3M6MDoiIjtzOjExOiJ2ZXJzaW9ubmFtZSI7czowOiIiO3M6NjoicHJlZml4IjtOO3M6NjoiYWN0aW9uIjtzOjc6IklOU1RBTEwiO3M6NToibGFiZWwiO3M6MjE6Ikluc3RhbGwgS3VuZW5hIDQuMC4xMCI7czoxMToiZGVzY3JpcHRpb24iO3M6MjI6Ikluc3RhbGwgS3VuZW5hIDQuMC4xMC4iO3M6NDoiaGludCI7czoxNDE6IjxzdHJvbmcgY2xhc3M9ImtoaW50Ij5ISU5UOjwvc3Ryb25nPiBVc2UgdGhpcyBvcHRpb24gdG8gY29tcGxldGUgeW91ciBpbnN0YWxsYXRpb24uIFRoaXMgYWN0aW9uIHdpbGwgY3JlYXRlIG5ldyBmb3J1bSB3aXRoIHNhbXBsZSBkYXRhIGluIGl0LiI7czo3OiJ3YXJuaW5nIjtzOjI1NToiPHN0cm9uZyBjbGFzcz0ia3dhcm4iPldBUk5JTkc6PC9zdHJvbmc+IElmIHlvdSBoYXZlIGFscmVhZHkgaW5zdGFsbGVkIEt1bmVuYSA0LjAuMTAgYW5kIHRoZW4gbGF0ZXIgZGVjaWRlZCB0byBkb3duZ3JhZGUgYmFjayB0byAgLCBhbnkgbmV3IG1lc3NhZ2VzIHNpbmNlIHRoZSB1cGdyYWRlIHdpbGwgbm90IGJlIGltcG9ydGVkIHVzaW5nIHRoaXMgb3B0aW9uLiBQbGVhc2UgPGVtPm1pZ3JhdGU8L2VtPiB5b3VyIG9sZCB2ZXJzaW9uIGluc3RlYWQuIjtzOjQ6ImxpbmsiO3M6MTI5OiIvSGVhbHRoX0luZm9ybWF0aW9uX1N5c3RlbS9hZG1pbmlzdHJhdG9yL2luZGV4LnBocD9vcHRpb249Y29tX2t1bmVuYSZ2aWV3PWluc3RhbGwmdGFzaz1pbnN0YWxsJjcwN2NjYmE0NjYwMjFmOWIzNzg0MTdmMzIwMWYxYTM4PTEiO31zOjc6ImF2YXRhcnMiO086ODoic3RkQ2xhc3MiOjQ6e3M6NzoibWlzc2luZyI7aTowO3M6NjoiZmFpbGVkIjtpOjA7czo4OiJtaWdyYXRlZCI7aTowO3M6NzoiY3VycmVudCI7aTowO31zOjExOiJhdHRhY2htZW50cyI7Tzo4OiJzdGRDbGFzcyI6NDp7czo3OiJtaXNzaW5nIjtpOjA7czo2OiJmYWlsZWQiO2k6MDtzOjg6Im1pZ3JhdGVkIjtpOjA7czo3OiJjdXJyZW50IjtpOjA7fXM6NzoiZGJzdGF0ZSI7TjtzOjc6InJlY291bnQiO047fXM6MTI6InVzZXI3NjBfcmVhZCI7YTozOntpOjE7aToxO2k6MjtpOjI7aTozO2k6Mzt9fXM6OToiY29tX21lbnVzIjtPOjg6InN0ZENsYXNzIjoyOntzOjQ6ImVkaXQiO086ODoic3RkQ2xhc3MiOjE6e3M6NDoiaXRlbSI7Tzo4OiJzdGRDbGFzcyI6NDp7czo0OiJ0eXBlIjtOO3M6NDoibGluayI7TjtzOjQ6ImRhdGEiO047czoyOiJpZCI7YToxOntpOjA7aToyMDAwO319fXM6NToiaXRlbXMiO086ODoic3RkQ2xhc3MiOjQ6e3M6ODoibWVudXR5cGUiO3M6ODoibWFpbm1lbnUiO3M6MTA6ImxpbWl0c3RhcnQiO3M6MjoiMjAiO3M6NDoibGlzdCI7YToyOntzOjEyOiJmdWxsb3JkZXJpbmciO3M6OToiYS5sZnQgQVNDIjtzOjU6ImxpbWl0IjtzOjI6IjIwIjt9czo2OiJmaWx0ZXIiO2E6NTp7czo2OiJzZWFyY2giO3M6MDoiIjtzOjk6InB1Ymxpc2hlZCI7czowOiIiO3M6NjoiYWNjZXNzIjtzOjA6IiI7czo4OiJsYW5ndWFnZSI7czowOiIiO3M6NToibGV2ZWwiO3M6MDoiIjt9fX19czo5OiJzZXBhcmF0b3IiO3M6MToiLiI7fXM6NDoidXNlciI7Tzo1OiJKVXNlciI6Mjg6e3M6OToiACoAaXNSb290IjtiOjE7czoyOiJpZCI7czozOiI3NjAiO3M6NDoibmFtZSI7czoxMDoiU3VwZXIgVXNlciI7czo4OiJ1c2VybmFtZSI7czo1OiJhZG1pbiI7czo1OiJlbWFpbCI7czoyMDoiZG9uZ3dhbnh1ZUBnbWFpbC5jb20iO3M6ODoicGFzc3dvcmQiO3M6NjA6IiQyeSQxMCRXcXRZN0Qwdi82bmdyS2FNUmlxSVpPbHp6T1hkNThxbm9xUmM5LldJLjhmSExEUjc3QmlIdSI7czoxNDoicGFzc3dvcmRfY2xlYXIiO3M6MDoiIjtzOjU6ImJsb2NrIjtzOjE6IjAiO3M6OToic2VuZEVtYWlsIjtzOjE6IjEiO3M6MTI6InJlZ2lzdGVyRGF0ZSI7czoxOToiMjAxNi0wMi0yMyAwMDoxMzo0MSI7czoxMzoibGFzdHZpc2l0RGF0ZSI7czoxOToiMjAxNi0wMy0xOCAyMTo1OTo1NCI7czoxMDoiYWN0aXZhdGlvbiI7czoxOiIwIjtzOjY6InBhcmFtcyI7czowOiIiO3M6NjoiZ3JvdXBzIjthOjE6e2k6ODtzOjE6IjgiO31zOjU6Imd1ZXN0IjtpOjA7czoxMzoibGFzdFJlc2V0VGltZSI7czoxOToiMDAwMC0wMC0wMCAwMDowMDowMCI7czoxMDoicmVzZXRDb3VudCI7czoxOiIwIjtzOjEyOiJyZXF1aXJlUmVzZXQiO3M6MToiMCI7czoxMDoiACoAX3BhcmFtcyI7TzoyNDoiSm9vbWxhXFJlZ2lzdHJ5XFJlZ2lzdHJ5IjoyOntzOjc6IgAqAGRhdGEiO086ODoic3RkQ2xhc3MiOjA6e31zOjk6InNlcGFyYXRvciI7czoxOiIuIjt9czoxNDoiACoAX2F1dGhHcm91cHMiO2E6Mjp7aTowO2k6MTtpOjE7aTo4O31zOjE0OiIAKgBfYXV0aExldmVscyI7YTo1OntpOjA7aToxO2k6MTtpOjE7aToyO2k6MjtpOjM7aTozO2k6NDtpOjY7fXM6MTU6IgAqAF9hdXRoQWN0aW9ucyI7TjtzOjEyOiIAKgBfZXJyb3JNc2ciO047czoxMzoiACoAdXNlckhlbHBlciI7TzoxODoiSlVzZXJXcmFwcGVySGVscGVyIjowOnt9czoxMDoiACoAX2Vycm9ycyI7YTowOnt9czozOiJhaWQiO2k6MDtzOjY6Im90cEtleSI7czowOiIiO3M6NDoib3RlcCI7czowOiIiO31zOjExOiJhcHBsaWNhdGlvbiI7Tzo4OiJzdGRDbGFzcyI6MTp7czo1OiJxdWV1ZSI7Tjt9czo2OiJrdW5lbmEiO086ODoic3RkQ2xhc3MiOjM6e3M6NjoicmVsb2FkIjtpOjE7czo1OiJxdWV1ZSI7YTowOnt9czo4OiJuZXdxdWV1ZSI7YTowOnt9fX19czo5OiJzZXBhcmF0b3IiO3M6MToiLiI7fQ==";', 760, 'admin'),
+('m1vu9ivnsgnfoej7vka3bhluv3', 0, 1, '1458357059', 'joomla|s:1704:"TzoyNDoiSm9vbWxhXFJlZ2lzdHJ5XFJlZ2lzdHJ5IjoyOntzOjc6IgAqAGRhdGEiO086ODoic3RkQ2xhc3MiOjE6e3M6OToiX19kZWZhdWx0IjtPOjg6InN0ZENsYXNzIjo0OntzOjc6InNlc3Npb24iO086ODoic3RkQ2xhc3MiOjM6e3M6NzoiY291bnRlciI7aToxMDtzOjU6InRpbWVyIjtPOjg6InN0ZENsYXNzIjozOntzOjU6InN0YXJ0IjtpOjE0NTgzNTY2Mjg7czo0OiJsYXN0IjtpOjE0NTgzNTcwNTE7czozOiJub3ciO2k6MTQ1ODM1NzA1Mzt9czo1OiJ0b2tlbiI7czozMjoiYmUxZDY5OWY5NTkwNTk1YWE3MDQyNGU3NmUzODk4YWMiO31zOjg6InJlZ2lzdHJ5IjtPOjI0OiJKb29tbGFcUmVnaXN0cnlcUmVnaXN0cnkiOjI6e3M6NzoiACoAZGF0YSI7Tzo4OiJzdGRDbGFzcyI6MTp7czoxMDoiY29tX2t1bmVuYSI7Tzo4OiJzdGRDbGFzcyI6MTp7czoxMDoidXNlcjBfcmVhZCI7YTozOntpOjE7aToxO2k6MjtpOjI7aTozO2k6Mzt9fX1zOjk6InNlcGFyYXRvciI7czoxOiIuIjt9czo0OiJ1c2VyIjtPOjU6IkpVc2VyIjoyNjp7czo5OiIAKgBpc1Jvb3QiO2I6MDtzOjI6ImlkIjtpOjA7czo0OiJuYW1lIjtOO3M6ODoidXNlcm5hbWUiO047czo1OiJlbWFpbCI7TjtzOjg6InBhc3N3b3JkIjtOO3M6MTQ6InBhc3N3b3JkX2NsZWFyIjtzOjA6IiI7czo1OiJibG9jayI7TjtzOjk6InNlbmRFbWFpbCI7aTowO3M6MTI6InJlZ2lzdGVyRGF0ZSI7TjtzOjEzOiJsYXN0dmlzaXREYXRlIjtOO3M6MTA6ImFjdGl2YXRpb24iO047czo2OiJwYXJhbXMiO047czo2OiJncm91cHMiO2E6MTp7aTowO3M6MToiOSI7fXM6NToiZ3Vlc3QiO2k6MTtzOjEzOiJsYXN0UmVzZXRUaW1lIjtOO3M6MTA6InJlc2V0Q291bnQiO047czoxMjoicmVxdWlyZVJlc2V0IjtOO3M6MTA6IgAqAF9wYXJhbXMiO086MjQ6Ikpvb21sYVxSZWdpc3RyeVxSZWdpc3RyeSI6Mjp7czo3OiIAKgBkYXRhIjtPOjg6InN0ZENsYXNzIjowOnt9czo5OiJzZXBhcmF0b3IiO3M6MToiLiI7fXM6MTQ6IgAqAF9hdXRoR3JvdXBzIjthOjI6e2k6MDtpOjE7aToxO2k6OTt9czoxNDoiACoAX2F1dGhMZXZlbHMiO2E6Mzp7aTowO2k6MTtpOjE7aToxO2k6MjtpOjU7fXM6MTU6IgAqAF9hdXRoQWN0aW9ucyI7TjtzOjEyOiIAKgBfZXJyb3JNc2ciO047czoxMzoiACoAdXNlckhlbHBlciI7TzoxODoiSlVzZXJXcmFwcGVySGVscGVyIjowOnt9czoxMDoiACoAX2Vycm9ycyI7YTowOnt9czozOiJhaWQiO2k6MDt9czoyMDoianNuX21vYmlsaXplX3Byb2ZpbGUiO047fX1zOjk6InNlcGFyYXRvciI7czoxOiIuIjt9";', 0, '');
 
 -- --------------------------------------------------------
 
@@ -3808,8 +4770,8 @@ INSERT INTO `cv0rg_session` (`session_id`, `client_id`, `guest`, `time`, `data`,
 -- Table structure for table `cv0rg_tags`
 --
 
-CREATE TABLE `cv0rg_tags` (
-  `id` int(10) unsigned NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_tags` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `parent_id` int(10) unsigned NOT NULL DEFAULT '0',
   `lft` int(11) NOT NULL DEFAULT '0',
   `rgt` int(11) NOT NULL DEFAULT '0',
@@ -3838,8 +4800,16 @@ CREATE TABLE `cv0rg_tags` (
   `language` char(7) NOT NULL,
   `version` int(10) unsigned NOT NULL DEFAULT '1',
   `publish_up` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `publish_down` datetime NOT NULL DEFAULT '0000-00-00 00:00:00'
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+  `publish_down` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`id`),
+  KEY `tag_idx` (`published`,`access`),
+  KEY `idx_access` (`access`),
+  KEY `idx_checkout` (`checked_out`),
+  KEY `idx_path` (`path`),
+  KEY `idx_left_right` (`lft`,`rgt`),
+  KEY `idx_alias` (`alias`),
+  KEY `idx_language` (`language`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
 
 --
 -- Dumping data for table `cv0rg_tags`
@@ -3855,14 +4825,17 @@ INSERT INTO `cv0rg_tags` (`id`, `parent_id`, `lft`, `rgt`, `level`, `path`, `tit
 -- Table structure for table `cv0rg_template_styles`
 --
 
-CREATE TABLE `cv0rg_template_styles` (
-  `id` int(10) unsigned NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_template_styles` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `template` varchar(50) NOT NULL DEFAULT '',
   `client_id` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `home` char(7) NOT NULL DEFAULT '0',
   `title` varchar(255) NOT NULL DEFAULT '',
-  `params` text NOT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
+  `params` text NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_template` (`template`),
+  KEY `idx_home` (`home`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=11 ;
 
 --
 -- Dumping data for table `cv0rg_template_styles`
@@ -3882,11 +4855,15 @@ INSERT INTO `cv0rg_template_styles` (`id`, `template`, `client_id`, `home`, `tit
 -- Table structure for table `cv0rg_ucm_base`
 --
 
-CREATE TABLE `cv0rg_ucm_base` (
+CREATE TABLE IF NOT EXISTS `cv0rg_ucm_base` (
   `ucm_id` int(10) unsigned NOT NULL,
   `ucm_item_id` int(10) NOT NULL,
   `ucm_type_id` int(11) NOT NULL,
-  `ucm_language_id` int(11) NOT NULL
+  `ucm_language_id` int(11) NOT NULL,
+  PRIMARY KEY (`ucm_id`),
+  KEY `idx_ucm_item_id` (`ucm_item_id`),
+  KEY `idx_ucm_type_id` (`ucm_type_id`),
+  KEY `idx_ucm_language_id` (`ucm_language_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -3902,8 +4879,8 @@ INSERT INTO `cv0rg_ucm_base` (`ucm_id`, `ucm_item_id`, `ucm_type_id`, `ucm_langu
 -- Table structure for table `cv0rg_ucm_content`
 --
 
-CREATE TABLE `cv0rg_ucm_content` (
-  `core_content_id` int(10) unsigned NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_ucm_content` (
+  `core_content_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `core_type_alias` varchar(255) NOT NULL DEFAULT '' COMMENT 'FK to the content types table',
   `core_title` varchar(255) NOT NULL,
   `core_alias` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '',
@@ -3934,8 +4911,21 @@ CREATE TABLE `cv0rg_ucm_content` (
   `core_metadesc` text NOT NULL,
   `core_catid` int(10) unsigned NOT NULL DEFAULT '0',
   `core_xreference` varchar(50) NOT NULL COMMENT 'A reference to enable linkages to external data sets.',
-  `core_type_id` int(10) unsigned DEFAULT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='Contains core content data in name spaced fields';
+  `core_type_id` int(10) unsigned DEFAULT NULL,
+  PRIMARY KEY (`core_content_id`),
+  KEY `tag_idx` (`core_state`,`core_access`),
+  KEY `idx_access` (`core_access`),
+  KEY `idx_alias` (`core_alias`),
+  KEY `idx_language` (`core_language`),
+  KEY `idx_title` (`core_title`),
+  KEY `idx_modified_time` (`core_modified_time`),
+  KEY `idx_created_time` (`core_created_time`),
+  KEY `idx_content_type` (`core_type_alias`),
+  KEY `idx_core_modified_user_id` (`core_modified_user_id`),
+  KEY `idx_core_checked_out_user_id` (`core_checked_out_user_id`),
+  KEY `idx_core_created_user_id` (`core_created_user_id`),
+  KEY `idx_core_type_id` (`core_type_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='Contains core content data in name spaced fields' AUTO_INCREMENT=2 ;
 
 --
 -- Dumping data for table `cv0rg_ucm_content`
@@ -3950,8 +4940,8 @@ INSERT INTO `cv0rg_ucm_content` (`core_content_id`, `core_type_alias`, `core_tit
 -- Table structure for table `cv0rg_ucm_history`
 --
 
-CREATE TABLE `cv0rg_ucm_history` (
-  `version_id` int(10) unsigned NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_ucm_history` (
+  `version_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `ucm_item_id` int(10) unsigned NOT NULL,
   `ucm_type_id` int(10) unsigned NOT NULL,
   `version_note` varchar(255) NOT NULL DEFAULT '' COMMENT 'Optional version name',
@@ -3960,8 +4950,11 @@ CREATE TABLE `cv0rg_ucm_history` (
   `character_count` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Number of characters in this version.',
   `sha1_hash` varchar(50) NOT NULL DEFAULT '' COMMENT 'SHA1 hash of the version_data column.',
   `version_data` mediumtext NOT NULL COMMENT 'json-encoded string of version data',
-  `keep_forever` tinyint(4) NOT NULL DEFAULT '0' COMMENT '0=auto delete; 1=keep'
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
+  `keep_forever` tinyint(4) NOT NULL DEFAULT '0' COMMENT '0=auto delete; 1=keep',
+  PRIMARY KEY (`version_id`),
+  KEY `idx_ucm_item_id` (`ucm_type_id`,`ucm_item_id`),
+  KEY `idx_save_date` (`save_date`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=15 ;
 
 --
 -- Dumping data for table `cv0rg_ucm_history`
@@ -3989,8 +4982,8 @@ INSERT INTO `cv0rg_ucm_history` (`version_id`, `ucm_item_id`, `ucm_type_id`, `ve
 -- Table structure for table `cv0rg_updates`
 --
 
-CREATE TABLE `cv0rg_updates` (
-  `update_id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_updates` (
+  `update_id` int(11) NOT NULL AUTO_INCREMENT,
   `update_site_id` int(11) DEFAULT '0',
   `extension_id` int(11) DEFAULT '0',
   `name` varchar(100) DEFAULT '',
@@ -4003,8 +4996,72 @@ CREATE TABLE `cv0rg_updates` (
   `data` text NOT NULL,
   `detailsurl` text NOT NULL,
   `infourl` text NOT NULL,
-  `extra_query` varchar(1000) DEFAULT ''
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Available Updates';
+  `extra_query` varchar(1000) DEFAULT '',
+  PRIMARY KEY (`update_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='Available Updates' AUTO_INCREMENT=58 ;
+
+--
+-- Dumping data for table `cv0rg_updates`
+--
+
+INSERT INTO `cv0rg_updates` (`update_id`, `update_site_id`, `extension_id`, `name`, `description`, `element`, `type`, `folder`, `client_id`, `version`, `data`, `detailsurl`, `infourl`, `extra_query`) VALUES
+(1, 3, 0, 'German', '', 'pkg_de-DE', 'package', '', 0, '3.4.8.1', '', 'http://update.joomla.org/language/details3/de-DE_details.xml', '', ''),
+(2, 3, 0, 'Greek', '', 'pkg_el-GR', 'package', '', 0, '3.4.2.1', '', 'http://update.joomla.org/language/details3/el-GR_details.xml', '', ''),
+(3, 3, 0, 'Japanese', '', 'pkg_ja-JP', 'package', '', 0, '3.4.8.1', '', 'http://update.joomla.org/language/details3/ja-JP_details.xml', '', ''),
+(4, 3, 0, 'Hebrew', '', 'pkg_he-IL', 'package', '', 0, '3.1.1.1', '', 'http://update.joomla.org/language/details3/he-IL_details.xml', '', ''),
+(5, 3, 0, 'Hungarian', '', 'pkg_hu-HU', 'package', '', 0, '3.4.8.1', '', 'http://update.joomla.org/language/details3/hu-HU_details.xml', '', ''),
+(6, 3, 0, 'Afrikaans', '', 'pkg_af-ZA', 'package', '', 0, '3.4.5.1', '', 'http://update.joomla.org/language/details3/af-ZA_details.xml', '', ''),
+(7, 3, 0, 'Arabic Unitag', '', 'pkg_ar-AA', 'package', '', 0, '3.4.4.1', '', 'http://update.joomla.org/language/details3/ar-AA_details.xml', '', ''),
+(8, 3, 0, 'Belarusian', '', 'pkg_be-BY', 'package', '', 0, '3.2.1.1', '', 'http://update.joomla.org/language/details3/be-BY_details.xml', '', ''),
+(9, 3, 0, 'Bulgarian', '', 'pkg_bg-BG', 'package', '', 0, '3.4.4.2', '', 'http://update.joomla.org/language/details3/bg-BG_details.xml', '', ''),
+(10, 3, 0, 'Catalan', '', 'pkg_ca-ES', 'package', '', 0, '3.4.4.2', '', 'http://update.joomla.org/language/details3/ca-ES_details.xml', '', ''),
+(11, 3, 0, 'Chinese Simplified', '', 'pkg_zh-CN', 'package', '', 0, '3.4.1.1', '', 'http://update.joomla.org/language/details3/zh-CN_details.xml', '', ''),
+(12, 3, 0, 'Croatian', '', 'pkg_hr-HR', 'package', '', 0, '3.4.4.2', '', 'http://update.joomla.org/language/details3/hr-HR_details.xml', '', ''),
+(13, 3, 0, 'Czech', '', 'pkg_cs-CZ', 'package', '', 0, '3.4.1.1', '', 'http://update.joomla.org/language/details3/cs-CZ_details.xml', '', ''),
+(14, 3, 0, 'Danish', '', 'pkg_da-DK', 'package', '', 0, '3.4.4.1', '', 'http://update.joomla.org/language/details3/da-DK_details.xml', '', ''),
+(15, 3, 0, 'Dutch', '', 'pkg_nl-NL', 'package', '', 0, '3.4.4.1', '', 'http://update.joomla.org/language/details3/nl-NL_details.xml', '', ''),
+(16, 3, 0, 'Estonian', '', 'pkg_et-EE', 'package', '', 0, '3.4.4.1', '', 'http://update.joomla.org/language/details3/et-EE_details.xml', '', ''),
+(17, 3, 0, 'Italian', '', 'pkg_it-IT', 'package', '', 0, '3.4.8.1', '', 'http://update.joomla.org/language/details3/it-IT_details.xml', '', ''),
+(18, 3, 0, 'Khmer', '', 'pkg_km-KH', 'package', '', 0, '3.4.5.1', '', 'http://update.joomla.org/language/details3/km-KH_details.xml', '', ''),
+(19, 3, 0, 'Korean', '', 'pkg_ko-KR', 'package', '', 0, '3.4.4.2', '', 'http://update.joomla.org/language/details3/ko-KR_details.xml', '', ''),
+(20, 3, 0, 'Latvian', '', 'pkg_lv-LV', 'package', '', 0, '3.4.3.1', '', 'http://update.joomla.org/language/details3/lv-LV_details.xml', '', ''),
+(21, 3, 0, 'Macedonian', '', 'pkg_mk-MK', 'package', '', 0, '3.4.5.1', '', 'http://update.joomla.org/language/details3/mk-MK_details.xml', '', ''),
+(22, 3, 0, 'Norwegian Bokmal', '', 'pkg_nb-NO', 'package', '', 0, '3.4.5.1', '', 'http://update.joomla.org/language/details3/nb-NO_details.xml', '', ''),
+(23, 3, 0, 'Norwegian Nynorsk', '', 'pkg_nn-NO', 'package', '', 0, '3.4.2.1', '', 'http://update.joomla.org/language/details3/nn-NO_details.xml', '', ''),
+(24, 3, 0, 'Persian', '', 'pkg_fa-IR', 'package', '', 0, '3.4.8.1', '', 'http://update.joomla.org/language/details3/fa-IR_details.xml', '', ''),
+(25, 3, 0, 'Polish', '', 'pkg_pl-PL', 'package', '', 0, '3.4.8.1', '', 'http://update.joomla.org/language/details3/pl-PL_details.xml', '', ''),
+(26, 3, 0, 'Portuguese', '', 'pkg_pt-PT', 'package', '', 0, '3.4.5.1', '', 'http://update.joomla.org/language/details3/pt-PT_details.xml', '', ''),
+(27, 3, 0, 'Russian', '', 'pkg_ru-RU', 'package', '', 0, '3.4.1.3', '', 'http://update.joomla.org/language/details3/ru-RU_details.xml', '', ''),
+(28, 3, 0, 'English AU', '', 'pkg_en-AU', 'package', '', 0, '3.4.8.1', '', 'http://update.joomla.org/language/details3/en-AU_details.xml', '', ''),
+(29, 3, 0, 'Slovak', '', 'pkg_sk-SK', 'package', '', 0, '3.4.8.2', '', 'http://update.joomla.org/language/details3/sk-SK_details.xml', '', ''),
+(30, 3, 0, 'English US', '', 'pkg_en-US', 'package', '', 0, '3.4.6.1', '', 'http://update.joomla.org/language/details3/en-US_details.xml', '', ''),
+(31, 3, 0, 'Swedish', '', 'pkg_sv-SE', 'package', '', 0, '3.4.8.1', '', 'http://update.joomla.org/language/details3/sv-SE_details.xml', '', ''),
+(32, 3, 0, 'Syriac', '', 'pkg_sy-IQ', 'package', '', 0, '3.4.5.1', '', 'http://update.joomla.org/language/details3/sy-IQ_details.xml', '', ''),
+(33, 3, 0, 'Tamil', '', 'pkg_ta-IN', 'package', '', 0, '3.4.8.1', '', 'http://update.joomla.org/language/details3/ta-IN_details.xml', '', ''),
+(34, 3, 0, 'Thai', '', 'pkg_th-TH', 'package', '', 0, '3.4.8.1', '', 'http://update.joomla.org/language/details3/th-TH_details.xml', '', ''),
+(35, 3, 0, 'Turkish', '', 'pkg_tr-TR', 'package', '', 0, '3.4.8.1', '', 'http://update.joomla.org/language/details3/tr-TR_details.xml', '', ''),
+(36, 3, 0, 'Ukrainian', '', 'pkg_uk-UA', 'package', '', 0, '3.4.4.1', '', 'http://update.joomla.org/language/details3/uk-UA_details.xml', '', ''),
+(37, 3, 0, 'Uyghur', '', 'pkg_ug-CN', 'package', '', 0, '3.3.0.1', '', 'http://update.joomla.org/language/details3/ug-CN_details.xml', '', ''),
+(38, 3, 0, 'Albanian', '', 'pkg_sq-AL', 'package', '', 0, '3.1.1.1', '', 'http://update.joomla.org/language/details3/sq-AL_details.xml', '', ''),
+(39, 3, 0, 'Hindi', '', 'pkg_hi-IN', 'package', '', 0, '3.3.6.1', '', 'http://update.joomla.org/language/details3/hi-IN_details.xml', '', ''),
+(40, 3, 0, 'Portuguese Brazil', '', 'pkg_pt-BR', 'package', '', 0, '3.4.8.1', '', 'http://update.joomla.org/language/details3/pt-BR_details.xml', '', ''),
+(41, 3, 0, 'Serbian Latin', '', 'pkg_sr-YU', 'package', '', 0, '3.4.4.1', '', 'http://update.joomla.org/language/details3/sr-YU_details.xml', '', ''),
+(42, 3, 0, 'Spanish', '', 'pkg_es-ES', 'package', '', 0, '3.4.8.1', '', 'http://update.joomla.org/language/details3/es-ES_details.xml', '', ''),
+(43, 3, 0, 'Bosnian', '', 'pkg_bs-BA', 'package', '', 0, '3.4.8.1', '', 'http://update.joomla.org/language/details3/bs-BA_details.xml', '', ''),
+(44, 3, 0, 'Serbian Cyrillic', '', 'pkg_sr-RS', 'package', '', 0, '3.4.4.1', '', 'http://update.joomla.org/language/details3/sr-RS_details.xml', '', ''),
+(45, 3, 0, 'Vietnamese', '', 'pkg_vi-VN', 'package', '', 0, '3.2.1.1', '', 'http://update.joomla.org/language/details3/vi-VN_details.xml', '', ''),
+(46, 3, 0, 'Bahasa Indonesia', '', 'pkg_id-ID', 'package', '', 0, '3.3.0.2', '', 'http://update.joomla.org/language/details3/id-ID_details.xml', '', ''),
+(47, 3, 0, 'Finnish', '', 'pkg_fi-FI', 'package', '', 0, '3.4.2.1', '', 'http://update.joomla.org/language/details3/fi-FI_details.xml', '', ''),
+(48, 3, 0, 'Swahili', '', 'pkg_sw-KE', 'package', '', 0, '3.4.8.1', '', 'http://update.joomla.org/language/details3/sw-KE_details.xml', '', ''),
+(49, 3, 0, 'Montenegrin', '', 'pkg_srp-ME', 'package', '', 0, '3.3.1.1', '', 'http://update.joomla.org/language/details3/srp-ME_details.xml', '', ''),
+(50, 3, 0, 'English CA', '', 'pkg_en-CA', 'package', '', 0, '3.4.6.1', '', 'http://update.joomla.org/language/details3/en-CA_details.xml', '', ''),
+(51, 3, 0, 'French CA', '', 'pkg_fr-CA', 'package', '', 0, '3.4.4.3', '', 'http://update.joomla.org/language/details3/fr-CA_details.xml', '', ''),
+(52, 3, 0, 'Welsh', '', 'pkg_cy-GB', 'package', '', 0, '3.3.0.2', '', 'http://update.joomla.org/language/details3/cy-GB_details.xml', '', ''),
+(53, 3, 0, 'Sinhala', '', 'pkg_si-LK', 'package', '', 0, '3.3.1.1', '', 'http://update.joomla.org/language/details3/si-LK_details.xml', '', ''),
+(54, 3, 0, 'Dari Persian', '', 'pkg_prs-AF', 'package', '', 0, '3.4.4.1', '', 'http://update.joomla.org/language/details3/prs-AF_details.xml', '', ''),
+(55, 3, 0, 'Turkmen', '', 'pkg_tk-TM', 'package', '', 0, '3.4.8.1', '', 'http://update.joomla.org/language/details3/tk-TM_details.xml', '', ''),
+(56, 3, 0, 'Irish', '', 'pkg_ga-IE', 'package', '', 0, '3.4.8.1', '', 'http://update.joomla.org/language/details3/ga-IE_details.xml', '', ''),
+(57, 3, 0, 'Dzongkha', '', 'pkg_dz-BT', 'package', '', 0, '3.4.5.1', '', 'http://update.joomla.org/language/details3/dz-BT_details.xml', '', '');
 
 -- --------------------------------------------------------
 
@@ -4012,31 +5069,33 @@ CREATE TABLE `cv0rg_updates` (
 -- Table structure for table `cv0rg_update_sites`
 --
 
-CREATE TABLE `cv0rg_update_sites` (
-  `update_site_id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_update_sites` (
+  `update_site_id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) DEFAULT '',
   `type` varchar(20) DEFAULT '',
   `location` text NOT NULL,
   `enabled` int(11) DEFAULT '0',
   `last_check_timestamp` bigint(20) DEFAULT '0',
-  `extra_query` varchar(1000) DEFAULT ''
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8 COMMENT='Update Sites';
+  `extra_query` varchar(1000) DEFAULT '',
+  PRIMARY KEY (`update_site_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='Update Sites' AUTO_INCREMENT=13 ;
 
 --
 -- Dumping data for table `cv0rg_update_sites`
 --
 
 INSERT INTO `cv0rg_update_sites` (`update_site_id`, `name`, `type`, `location`, `enabled`, `last_check_timestamp`, `extra_query`) VALUES
-(1, 'Joomla! Core', 'collection', 'http://update.joomla.org/core/list.xml', 1, 1458290870, ''),
-(2, 'Joomla! Extension Directory', 'collection', 'http://update.joomla.org/jed/list.xml', 1, 1458290870, ''),
-(3, 'Accredited Joomla! Translations', 'collection', 'http://update.joomla.org/language/translationlist_3.xml', 1, 0, ''),
-(4, 'Joomla! Update Component Update Site', 'extension', 'http://update.joomla.org/core/extensions/com_joomlaupdate.xml', 1, 0, ''),
-(5, 'imageshow', 'collection', 'http://www.joomlashine.com/versioning/extensions/com_imageshow.xml', 1, 0, ''),
-(6, 'poweradmin', 'collection', 'http://www.joomlashine.com/versioning/extensions/com_poweradmin.xml', 1, 0, ''),
-(8, 'mobilize', 'collection', 'http://www.joomlashine.com/versioning/extensions/com_mobilize.xml', 1, 0, ''),
-(9, 'pagebuilder', 'collection', 'http://www.joomlashine.com/versioning/extensions/com_pagebuilder.xml', 1, 0, ''),
-(10, 'easyslider', 'collection', 'http://www.joomlashine.com/versioning/extensions/com_easyslider.xml', 1, 0, ''),
-(11, 'uniform', 'collection', 'http://www.joomlashine.com/versioning/extensions/com_uniform.xml', 1, 0, '');
+(1, 'Joomla! Core', 'collection', 'http://update.joomla.org/core/list.xml', 1, 1458356169, ''),
+(2, 'Joomla! Extension Directory', 'collection', 'http://update.joomla.org/jed/list.xml', 1, 1458356169, ''),
+(3, 'Accredited Joomla! Translations', 'collection', 'http://update.joomla.org/language/translationlist_3.xml', 1, 1458356166, ''),
+(4, 'Joomla! Update Component Update Site', 'extension', 'http://update.joomla.org/core/extensions/com_joomlaupdate.xml', 1, 1458356166, ''),
+(5, 'imageshow', 'collection', 'http://www.joomlashine.com/versioning/extensions/com_imageshow.xml', 1, 1458356166, ''),
+(6, 'poweradmin', 'collection', 'http://www.joomlashine.com/versioning/extensions/com_poweradmin.xml', 1, 1458356166, ''),
+(8, 'mobilize', 'collection', 'http://www.joomlashine.com/versioning/extensions/com_mobilize.xml', 1, 1458356166, ''),
+(9, 'pagebuilder', 'collection', 'http://www.joomlashine.com/versioning/extensions/com_pagebuilder.xml', 1, 1458356166, ''),
+(10, 'easyslider', 'collection', 'http://www.joomlashine.com/versioning/extensions/com_easyslider.xml', 1, 1458356166, ''),
+(11, 'uniform', 'collection', 'http://www.joomlashine.com/versioning/extensions/com_uniform.xml', 1, 1458356166, ''),
+(12, 'Kunena 4.0 Update Site', 'collection', 'http://update.kunena.org/4.0/list.xml', 1, 0, '');
 
 -- --------------------------------------------------------
 
@@ -4044,9 +5103,10 @@ INSERT INTO `cv0rg_update_sites` (`update_site_id`, `name`, `type`, `location`, 
 -- Table structure for table `cv0rg_update_sites_extensions`
 --
 
-CREATE TABLE `cv0rg_update_sites_extensions` (
+CREATE TABLE IF NOT EXISTS `cv0rg_update_sites_extensions` (
   `update_site_id` int(11) NOT NULL DEFAULT '0',
-  `extension_id` int(11) NOT NULL DEFAULT '0'
+  `extension_id` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`update_site_id`,`extension_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Links extensions to update sites';
 
 --
@@ -4063,7 +5123,8 @@ INSERT INTO `cv0rg_update_sites_extensions` (`update_site_id`, `extension_id`) V
 (8, 731),
 (9, 734),
 (10, 740),
-(11, 726);
+(11, 726),
+(12, 752);
 
 -- --------------------------------------------------------
 
@@ -4071,13 +5132,18 @@ INSERT INTO `cv0rg_update_sites_extensions` (`update_site_id`, `extension_id`) V
 -- Table structure for table `cv0rg_usergroups`
 --
 
-CREATE TABLE `cv0rg_usergroups` (
-  `id` int(10) unsigned NOT NULL COMMENT 'Primary Key',
+CREATE TABLE IF NOT EXISTS `cv0rg_usergroups` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Primary Key',
   `parent_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Adjacency List Reference Id',
   `lft` int(11) NOT NULL DEFAULT '0' COMMENT 'Nested set lft.',
   `rgt` int(11) NOT NULL DEFAULT '0' COMMENT 'Nested set rgt.',
-  `title` varchar(100) NOT NULL DEFAULT ''
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
+  `title` varchar(100) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `idx_usergroup_parent_title_lookup` (`parent_id`,`title`),
+  KEY `idx_usergroup_title_lookup` (`title`),
+  KEY `idx_usergroup_adjacency_lookup` (`parent_id`),
+  KEY `idx_usergroup_nested_set_lookup` (`lft`,`rgt`) USING BTREE
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=10 ;
 
 --
 -- Dumping data for table `cv0rg_usergroups`
@@ -4100,8 +5166,8 @@ INSERT INTO `cv0rg_usergroups` (`id`, `parent_id`, `lft`, `rgt`, `title`) VALUES
 -- Table structure for table `cv0rg_users`
 --
 
-CREATE TABLE `cv0rg_users` (
-  `id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL DEFAULT '',
   `username` varchar(150) NOT NULL DEFAULT '',
   `email` varchar(100) NOT NULL DEFAULT '',
@@ -4116,15 +5182,20 @@ CREATE TABLE `cv0rg_users` (
   `resetCount` int(11) NOT NULL DEFAULT '0' COMMENT 'Count of password resets since lastResetTime',
   `otpKey` varchar(1000) NOT NULL DEFAULT '' COMMENT 'Two factor authentication encrypted keys',
   `otep` varchar(1000) NOT NULL DEFAULT '' COMMENT 'One time emergency passwords',
-  `requireReset` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Require user to reset password on next login'
-) ENGINE=InnoDB AUTO_INCREMENT=761 DEFAULT CHARSET=utf8;
+  `requireReset` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Require user to reset password on next login',
+  PRIMARY KEY (`id`),
+  KEY `idx_name` (`name`),
+  KEY `idx_block` (`block`),
+  KEY `username` (`username`),
+  KEY `email` (`email`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=761 ;
 
 --
 -- Dumping data for table `cv0rg_users`
 --
 
 INSERT INTO `cv0rg_users` (`id`, `name`, `username`, `email`, `password`, `block`, `sendEmail`, `registerDate`, `lastvisitDate`, `activation`, `params`, `lastResetTime`, `resetCount`, `otpKey`, `otep`, `requireReset`) VALUES
-(760, 'Super User', 'admin', 'dongwanxue@gmail.com', '$2y$10$WqtY7D0v/6ngrKaMRiqIZOlzzOXd58qnoqRc9.WI.8fHLDR77BiHu', 0, 1, '2016-02-23 00:13:41', '2016-03-18 08:47:47', '0', '', '0000-00-00 00:00:00', 0, '', '', 0);
+(760, 'Super User', 'admin', 'dongwanxue@gmail.com', '$2y$10$WqtY7D0v/6ngrKaMRiqIZOlzzOXd58qnoqRc9.WI.8fHLDR77BiHu', 0, 1, '2016-02-23 00:13:41', '2016-03-19 02:55:57', '0', '', '0000-00-00 00:00:00', 0, '', '', 0);
 
 -- --------------------------------------------------------
 
@@ -4132,15 +5203,20 @@ INSERT INTO `cv0rg_users` (`id`, `name`, `username`, `email`, `password`, `block
 -- Table structure for table `cv0rg_user_keys`
 --
 
-CREATE TABLE `cv0rg_user_keys` (
-  `id` int(10) unsigned NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_user_keys` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `user_id` varchar(255) NOT NULL,
   `token` varchar(255) NOT NULL,
   `series` varchar(255) NOT NULL,
   `invalid` tinyint(4) NOT NULL,
   `time` varchar(200) NOT NULL,
-  `uastring` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `uastring` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `series` (`series`),
+  UNIQUE KEY `series_2` (`series`),
+  UNIQUE KEY `series_3` (`series`),
+  KEY `user_id` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -4148,8 +5224,8 @@ CREATE TABLE `cv0rg_user_keys` (
 -- Table structure for table `cv0rg_user_notes`
 --
 
-CREATE TABLE `cv0rg_user_notes` (
-  `id` int(10) unsigned NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_user_notes` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `user_id` int(10) unsigned NOT NULL DEFAULT '0',
   `catid` int(10) unsigned NOT NULL DEFAULT '0',
   `subject` varchar(100) NOT NULL DEFAULT '',
@@ -4163,8 +5239,11 @@ CREATE TABLE `cv0rg_user_notes` (
   `modified_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `review_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `publish_up` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `publish_down` datetime NOT NULL DEFAULT '0000-00-00 00:00:00'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `publish_down` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`id`),
+  KEY `idx_user_id` (`user_id`),
+  KEY `idx_category_id` (`catid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -4172,11 +5251,12 @@ CREATE TABLE `cv0rg_user_notes` (
 -- Table structure for table `cv0rg_user_profiles`
 --
 
-CREATE TABLE `cv0rg_user_profiles` (
+CREATE TABLE IF NOT EXISTS `cv0rg_user_profiles` (
   `user_id` int(11) NOT NULL,
   `profile_key` varchar(100) NOT NULL,
   `profile_value` text NOT NULL,
-  `ordering` int(11) NOT NULL DEFAULT '0'
+  `ordering` int(11) NOT NULL DEFAULT '0',
+  UNIQUE KEY `idx_user_id_profile_key` (`user_id`,`profile_key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Simple user profile storage table';
 
 -- --------------------------------------------------------
@@ -4185,9 +5265,10 @@ CREATE TABLE `cv0rg_user_profiles` (
 -- Table structure for table `cv0rg_user_usergroup_map`
 --
 
-CREATE TABLE `cv0rg_user_usergroup_map` (
+CREATE TABLE IF NOT EXISTS `cv0rg_user_usergroup_map` (
   `user_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Foreign Key to #__users.id',
-  `group_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Foreign Key to #__usergroups.id'
+  `group_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Foreign Key to #__usergroups.id',
+  PRIMARY KEY (`user_id`,`group_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -4203,12 +5284,14 @@ INSERT INTO `cv0rg_user_usergroup_map` (`user_id`, `group_id`) VALUES
 -- Table structure for table `cv0rg_viewlevels`
 --
 
-CREATE TABLE `cv0rg_viewlevels` (
-  `id` int(10) unsigned NOT NULL COMMENT 'Primary Key',
+CREATE TABLE IF NOT EXISTS `cv0rg_viewlevels` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Primary Key',
   `title` varchar(100) NOT NULL DEFAULT '',
   `ordering` int(11) NOT NULL DEFAULT '0',
-  `rules` varchar(5120) NOT NULL COMMENT 'JSON encoded access control.'
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+  `rules` varchar(5120) NOT NULL COMMENT 'JSON encoded access control.',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `idx_assetgroup_title_lookup` (`title`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=7 ;
 
 --
 -- Dumping data for table `cv0rg_viewlevels`
@@ -4227,8 +5310,8 @@ INSERT INTO `cv0rg_viewlevels` (`id`, `title`, `ordering`, `rules`) VALUES
 -- Table structure for table `cv0rg_weblinks`
 --
 
-CREATE TABLE `cv0rg_weblinks` (
-  `id` int(10) unsigned NOT NULL,
+CREATE TABLE IF NOT EXISTS `cv0rg_weblinks` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `catid` int(11) NOT NULL DEFAULT '0',
   `title` varchar(250) NOT NULL DEFAULT '',
   `alias` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '',
@@ -4255,8 +5338,17 @@ CREATE TABLE `cv0rg_weblinks` (
   `publish_up` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `publish_down` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `version` int(10) unsigned NOT NULL DEFAULT '1',
-  `images` text NOT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
+  `images` text NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_access` (`access`),
+  KEY `idx_checkout` (`checked_out`),
+  KEY `idx_state` (`state`),
+  KEY `idx_catid` (`catid`),
+  KEY `idx_createdby` (`created_by`),
+  KEY `idx_featured_catid` (`featured`,`catid`),
+  KEY `idx_language` (`language`),
+  KEY `idx_xreference` (`xreference`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=10 ;
 
 --
 -- Dumping data for table `cv0rg_weblinks`
@@ -4273,1214 +5365,6 @@ INSERT INTO `cv0rg_weblinks` (`id`, `catid`, `title`, `alias`, `url`, `descripti
 (8, 31, 'Kakadu', 'kakadu', 'http://www.environment.gov.au/parks/kakadu/index.html', '<p>Kakadu is known for both its cultural heritage and its natural features. It is one of a small number of places listed as World Heritage Places for both reasons. Extensive rock art is found there.</p>', 0, 1, 0, '0000-00-00 00:00:00', 2, 1, '{"target":"0","count_clicks":""}', 'en-GB', '2011-01-01 00:00:01', 0, '', '2011-01-01 00:00:01', 42, '', '', '{"robots":"","author":"","rights":""}', 0, '', '0000-00-00 00:00:00', '0000-00-00 00:00:00', 1, ''),
 (9, 31, 'Pulu Keeling', 'pulu-keeling', 'http://www.environment.gov.au/parks/cocos/index.html', '<p>Located on an atoll 2000 kilometers north of Perth, Pulu Keeling is Australia''s smallest national park.</p>', 0, 1, 0, '0000-00-00 00:00:00', 3, 1, '{"target":"0","count_clicks":""}', 'en-GB', '2011-01-01 00:00:01', 0, '', '2011-01-01 00:00:01', 42, '', '', '{"robots":"","author":"","rights":""}', 0, '', '2010-07-10 23:44:03', '0000-00-00 00:00:00', 1, '');
 
---
--- Indexes for dumped tables
---
-
---
--- Indexes for table `cv0rg_assets`
---
-ALTER TABLE `cv0rg_assets`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `idx_asset_name` (`name`),
-  ADD KEY `idx_lft_rgt` (`lft`,`rgt`),
-  ADD KEY `idx_parent_id` (`parent_id`);
-
---
--- Indexes for table `cv0rg_associations`
---
-ALTER TABLE `cv0rg_associations`
-  ADD PRIMARY KEY (`context`,`id`),
-  ADD KEY `idx_key` (`key`);
-
---
--- Indexes for table `cv0rg_banners`
---
-ALTER TABLE `cv0rg_banners`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_state` (`state`),
-  ADD KEY `idx_own_prefix` (`own_prefix`),
-  ADD KEY `idx_metakey_prefix` (`metakey_prefix`),
-  ADD KEY `idx_banner_catid` (`catid`),
-  ADD KEY `idx_language` (`language`);
-
---
--- Indexes for table `cv0rg_banner_clients`
---
-ALTER TABLE `cv0rg_banner_clients`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_own_prefix` (`own_prefix`),
-  ADD KEY `idx_metakey_prefix` (`metakey_prefix`);
-
---
--- Indexes for table `cv0rg_banner_tracks`
---
-ALTER TABLE `cv0rg_banner_tracks`
-  ADD PRIMARY KEY (`track_date`,`track_type`,`banner_id`),
-  ADD KEY `idx_track_date` (`track_date`),
-  ADD KEY `idx_track_type` (`track_type`),
-  ADD KEY `idx_banner_id` (`banner_id`);
-
---
--- Indexes for table `cv0rg_categories`
---
-ALTER TABLE `cv0rg_categories`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `cat_idx` (`extension`,`published`,`access`),
-  ADD KEY `idx_access` (`access`),
-  ADD KEY `idx_checkout` (`checked_out`),
-  ADD KEY `idx_path` (`path`),
-  ADD KEY `idx_left_right` (`lft`,`rgt`),
-  ADD KEY `idx_alias` (`alias`),
-  ADD KEY `idx_language` (`language`);
-
---
--- Indexes for table `cv0rg_contact_details`
---
-ALTER TABLE `cv0rg_contact_details`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_access` (`access`),
-  ADD KEY `idx_checkout` (`checked_out`),
-  ADD KEY `idx_state` (`published`),
-  ADD KEY `idx_catid` (`catid`),
-  ADD KEY `idx_createdby` (`created_by`),
-  ADD KEY `idx_featured_catid` (`featured`,`catid`),
-  ADD KEY `idx_language` (`language`),
-  ADD KEY `idx_xreference` (`xreference`);
-
---
--- Indexes for table `cv0rg_content`
---
-ALTER TABLE `cv0rg_content`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_access` (`access`),
-  ADD KEY `idx_checkout` (`checked_out`),
-  ADD KEY `idx_state` (`state`),
-  ADD KEY `idx_catid` (`catid`),
-  ADD KEY `idx_createdby` (`created_by`),
-  ADD KEY `idx_featured_catid` (`featured`,`catid`),
-  ADD KEY `idx_language` (`language`),
-  ADD KEY `idx_xreference` (`xreference`);
-
---
--- Indexes for table `cv0rg_contentitem_tag_map`
---
-ALTER TABLE `cv0rg_contentitem_tag_map`
-  ADD UNIQUE KEY `uc_ItemnameTagid` (`type_id`,`content_item_id`,`tag_id`),
-  ADD KEY `idx_tag_type` (`tag_id`,`type_id`),
-  ADD KEY `idx_date_id` (`tag_date`,`tag_id`),
-  ADD KEY `idx_tag` (`tag_id`),
-  ADD KEY `idx_type` (`type_id`),
-  ADD KEY `idx_core_content_id` (`core_content_id`);
-
---
--- Indexes for table `cv0rg_content_frontpage`
---
-ALTER TABLE `cv0rg_content_frontpage`
-  ADD PRIMARY KEY (`content_id`);
-
---
--- Indexes for table `cv0rg_content_rating`
---
-ALTER TABLE `cv0rg_content_rating`
-  ADD PRIMARY KEY (`content_id`);
-
---
--- Indexes for table `cv0rg_content_types`
---
-ALTER TABLE `cv0rg_content_types`
-  ADD PRIMARY KEY (`type_id`),
-  ADD KEY `idx_alias` (`type_alias`);
-
---
--- Indexes for table `cv0rg_extensions`
---
-ALTER TABLE `cv0rg_extensions`
-  ADD PRIMARY KEY (`extension_id`),
-  ADD KEY `element_clientid` (`element`,`client_id`),
-  ADD KEY `element_folder_clientid` (`element`,`folder`,`client_id`),
-  ADD KEY `extension` (`type`,`element`,`folder`,`client_id`);
-
---
--- Indexes for table `cv0rg_finder_filters`
---
-ALTER TABLE `cv0rg_finder_filters`
-  ADD PRIMARY KEY (`filter_id`);
-
---
--- Indexes for table `cv0rg_finder_links`
---
-ALTER TABLE `cv0rg_finder_links`
-  ADD PRIMARY KEY (`link_id`),
-  ADD KEY `idx_type` (`type_id`),
-  ADD KEY `idx_title` (`title`),
-  ADD KEY `idx_md5` (`md5sum`),
-  ADD KEY `idx_url` (`url`(75)),
-  ADD KEY `idx_published_list` (`published`,`state`,`access`,`publish_start_date`,`publish_end_date`,`list_price`),
-  ADD KEY `idx_published_sale` (`published`,`state`,`access`,`publish_start_date`,`publish_end_date`,`sale_price`);
-
---
--- Indexes for table `cv0rg_finder_links_terms0`
---
-ALTER TABLE `cv0rg_finder_links_terms0`
-  ADD PRIMARY KEY (`link_id`,`term_id`),
-  ADD KEY `idx_term_weight` (`term_id`,`weight`),
-  ADD KEY `idx_link_term_weight` (`link_id`,`term_id`,`weight`);
-
---
--- Indexes for table `cv0rg_finder_links_terms1`
---
-ALTER TABLE `cv0rg_finder_links_terms1`
-  ADD PRIMARY KEY (`link_id`,`term_id`),
-  ADD KEY `idx_term_weight` (`term_id`,`weight`),
-  ADD KEY `idx_link_term_weight` (`link_id`,`term_id`,`weight`);
-
---
--- Indexes for table `cv0rg_finder_links_terms2`
---
-ALTER TABLE `cv0rg_finder_links_terms2`
-  ADD PRIMARY KEY (`link_id`,`term_id`),
-  ADD KEY `idx_term_weight` (`term_id`,`weight`),
-  ADD KEY `idx_link_term_weight` (`link_id`,`term_id`,`weight`);
-
---
--- Indexes for table `cv0rg_finder_links_terms3`
---
-ALTER TABLE `cv0rg_finder_links_terms3`
-  ADD PRIMARY KEY (`link_id`,`term_id`),
-  ADD KEY `idx_term_weight` (`term_id`,`weight`),
-  ADD KEY `idx_link_term_weight` (`link_id`,`term_id`,`weight`);
-
---
--- Indexes for table `cv0rg_finder_links_terms4`
---
-ALTER TABLE `cv0rg_finder_links_terms4`
-  ADD PRIMARY KEY (`link_id`,`term_id`),
-  ADD KEY `idx_term_weight` (`term_id`,`weight`),
-  ADD KEY `idx_link_term_weight` (`link_id`,`term_id`,`weight`);
-
---
--- Indexes for table `cv0rg_finder_links_terms5`
---
-ALTER TABLE `cv0rg_finder_links_terms5`
-  ADD PRIMARY KEY (`link_id`,`term_id`),
-  ADD KEY `idx_term_weight` (`term_id`,`weight`),
-  ADD KEY `idx_link_term_weight` (`link_id`,`term_id`,`weight`);
-
---
--- Indexes for table `cv0rg_finder_links_terms6`
---
-ALTER TABLE `cv0rg_finder_links_terms6`
-  ADD PRIMARY KEY (`link_id`,`term_id`),
-  ADD KEY `idx_term_weight` (`term_id`,`weight`),
-  ADD KEY `idx_link_term_weight` (`link_id`,`term_id`,`weight`);
-
---
--- Indexes for table `cv0rg_finder_links_terms7`
---
-ALTER TABLE `cv0rg_finder_links_terms7`
-  ADD PRIMARY KEY (`link_id`,`term_id`),
-  ADD KEY `idx_term_weight` (`term_id`,`weight`),
-  ADD KEY `idx_link_term_weight` (`link_id`,`term_id`,`weight`);
-
---
--- Indexes for table `cv0rg_finder_links_terms8`
---
-ALTER TABLE `cv0rg_finder_links_terms8`
-  ADD PRIMARY KEY (`link_id`,`term_id`),
-  ADD KEY `idx_term_weight` (`term_id`,`weight`),
-  ADD KEY `idx_link_term_weight` (`link_id`,`term_id`,`weight`);
-
---
--- Indexes for table `cv0rg_finder_links_terms9`
---
-ALTER TABLE `cv0rg_finder_links_terms9`
-  ADD PRIMARY KEY (`link_id`,`term_id`),
-  ADD KEY `idx_term_weight` (`term_id`,`weight`),
-  ADD KEY `idx_link_term_weight` (`link_id`,`term_id`,`weight`);
-
---
--- Indexes for table `cv0rg_finder_links_termsa`
---
-ALTER TABLE `cv0rg_finder_links_termsa`
-  ADD PRIMARY KEY (`link_id`,`term_id`),
-  ADD KEY `idx_term_weight` (`term_id`,`weight`),
-  ADD KEY `idx_link_term_weight` (`link_id`,`term_id`,`weight`);
-
---
--- Indexes for table `cv0rg_finder_links_termsb`
---
-ALTER TABLE `cv0rg_finder_links_termsb`
-  ADD PRIMARY KEY (`link_id`,`term_id`),
-  ADD KEY `idx_term_weight` (`term_id`,`weight`),
-  ADD KEY `idx_link_term_weight` (`link_id`,`term_id`,`weight`);
-
---
--- Indexes for table `cv0rg_finder_links_termsc`
---
-ALTER TABLE `cv0rg_finder_links_termsc`
-  ADD PRIMARY KEY (`link_id`,`term_id`),
-  ADD KEY `idx_term_weight` (`term_id`,`weight`),
-  ADD KEY `idx_link_term_weight` (`link_id`,`term_id`,`weight`);
-
---
--- Indexes for table `cv0rg_finder_links_termsd`
---
-ALTER TABLE `cv0rg_finder_links_termsd`
-  ADD PRIMARY KEY (`link_id`,`term_id`),
-  ADD KEY `idx_term_weight` (`term_id`,`weight`),
-  ADD KEY `idx_link_term_weight` (`link_id`,`term_id`,`weight`);
-
---
--- Indexes for table `cv0rg_finder_links_termse`
---
-ALTER TABLE `cv0rg_finder_links_termse`
-  ADD PRIMARY KEY (`link_id`,`term_id`),
-  ADD KEY `idx_term_weight` (`term_id`,`weight`),
-  ADD KEY `idx_link_term_weight` (`link_id`,`term_id`,`weight`);
-
---
--- Indexes for table `cv0rg_finder_links_termsf`
---
-ALTER TABLE `cv0rg_finder_links_termsf`
-  ADD PRIMARY KEY (`link_id`,`term_id`),
-  ADD KEY `idx_term_weight` (`term_id`,`weight`),
-  ADD KEY `idx_link_term_weight` (`link_id`,`term_id`,`weight`);
-
---
--- Indexes for table `cv0rg_finder_taxonomy`
---
-ALTER TABLE `cv0rg_finder_taxonomy`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `parent_id` (`parent_id`),
-  ADD KEY `state` (`state`),
-  ADD KEY `ordering` (`ordering`),
-  ADD KEY `access` (`access`),
-  ADD KEY `idx_parent_published` (`parent_id`,`state`,`access`);
-
---
--- Indexes for table `cv0rg_finder_taxonomy_map`
---
-ALTER TABLE `cv0rg_finder_taxonomy_map`
-  ADD PRIMARY KEY (`link_id`,`node_id`),
-  ADD KEY `link_id` (`link_id`),
-  ADD KEY `node_id` (`node_id`);
-
---
--- Indexes for table `cv0rg_finder_terms`
---
-ALTER TABLE `cv0rg_finder_terms`
-  ADD PRIMARY KEY (`term_id`),
-  ADD UNIQUE KEY `idx_term` (`term`),
-  ADD KEY `idx_term_phrase` (`term`,`phrase`),
-  ADD KEY `idx_stem_phrase` (`stem`,`phrase`),
-  ADD KEY `idx_soundex_phrase` (`soundex`,`phrase`);
-
---
--- Indexes for table `cv0rg_finder_terms_common`
---
-ALTER TABLE `cv0rg_finder_terms_common`
-  ADD KEY `idx_word_lang` (`term`,`language`),
-  ADD KEY `idx_lang` (`language`);
-
---
--- Indexes for table `cv0rg_finder_tokens`
---
-ALTER TABLE `cv0rg_finder_tokens`
-  ADD KEY `idx_word` (`term`),
-  ADD KEY `idx_context` (`context`);
-
---
--- Indexes for table `cv0rg_finder_tokens_aggregate`
---
-ALTER TABLE `cv0rg_finder_tokens_aggregate`
-  ADD KEY `token` (`term`),
-  ADD KEY `keyword_id` (`term_id`);
-
---
--- Indexes for table `cv0rg_finder_types`
---
-ALTER TABLE `cv0rg_finder_types`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `title` (`title`);
-
---
--- Indexes for table `cv0rg_imageshow_external_source_picasa`
---
-ALTER TABLE `cv0rg_imageshow_external_source_picasa`
-  ADD PRIMARY KEY (`external_source_id`);
-
---
--- Indexes for table `cv0rg_imageshow_images`
---
-ALTER TABLE `cv0rg_imageshow_images`
-  ADD PRIMARY KEY (`image_id`);
-
---
--- Indexes for table `cv0rg_imageshow_log`
---
-ALTER TABLE `cv0rg_imageshow_log`
-  ADD PRIMARY KEY (`log_id`);
-
---
--- Indexes for table `cv0rg_imageshow_showcase`
---
-ALTER TABLE `cv0rg_imageshow_showcase`
-  ADD PRIMARY KEY (`showcase_id`);
-
---
--- Indexes for table `cv0rg_imageshow_showlist`
---
-ALTER TABLE `cv0rg_imageshow_showlist`
-  ADD PRIMARY KEY (`showlist_id`);
-
---
--- Indexes for table `cv0rg_imageshow_source_profile`
---
-ALTER TABLE `cv0rg_imageshow_source_profile`
-  ADD PRIMARY KEY (`external_source_profile_id`);
-
---
--- Indexes for table `cv0rg_imageshow_theme_carousel`
---
-ALTER TABLE `cv0rg_imageshow_theme_carousel`
-  ADD PRIMARY KEY (`theme_id`);
-
---
--- Indexes for table `cv0rg_imageshow_theme_classic_flash`
---
-ALTER TABLE `cv0rg_imageshow_theme_classic_flash`
-  ADD PRIMARY KEY (`theme_id`);
-
---
--- Indexes for table `cv0rg_imageshow_theme_classic_javascript`
---
-ALTER TABLE `cv0rg_imageshow_theme_classic_javascript`
-  ADD PRIMARY KEY (`theme_id`);
-
---
--- Indexes for table `cv0rg_imageshow_theme_classic_parameters`
---
-ALTER TABLE `cv0rg_imageshow_theme_classic_parameters`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `cv0rg_imageshow_theme_flow`
---
-ALTER TABLE `cv0rg_imageshow_theme_flow`
-  ADD PRIMARY KEY (`theme_id`);
-
---
--- Indexes for table `cv0rg_imageshow_theme_grid`
---
-ALTER TABLE `cv0rg_imageshow_theme_grid`
-  ADD PRIMARY KEY (`theme_id`);
-
---
--- Indexes for table `cv0rg_imageshow_theme_slider`
---
-ALTER TABLE `cv0rg_imageshow_theme_slider`
-  ADD PRIMARY KEY (`theme_id`);
-
---
--- Indexes for table `cv0rg_imageshow_theme_strip`
---
-ALTER TABLE `cv0rg_imageshow_theme_strip`
-  ADD PRIMARY KEY (`theme_id`);
-
---
--- Indexes for table `cv0rg_jsn_easyslider_config`
---
-ALTER TABLE `cv0rg_jsn_easyslider_config`
-  ADD UNIQUE KEY `name` (`name`);
-
---
--- Indexes for table `cv0rg_jsn_easyslider_item_templates`
---
-ALTER TABLE `cv0rg_jsn_easyslider_item_templates`
-  ADD PRIMARY KEY (`model_id`);
-
---
--- Indexes for table `cv0rg_jsn_easyslider_messages`
---
-ALTER TABLE `cv0rg_jsn_easyslider_messages`
-  ADD PRIMARY KEY (`msg_id`),
-  ADD UNIQUE KEY `message` (`msg_screen`,`ordering`);
-
---
--- Indexes for table `cv0rg_jsn_easyslider_sliders`
---
-ALTER TABLE `cv0rg_jsn_easyslider_sliders`
-  ADD PRIMARY KEY (`slider_id`);
-
---
--- Indexes for table `cv0rg_jsn_easyslider_slide_templates`
---
-ALTER TABLE `cv0rg_jsn_easyslider_slide_templates`
-  ADD PRIMARY KEY (`model_id`);
-
---
--- Indexes for table `cv0rg_jsn_imageshow_config`
---
-ALTER TABLE `cv0rg_jsn_imageshow_config`
-  ADD UNIQUE KEY `name` (`name`);
-
---
--- Indexes for table `cv0rg_jsn_imageshow_messages`
---
-ALTER TABLE `cv0rg_jsn_imageshow_messages`
-  ADD PRIMARY KEY (`msg_id`);
-
---
--- Indexes for table `cv0rg_jsn_mobilize_config`
---
-ALTER TABLE `cv0rg_jsn_mobilize_config`
-  ADD UNIQUE KEY `name` (`name`);
-
---
--- Indexes for table `cv0rg_jsn_mobilize_design`
---
-ALTER TABLE `cv0rg_jsn_mobilize_design`
-  ADD PRIMARY KEY (`design_id`);
-
---
--- Indexes for table `cv0rg_jsn_mobilize_messages`
---
-ALTER TABLE `cv0rg_jsn_mobilize_messages`
-  ADD PRIMARY KEY (`msg_id`),
-  ADD UNIQUE KEY `message` (`msg_screen`,`ordering`);
-
---
--- Indexes for table `cv0rg_jsn_mobilize_os`
---
-ALTER TABLE `cv0rg_jsn_mobilize_os`
-  ADD PRIMARY KEY (`os_id`);
-
---
--- Indexes for table `cv0rg_jsn_mobilize_os_support`
---
-ALTER TABLE `cv0rg_jsn_mobilize_os_support`
-  ADD PRIMARY KEY (`support_id`);
-
---
--- Indexes for table `cv0rg_jsn_mobilize_profiles`
---
-ALTER TABLE `cv0rg_jsn_mobilize_profiles`
-  ADD PRIMARY KEY (`profile_id`);
-
---
--- Indexes for table `cv0rg_jsn_pagebuilder_config`
---
-ALTER TABLE `cv0rg_jsn_pagebuilder_config`
-  ADD UNIQUE KEY `name` (`name`);
-
---
--- Indexes for table `cv0rg_jsn_pagebuilder_content_custom_css`
---
-ALTER TABLE `cv0rg_jsn_pagebuilder_content_custom_css`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `cv0rg_jsn_pagebuilder_messages`
---
-ALTER TABLE `cv0rg_jsn_pagebuilder_messages`
-  ADD PRIMARY KEY (`msg_id`),
-  ADD UNIQUE KEY `message` (`msg_screen`,`ordering`);
-
---
--- Indexes for table `cv0rg_jsn_poweradmin_config`
---
-ALTER TABLE `cv0rg_jsn_poweradmin_config`
-  ADD UNIQUE KEY `name` (`name`);
-
---
--- Indexes for table `cv0rg_jsn_poweradmin_favourite`
---
-ALTER TABLE `cv0rg_jsn_poweradmin_favourite`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `cv0rg_jsn_poweradmin_history`
---
-ALTER TABLE `cv0rg_jsn_poweradmin_history`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `cv0rg_jsn_uniform_config`
---
-ALTER TABLE `cv0rg_jsn_uniform_config`
-  ADD UNIQUE KEY `name` (`name`);
-
---
--- Indexes for table `cv0rg_jsn_uniform_data`
---
-ALTER TABLE `cv0rg_jsn_uniform_data`
-  ADD PRIMARY KEY (`data_id`),
-  ADD KEY `fk_uniform_data_forms` (`form_id`);
-
---
--- Indexes for table `cv0rg_jsn_uniform_emails`
---
-ALTER TABLE `cv0rg_jsn_uniform_emails`
-  ADD PRIMARY KEY (`email_id`),
-  ADD KEY `fk_uniform_emails_forms` (`form_id`);
-
---
--- Indexes for table `cv0rg_jsn_uniform_fields`
---
-ALTER TABLE `cv0rg_jsn_uniform_fields`
-  ADD PRIMARY KEY (`field_id`),
-  ADD KEY `fk_uniform_fields_forms` (`form_id`);
-
---
--- Indexes for table `cv0rg_jsn_uniform_forms`
---
-ALTER TABLE `cv0rg_jsn_uniform_forms`
-  ADD PRIMARY KEY (`form_id`);
-
---
--- Indexes for table `cv0rg_jsn_uniform_form_pages`
---
-ALTER TABLE `cv0rg_jsn_uniform_form_pages`
-  ADD PRIMARY KEY (`page_id`);
-
---
--- Indexes for table `cv0rg_jsn_uniform_messages`
---
-ALTER TABLE `cv0rg_jsn_uniform_messages`
-  ADD PRIMARY KEY (`msg_id`),
-  ADD UNIQUE KEY `message` (`msg_screen`,`ordering`);
-
---
--- Indexes for table `cv0rg_jsn_uniform_submissions`
---
-ALTER TABLE `cv0rg_jsn_uniform_submissions`
-  ADD PRIMARY KEY (`submission_id`);
-
---
--- Indexes for table `cv0rg_jsn_uniform_submission_data`
---
-ALTER TABLE `cv0rg_jsn_uniform_submission_data`
-  ADD PRIMARY KEY (`submission_data_id`),
-  ADD KEY `submission_data_id` (`submission_data_id`),
-  ADD KEY `submission_id` (`submission_id`),
-  ADD KEY `form_id` (`form_id`),
-  ADD KEY `field_id` (`field_id`);
-
---
--- Indexes for table `cv0rg_jsn_uniform_templates`
---
-ALTER TABLE `cv0rg_jsn_uniform_templates`
-  ADD PRIMARY KEY (`template_id`),
-  ADD KEY `fk_uniform_templates_forms` (`form_id`);
-
---
--- Indexes for table `cv0rg_languages`
---
-ALTER TABLE `cv0rg_languages`
-  ADD PRIMARY KEY (`lang_id`),
-  ADD UNIQUE KEY `idx_sef` (`sef`),
-  ADD UNIQUE KEY `idx_image` (`image`),
-  ADD UNIQUE KEY `idx_langcode` (`lang_code`),
-  ADD KEY `idx_ordering` (`ordering`),
-  ADD KEY `idx_access` (`access`);
-
---
--- Indexes for table `cv0rg_menu`
---
-ALTER TABLE `cv0rg_menu`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `idx_client_id_parent_id_alias_language` (`client_id`,`parent_id`,`alias`,`language`),
-  ADD KEY `idx_componentid` (`component_id`,`menutype`,`published`,`access`),
-  ADD KEY `idx_menutype` (`menutype`),
-  ADD KEY `idx_left_right` (`lft`,`rgt`),
-  ADD KEY `idx_alias` (`alias`),
-  ADD KEY `idx_path` (`path`(255)),
-  ADD KEY `idx_language` (`language`);
-
---
--- Indexes for table `cv0rg_menu_types`
---
-ALTER TABLE `cv0rg_menu_types`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `idx_menutype` (`menutype`);
-
---
--- Indexes for table `cv0rg_messages`
---
-ALTER TABLE `cv0rg_messages`
-  ADD PRIMARY KEY (`message_id`),
-  ADD KEY `useridto_state` (`user_id_to`,`state`);
-
---
--- Indexes for table `cv0rg_messages_cfg`
---
-ALTER TABLE `cv0rg_messages_cfg`
-  ADD UNIQUE KEY `idx_user_var_name` (`user_id`,`cfg_name`);
-
---
--- Indexes for table `cv0rg_modules`
---
-ALTER TABLE `cv0rg_modules`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `published` (`published`,`access`),
-  ADD KEY `newsfeeds` (`module`,`published`),
-  ADD KEY `idx_language` (`language`);
-
---
--- Indexes for table `cv0rg_modules_menu`
---
-ALTER TABLE `cv0rg_modules_menu`
-  ADD PRIMARY KEY (`moduleid`,`menuid`);
-
---
--- Indexes for table `cv0rg_newsfeeds`
---
-ALTER TABLE `cv0rg_newsfeeds`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_access` (`access`),
-  ADD KEY `idx_checkout` (`checked_out`),
-  ADD KEY `idx_state` (`published`),
-  ADD KEY `idx_catid` (`catid`),
-  ADD KEY `idx_createdby` (`created_by`),
-  ADD KEY `idx_language` (`language`),
-  ADD KEY `idx_xreference` (`xreference`);
-
---
--- Indexes for table `cv0rg_overrider`
---
-ALTER TABLE `cv0rg_overrider`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `cv0rg_postinstall_messages`
---
-ALTER TABLE `cv0rg_postinstall_messages`
-  ADD PRIMARY KEY (`postinstall_message_id`);
-
---
--- Indexes for table `cv0rg_redirect_links`
---
-ALTER TABLE `cv0rg_redirect_links`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `idx_link_old` (`old_url`),
-  ADD KEY `idx_link_modifed` (`modified_date`);
-
---
--- Indexes for table `cv0rg_schemas`
---
-ALTER TABLE `cv0rg_schemas`
-  ADD PRIMARY KEY (`extension_id`,`version_id`);
-
---
--- Indexes for table `cv0rg_session`
---
-ALTER TABLE `cv0rg_session`
-  ADD PRIMARY KEY (`session_id`),
-  ADD KEY `userid` (`userid`),
-  ADD KEY `time` (`time`);
-
---
--- Indexes for table `cv0rg_tags`
---
-ALTER TABLE `cv0rg_tags`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `tag_idx` (`published`,`access`),
-  ADD KEY `idx_access` (`access`),
-  ADD KEY `idx_checkout` (`checked_out`),
-  ADD KEY `idx_path` (`path`),
-  ADD KEY `idx_left_right` (`lft`,`rgt`),
-  ADD KEY `idx_alias` (`alias`),
-  ADD KEY `idx_language` (`language`);
-
---
--- Indexes for table `cv0rg_template_styles`
---
-ALTER TABLE `cv0rg_template_styles`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_template` (`template`),
-  ADD KEY `idx_home` (`home`);
-
---
--- Indexes for table `cv0rg_ucm_base`
---
-ALTER TABLE `cv0rg_ucm_base`
-  ADD PRIMARY KEY (`ucm_id`),
-  ADD KEY `idx_ucm_item_id` (`ucm_item_id`),
-  ADD KEY `idx_ucm_type_id` (`ucm_type_id`),
-  ADD KEY `idx_ucm_language_id` (`ucm_language_id`);
-
---
--- Indexes for table `cv0rg_ucm_content`
---
-ALTER TABLE `cv0rg_ucm_content`
-  ADD PRIMARY KEY (`core_content_id`),
-  ADD KEY `tag_idx` (`core_state`,`core_access`),
-  ADD KEY `idx_access` (`core_access`),
-  ADD KEY `idx_alias` (`core_alias`),
-  ADD KEY `idx_language` (`core_language`),
-  ADD KEY `idx_title` (`core_title`),
-  ADD KEY `idx_modified_time` (`core_modified_time`),
-  ADD KEY `idx_created_time` (`core_created_time`),
-  ADD KEY `idx_content_type` (`core_type_alias`),
-  ADD KEY `idx_core_modified_user_id` (`core_modified_user_id`),
-  ADD KEY `idx_core_checked_out_user_id` (`core_checked_out_user_id`),
-  ADD KEY `idx_core_created_user_id` (`core_created_user_id`),
-  ADD KEY `idx_core_type_id` (`core_type_id`);
-
---
--- Indexes for table `cv0rg_ucm_history`
---
-ALTER TABLE `cv0rg_ucm_history`
-  ADD PRIMARY KEY (`version_id`),
-  ADD KEY `idx_ucm_item_id` (`ucm_type_id`,`ucm_item_id`),
-  ADD KEY `idx_save_date` (`save_date`);
-
---
--- Indexes for table `cv0rg_updates`
---
-ALTER TABLE `cv0rg_updates`
-  ADD PRIMARY KEY (`update_id`);
-
---
--- Indexes for table `cv0rg_update_sites`
---
-ALTER TABLE `cv0rg_update_sites`
-  ADD PRIMARY KEY (`update_site_id`);
-
---
--- Indexes for table `cv0rg_update_sites_extensions`
---
-ALTER TABLE `cv0rg_update_sites_extensions`
-  ADD PRIMARY KEY (`update_site_id`,`extension_id`);
-
---
--- Indexes for table `cv0rg_usergroups`
---
-ALTER TABLE `cv0rg_usergroups`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `idx_usergroup_parent_title_lookup` (`parent_id`,`title`),
-  ADD KEY `idx_usergroup_title_lookup` (`title`),
-  ADD KEY `idx_usergroup_adjacency_lookup` (`parent_id`),
-  ADD KEY `idx_usergroup_nested_set_lookup` (`lft`,`rgt`) USING BTREE;
-
---
--- Indexes for table `cv0rg_users`
---
-ALTER TABLE `cv0rg_users`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_name` (`name`),
-  ADD KEY `idx_block` (`block`),
-  ADD KEY `username` (`username`),
-  ADD KEY `email` (`email`);
-
---
--- Indexes for table `cv0rg_user_keys`
---
-ALTER TABLE `cv0rg_user_keys`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `series` (`series`),
-  ADD UNIQUE KEY `series_2` (`series`),
-  ADD UNIQUE KEY `series_3` (`series`),
-  ADD KEY `user_id` (`user_id`);
-
---
--- Indexes for table `cv0rg_user_notes`
---
-ALTER TABLE `cv0rg_user_notes`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_user_id` (`user_id`),
-  ADD KEY `idx_category_id` (`catid`);
-
---
--- Indexes for table `cv0rg_user_profiles`
---
-ALTER TABLE `cv0rg_user_profiles`
-  ADD UNIQUE KEY `idx_user_id_profile_key` (`user_id`,`profile_key`);
-
---
--- Indexes for table `cv0rg_user_usergroup_map`
---
-ALTER TABLE `cv0rg_user_usergroup_map`
-  ADD PRIMARY KEY (`user_id`,`group_id`);
-
---
--- Indexes for table `cv0rg_viewlevels`
---
-ALTER TABLE `cv0rg_viewlevels`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `idx_assetgroup_title_lookup` (`title`);
-
---
--- Indexes for table `cv0rg_weblinks`
---
-ALTER TABLE `cv0rg_weblinks`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_access` (`access`),
-  ADD KEY `idx_checkout` (`checked_out`),
-  ADD KEY `idx_state` (`state`),
-  ADD KEY `idx_catid` (`catid`),
-  ADD KEY `idx_createdby` (`created_by`),
-  ADD KEY `idx_featured_catid` (`featured`,`catid`),
-  ADD KEY `idx_language` (`language`),
-  ADD KEY `idx_xreference` (`xreference`);
-
---
--- AUTO_INCREMENT for dumped tables
---
-
---
--- AUTO_INCREMENT for table `cv0rg_assets`
---
-ALTER TABLE `cv0rg_assets`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Primary Key',AUTO_INCREMENT=264;
---
--- AUTO_INCREMENT for table `cv0rg_banners`
---
-ALTER TABLE `cv0rg_banners`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=6;
---
--- AUTO_INCREMENT for table `cv0rg_banner_clients`
---
-ALTER TABLE `cv0rg_banner_clients`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2;
---
--- AUTO_INCREMENT for table `cv0rg_categories`
---
-ALTER TABLE `cv0rg_categories`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=86;
---
--- AUTO_INCREMENT for table `cv0rg_contact_details`
---
-ALTER TABLE `cv0rg_contact_details`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=10;
---
--- AUTO_INCREMENT for table `cv0rg_content`
---
-ALTER TABLE `cv0rg_content`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=118;
---
--- AUTO_INCREMENT for table `cv0rg_content_types`
---
-ALTER TABLE `cv0rg_content_types`
-  MODIFY `type_id` int(10) unsigned NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=14;
---
--- AUTO_INCREMENT for table `cv0rg_extensions`
---
-ALTER TABLE `cv0rg_extensions`
-  MODIFY `extension_id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=746;
---
--- AUTO_INCREMENT for table `cv0rg_finder_filters`
---
-ALTER TABLE `cv0rg_finder_filters`
-  MODIFY `filter_id` int(10) unsigned NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT for table `cv0rg_finder_links`
---
-ALTER TABLE `cv0rg_finder_links`
-  MODIFY `link_id` int(10) unsigned NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT for table `cv0rg_finder_taxonomy`
---
-ALTER TABLE `cv0rg_finder_taxonomy`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2;
---
--- AUTO_INCREMENT for table `cv0rg_finder_terms`
---
-ALTER TABLE `cv0rg_finder_terms`
-  MODIFY `term_id` int(10) unsigned NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT for table `cv0rg_finder_types`
---
-ALTER TABLE `cv0rg_finder_types`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT for table `cv0rg_imageshow_external_source_picasa`
---
-ALTER TABLE `cv0rg_imageshow_external_source_picasa`
-  MODIFY `external_source_id` int(11) unsigned NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=4;
---
--- AUTO_INCREMENT for table `cv0rg_imageshow_images`
---
-ALTER TABLE `cv0rg_imageshow_images`
-  MODIFY `image_id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=368;
---
--- AUTO_INCREMENT for table `cv0rg_imageshow_log`
---
-ALTER TABLE `cv0rg_imageshow_log`
-  MODIFY `log_id` int(11) unsigned NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT for table `cv0rg_imageshow_showcase`
---
-ALTER TABLE `cv0rg_imageshow_showcase`
-  MODIFY `showcase_id` int(11) unsigned NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=8;
---
--- AUTO_INCREMENT for table `cv0rg_imageshow_showlist`
---
-ALTER TABLE `cv0rg_imageshow_showlist`
-  MODIFY `showlist_id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=12;
---
--- AUTO_INCREMENT for table `cv0rg_imageshow_source_profile`
---
-ALTER TABLE `cv0rg_imageshow_source_profile`
-  MODIFY `external_source_profile_id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=11;
---
--- AUTO_INCREMENT for table `cv0rg_imageshow_theme_carousel`
---
-ALTER TABLE `cv0rg_imageshow_theme_carousel`
-  MODIFY `theme_id` int(11) unsigned NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2;
---
--- AUTO_INCREMENT for table `cv0rg_imageshow_theme_classic_flash`
---
-ALTER TABLE `cv0rg_imageshow_theme_classic_flash`
-  MODIFY `theme_id` int(11) unsigned NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT for table `cv0rg_imageshow_theme_classic_javascript`
---
-ALTER TABLE `cv0rg_imageshow_theme_classic_javascript`
-  MODIFY `theme_id` int(11) unsigned NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=4;
---
--- AUTO_INCREMENT for table `cv0rg_imageshow_theme_classic_parameters`
---
-ALTER TABLE `cv0rg_imageshow_theme_classic_parameters`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2;
---
--- AUTO_INCREMENT for table `cv0rg_imageshow_theme_flow`
---
-ALTER TABLE `cv0rg_imageshow_theme_flow`
-  MODIFY `theme_id` int(11) unsigned NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2;
---
--- AUTO_INCREMENT for table `cv0rg_imageshow_theme_grid`
---
-ALTER TABLE `cv0rg_imageshow_theme_grid`
-  MODIFY `theme_id` int(11) unsigned NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=3;
---
--- AUTO_INCREMENT for table `cv0rg_imageshow_theme_slider`
---
-ALTER TABLE `cv0rg_imageshow_theme_slider`
-  MODIFY `theme_id` int(11) unsigned NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2;
---
--- AUTO_INCREMENT for table `cv0rg_imageshow_theme_strip`
---
-ALTER TABLE `cv0rg_imageshow_theme_strip`
-  MODIFY `theme_id` int(11) unsigned NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=4;
---
--- AUTO_INCREMENT for table `cv0rg_jsn_easyslider_item_templates`
---
-ALTER TABLE `cv0rg_jsn_easyslider_item_templates`
-  MODIFY `model_id` int(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT for table `cv0rg_jsn_easyslider_messages`
---
-ALTER TABLE `cv0rg_jsn_easyslider_messages`
-  MODIFY `msg_id` int(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT for table `cv0rg_jsn_easyslider_sliders`
---
-ALTER TABLE `cv0rg_jsn_easyslider_sliders`
-  MODIFY `slider_id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=3;
---
--- AUTO_INCREMENT for table `cv0rg_jsn_easyslider_slide_templates`
---
-ALTER TABLE `cv0rg_jsn_easyslider_slide_templates`
-  MODIFY `model_id` int(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT for table `cv0rg_jsn_imageshow_messages`
---
-ALTER TABLE `cv0rg_jsn_imageshow_messages`
-  MODIFY `msg_id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=4;
---
--- AUTO_INCREMENT for table `cv0rg_jsn_mobilize_design`
---
-ALTER TABLE `cv0rg_jsn_mobilize_design`
-  MODIFY `design_id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=23;
---
--- AUTO_INCREMENT for table `cv0rg_jsn_mobilize_messages`
---
-ALTER TABLE `cv0rg_jsn_mobilize_messages`
-  MODIFY `msg_id` int(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT for table `cv0rg_jsn_mobilize_os`
---
-ALTER TABLE `cv0rg_jsn_mobilize_os`
-  MODIFY `os_id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=13;
---
--- AUTO_INCREMENT for table `cv0rg_jsn_mobilize_os_support`
---
-ALTER TABLE `cv0rg_jsn_mobilize_os_support`
-  MODIFY `support_id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=106;
---
--- AUTO_INCREMENT for table `cv0rg_jsn_mobilize_profiles`
---
-ALTER TABLE `cv0rg_jsn_mobilize_profiles`
-  MODIFY `profile_id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2;
---
--- AUTO_INCREMENT for table `cv0rg_jsn_pagebuilder_content_custom_css`
---
-ALTER TABLE `cv0rg_jsn_pagebuilder_content_custom_css`
-  MODIFY `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT for table `cv0rg_jsn_pagebuilder_messages`
---
-ALTER TABLE `cv0rg_jsn_pagebuilder_messages`
-  MODIFY `msg_id` int(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT for table `cv0rg_jsn_poweradmin_favourite`
---
-ALTER TABLE `cv0rg_jsn_poweradmin_favourite`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT for table `cv0rg_jsn_poweradmin_history`
---
-ALTER TABLE `cv0rg_jsn_poweradmin_history`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=31;
---
--- AUTO_INCREMENT for table `cv0rg_jsn_uniform_data`
---
-ALTER TABLE `cv0rg_jsn_uniform_data`
-  MODIFY `data_id` int(10) unsigned NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=6;
---
--- AUTO_INCREMENT for table `cv0rg_jsn_uniform_emails`
---
-ALTER TABLE `cv0rg_jsn_uniform_emails`
-  MODIFY `email_id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=8;
---
--- AUTO_INCREMENT for table `cv0rg_jsn_uniform_fields`
---
-ALTER TABLE `cv0rg_jsn_uniform_fields`
-  MODIFY `field_id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=39;
---
--- AUTO_INCREMENT for table `cv0rg_jsn_uniform_forms`
---
-ALTER TABLE `cv0rg_jsn_uniform_forms`
-  MODIFY `form_id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=7;
---
--- AUTO_INCREMENT for table `cv0rg_jsn_uniform_form_pages`
---
-ALTER TABLE `cv0rg_jsn_uniform_form_pages`
-  MODIFY `page_id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=9;
---
--- AUTO_INCREMENT for table `cv0rg_jsn_uniform_messages`
---
-ALTER TABLE `cv0rg_jsn_uniform_messages`
-  MODIFY `msg_id` int(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT for table `cv0rg_jsn_uniform_submissions`
---
-ALTER TABLE `cv0rg_jsn_uniform_submissions`
-  MODIFY `submission_id` int(10) unsigned NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT for table `cv0rg_jsn_uniform_submission_data`
---
-ALTER TABLE `cv0rg_jsn_uniform_submission_data`
-  MODIFY `submission_data_id` int(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT for table `cv0rg_jsn_uniform_templates`
---
-ALTER TABLE `cv0rg_jsn_uniform_templates`
-  MODIFY `template_id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=17;
---
--- AUTO_INCREMENT for table `cv0rg_languages`
---
-ALTER TABLE `cv0rg_languages`
-  MODIFY `lang_id` int(11) unsigned NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2;
---
--- AUTO_INCREMENT for table `cv0rg_menu`
---
-ALTER TABLE `cv0rg_menu`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=1978;
---
--- AUTO_INCREMENT for table `cv0rg_menu_types`
---
-ALTER TABLE `cv0rg_menu_types`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=12;
---
--- AUTO_INCREMENT for table `cv0rg_messages`
---
-ALTER TABLE `cv0rg_messages`
-  MODIFY `message_id` int(10) unsigned NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT for table `cv0rg_modules`
---
-ALTER TABLE `cv0rg_modules`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=253;
---
--- AUTO_INCREMENT for table `cv0rg_newsfeeds`
---
-ALTER TABLE `cv0rg_newsfeeds`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=5;
---
--- AUTO_INCREMENT for table `cv0rg_overrider`
---
-ALTER TABLE `cv0rg_overrider`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'Primary Key';
---
--- AUTO_INCREMENT for table `cv0rg_postinstall_messages`
---
-ALTER TABLE `cv0rg_postinstall_messages`
-  MODIFY `postinstall_message_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=3;
---
--- AUTO_INCREMENT for table `cv0rg_redirect_links`
---
-ALTER TABLE `cv0rg_redirect_links`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT for table `cv0rg_tags`
---
-ALTER TABLE `cv0rg_tags`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=3;
---
--- AUTO_INCREMENT for table `cv0rg_template_styles`
---
-ALTER TABLE `cv0rg_template_styles`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=11;
---
--- AUTO_INCREMENT for table `cv0rg_ucm_content`
---
-ALTER TABLE `cv0rg_ucm_content`
-  MODIFY `core_content_id` int(10) unsigned NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2;
---
--- AUTO_INCREMENT for table `cv0rg_ucm_history`
---
-ALTER TABLE `cv0rg_ucm_history`
-  MODIFY `version_id` int(10) unsigned NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=15;
---
--- AUTO_INCREMENT for table `cv0rg_updates`
---
-ALTER TABLE `cv0rg_updates`
-  MODIFY `update_id` int(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT for table `cv0rg_update_sites`
---
-ALTER TABLE `cv0rg_update_sites`
-  MODIFY `update_site_id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=12;
---
--- AUTO_INCREMENT for table `cv0rg_usergroups`
---
-ALTER TABLE `cv0rg_usergroups`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Primary Key',AUTO_INCREMENT=10;
---
--- AUTO_INCREMENT for table `cv0rg_users`
---
-ALTER TABLE `cv0rg_users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=761;
---
--- AUTO_INCREMENT for table `cv0rg_user_keys`
---
-ALTER TABLE `cv0rg_user_keys`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT for table `cv0rg_user_notes`
---
-ALTER TABLE `cv0rg_user_notes`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT for table `cv0rg_viewlevels`
---
-ALTER TABLE `cv0rg_viewlevels`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Primary Key',AUTO_INCREMENT=7;
---
--- AUTO_INCREMENT for table `cv0rg_weblinks`
---
-ALTER TABLE `cv0rg_weblinks`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=10;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
